@@ -22,9 +22,8 @@ This course covers advanced econometric methods with real-world data application
 ```
 EC627/
 ├── lectures/        # Lecture slides (PDF) and Stata do-files, organized by chapter
-│   ├── chap1/ ~ chap8/
-│   └── Full EE627_Lecture_Notes.*
-├── slides/          # Interactive reveal.js presentations (Chapters 5-8)
+│   └── chap1/ ~ chap8/
+├── slides/          # Interactive reveal.js presentations (all 8 chapters)
 ├── data/            # Datasets (.dta, .xlsx)
 ├── scripts/         # Python scripts and Jupyter notebooks
 └── assets/          # Images and logos
@@ -32,7 +31,7 @@ EC627/
 
 ## Interactive Slides
 
-Chapters 5–8 include interactive **reveal.js** presentations with:
+All 8 chapters include interactive **reveal.js** presentations with:
 
 - Step-by-step explanations in Thai
 - Interactive visualizations (sliders, canvas animations)
@@ -42,12 +41,24 @@ Chapters 5–8 include interactive **reveal.js** presentations with:
 
 To view, open the `.html` files in `slides/` with any modern browser.
 
+| File | Chapter | Highlights |
+|------|---------|------------|
+| `chap1_slides.html` | OLS & Linear Models | Kernel density toggle, residual diagnostics, retransformation demo |
+| `chap2_slides.html` | Monte Carlo Simulation | Distribution explorer, CLT simulator, OLS simulation, endogeneity demo |
+| `chap3_slides.html` | GLS, SUR, Survey | Heteroskedasticity visualizer, FGLS steps, SUR correlation, design effects |
+| `chap4_slides.html` | Instrumental Variables | Endogeneity bias, 2SLS step-by-step, weak instruments, overidentification |
+| `chap5_slides.html` | Quantile Regression | Check function, objective function, coefficient plot, QCR jittering |
+| `chap6_slides.html` | Panel Data | Within/between variation, FE vs RE, Hausman test, incidental parameters |
+| `chap7_slides.html` | Regression Discontinuity | RD plot simulator, sharp vs fuzzy, bandwidth selector, density test |
+| `chap8_slides.html` | Difference-in-Differences | DID visualizer, common trends violation, event study plot, Autor (2003) |
+
 ## Key Datasets
 
 | Dataset | Chapter | Description |
 |---------|---------|-------------|
-| MEPS (Medical Expenditure) | 1, 5 | Healthcare spending among elderly |
+| MEPS (Medical Expenditure) | 1, 4, 5 | Healthcare spending among elderly |
 | NHANES II | 3 | National Health and Nutrition survey |
+| SUR example | 3 | Drug expenditures and other medical costs |
 | PSID Panel | 6 | Panel on log hourly wages (595 individuals, 1976–82) |
 | Rand HIE | 6 | Health Insurance Experiment (coinsurance rates) |
 | Head Start | 7 | Ludwig & Miller (2007) county-level mortality |
