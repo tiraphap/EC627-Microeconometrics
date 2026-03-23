@@ -330,10 +330,9 @@
 
     <section>
         <h2>กรอบแนวคิดที่ 2: Local Randomization</h2>
-        <div class="concept-box">
+        <div class="concept-box" style="margin-bottom:3px;">
             <h3>สมมติฐานหลัก</h3>
-            <p>ภายในหน้าต่างแคบ ๆ รอบ cutoff <strong>การได้รับ treatment เสมือนถูกสุ่ม</strong> (as-if random assignment)</p>
-            <p>Potential outcomes เป็นอิสระจาก running variable ในหน้าต่างนั้น</p>
+            <p>ภายในหน้าต่างแคบ ๆ รอบ cutoff <strong>การได้รับ treatment เสมือนถูกสุ่ม</strong> (as-if random) &mdash; potential outcomes เป็นอิสระจาก running variable ในหน้าต่างนั้น</p>
         </div>
         <div class="fragment two-col">
             <div>
@@ -353,11 +352,8 @@
                     <div class="stata-code">
 <span class="cmt">* Local Randomization Inference</span>
 <span class="cmd">rdrandinf</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">wl</span>(<span class="num">57</span>) <span class="opt">wr</span>(<span class="num">61</span>) <span class="opt">reps</span>(<span class="num">1000</span>)
-
 <span class="cmt">* Window Selection</span>
-<span class="cmd">rdwinselect</span> $X census1960_pop
-  census1960_pcturban census1960_pctblack,
-  <span class="opt">c</span>(<span class="num">59.1984</span>)
+<span class="cmd">rdwinselect</span> $X census1960_pop census1960_pcturban census1960_pctblack, <span class="opt">c</span>(<span class="num">59.1984</span>)
                     </div>
                 </div>
             </div>
