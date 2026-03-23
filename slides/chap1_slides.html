@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 1: Overview Concepts & Linear Models | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            color: var(--text);
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: none;
+            line-height: 1.6;
+            padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree (HTML/CSS) ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px;
+            font-size: 13px; color: rgba(0,0,0,0.35);
+            z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer {
+            position: fixed; bottom: 8px; left: 16px;
+            z-index: 100; pointer-events: none; opacity: 0.45;
+        }
+        .logo-footer img { height: 38px; width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer">
+    <img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University">
+</div>
+<div class="instructor-footer">
+    ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ==================== TITLE ==================== -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>Overview Concepts &amp; Linear Models</h1>
+    <div class="subtitle">Chapter 1 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Overview &bull; Data &bull; OLS &bull; Specification &bull; Prediction &bull; Weights &bull; Summary</p>
+    </div>
+</section>
+
+<!-- ==================== SECTION 1: OVERVIEW & INTRODUCTION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>1. Overview &amp; Introduction</h2>
+    <p>Microeconometric Analysis คืออะไร?</p>
+</section>
+
+<section>
+    <h2>Microeconometric Analysis คืออะไร?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Microeconometrics</strong> คือการวิเคราะห์ข้อมูลระดับบุคคล (individual-level data) เกี่ยวกับพฤติกรรมทางเศรษฐกิจ</p>
+                <p>ต่างจาก macroeconometrics ที่ใช้ข้อมูลรวม (aggregate data เช่น GDP, CPI)</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ตัวอย่างข้อมูล:</strong></p>
+                <ul>
+                    <li>ค่าใช้จ่ายสุขภาพรายบุคคล (MEPS)</li>
+                    <li>การตัดสินใจเข้าร่วมตลาดแรงงาน</li>
+                    <li>ความต้องการซื้อประกัน</li>
+                    <li>จำนวนครั้งที่ไปพบแพทย์</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ทำไมต้องศึกษาระดับจุลภาค?</h3>
+                <p>ข้อมูลรวมซ่อน <strong>ความหลากหลาย</strong> (heterogeneity) ระหว่างบุคคลไว้</p>
+                <p>ผลกระทบของนโยบายมักแตกต่างกันตามลักษณะของแต่ละคน &mdash; ข้อมูลระดับจุลภาคช่วยให้เห็นความแตกต่างนี้</p>
+            </div>
+            <div class="concept-box fragment">
+                <h3>ข้อมูลที่ใช้บ่อย</h3>
+                <ul>
+                    <li><strong>Cross-section:</strong> สุ่มตัวอย่าง ณ จุดเวลาเดียว</li>
+                    <li><strong>Panel data:</strong> ติดตามบุคคลเดิมหลายช่วงเวลา</li>
+                    <li><strong>Repeated cross-section:</strong> สุ่มใหม่ทุกรอบ</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ลักษณะเด่นของ Microeconometric Data</h2>
+    <div class="three-col">
+        <div class="concept-box fragment">
+            <h3>Discreteness &amp; Nonlinearity</h3>
+            <p>ตัวแปรตามมักไม่ต่อเนื่อง เช่น ซื้อ/ไม่ซื้อ (binary), จำนวนครั้งไปหาหมอ (count) &rarr; ต้องใช้โมเดลที่เหมาะสม</p>
+        </div>
+        <div class="concept-box fragment">
+            <h3>Greater Realism</h3>
+            <p>สร้างโมเดลจากทฤษฎีเศรษฐศาสตร์จุลภาคโดยตรง เช่น utility maximization, labor supply &rarr; ความสอดคล้องระหว่างทฤษฎีกับแบบจำลองเชิงประจักษ์</p>
+        </div>
+        <div class="concept-box fragment">
+            <h3>Disaggregation &amp; Heterogeneity</h3>
+            <p>แต่ละบุคคลมีลักษณะต่างกัน &rarr; ผลกระทบอาจต่างกัน (heterogeneous treatment effects) ข้อมูลรวมมองไม่เห็นความแตกต่างนี้</p>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top: 6px;">
+        <p><strong>Greater Information Content:</strong> ข้อมูลจุลภาคมีความแปรปรวน (variation) มากกว่าข้อมูลมหภาค &rarr; ประมาณค่าพารามิเตอร์ได้แม่นยำกว่า แต่ต้องระวังปัญหา heteroskedasticity, selection bias, measurement error</p>
+    </div>
+</section>
+
+<section>
+    <h2>ปัญหาหลัก: Confounding &amp; Unobserved Heterogeneity</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Confounding Factors</h3>
+                <p>ตัวแปรที่ส่งผลต่อทั้ง X และ Y พร้อมกัน ทำให้ correlation ไม่ใช่ causation</p>
+                <div class="math-block">
+                    Cov(X, Y) &ne; 0 &nrArr; X &rarr; Y
+                </div>
+                <p>เช่น คนมีประกันสุขภาพใช้จ่ายด้านสุขภาพมากกว่า &mdash; แต่อาจเป็นเพราะคนป่วยบ่อยเลือกซื้อประกัน (selection)</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>Omitted Variable Bias (OVB)</h3>
+                <p>ถ้าละเว้นตัวแปรที่สัมพันธ์กับทั้ง X และ Y:</p>
+                <div class="math-block">
+                    E[&beta;&#770;<sub>OLS</sub>] = &beta; + &gamma; &middot; &delta;
+                </div>
+                <p>โดย &gamma; = ผลของตัวแปรที่ละเว้นต่อ Y, &delta; = ความสัมพันธ์ระหว่างตัวแปรที่ละเว้นกับ X</p>
+                <p><strong>ทิศทาง bias</strong> ขึ้นอยู่กับเครื่องหมายของ &gamma; &times; &delta;</p>
+            </div>
+        </div>
+    </div>
+    <div class="example-box fragment" style="margin-top: 4px;">
+        <p><strong>ตัวอย่าง:</strong> ถ้า "ความร้ายแรงของโรค" ส่งผลให้ใช้จ่ายสุขภาพสูง (+) และทำให้ซื้อประกัน (+) &rarr; OVB จะทำให้ค่าสัมประสิทธิ์ของประกันถูก bias ขึ้น (overestimate)</p>
+    </div>
+</section>
+
+<section>
+    <h2>Causal vs Noncausal Models</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Noncausal (Predictive) Model</h3>
+                <p>เป้าหมาย: ทำนาย Y ให้แม่นที่สุด</p>
+                <p>ไม่จำเป็นต้องตีความ &beta; เป็น causal effect</p>
+                <div class="math-block">
+                    E[Y | X] = X&beta;
+                </div>
+                <p>ใช้ได้ดีสำหรับ forecasting, risk scoring</p>
+            </div>
+            <div class="example-box fragment">
+                <p>เช่น ทำนายค่าใช้จ่ายสุขภาพจากอายุ เพศ จำนวนโรคเรื้อรัง &mdash; ไม่ต้องรู้ว่าตัวไหนเป็น "สาเหตุ"</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>Causal (Structural) Model</h3>
+                <p>เป้าหมาย: วัดผลกระทบเชิงสาเหตุของ X ต่อ Y</p>
+                <p>ต้องใช้เครื่องมือพิเศษ:</p>
+                <ul>
+                    <li><strong>Randomized experiment</strong></li>
+                    <li><strong>Instrumental variables</strong> (Ch. 4)</li>
+                    <li><strong>Panel data / Fixed effects</strong> (Ch. 6)</li>
+                    <li><strong>Regression Discontinuity</strong> (Ch. 7)</li>
+                    <li><strong>Difference-in-Differences</strong> (Ch. 8)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="concept-box fragment" style="margin-top: 4px;">
+        <p><strong>Structural vs Reduced Form:</strong> Structural model สะท้อนทฤษฎีเศรษฐศาสตร์โดยตรง (เช่น demand &amp; supply) &rarr; reduced form ได้จากการแก้ระบบสมการ ซึ่งแสดง endogenous variables เป็นฟังก์ชันของ exogenous variables เท่านั้น</p>
+    </div>
+</section>
+
+<section>
+    <h2>Exogeneity &amp; Conditional Independence</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Weak Exogeneity</h3>
+                <div class="math-block">E[u | X] = 0</div>
+                <p>ค่าคาดหวังของ error term เท่ากับศูนย์เมื่อกำหนด X &rarr; เพียงพอสำหรับ OLS consistency</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>Strong Exogeneity</h3>
+                <div class="math-block">f(u | X) = f(u)</div>
+                <p>การกระจายตัวของ u ไม่ขึ้นกับ X เลย &rarr; เข้มงวดกว่า weak exogeneity</p>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box fragment">
+                <h3>Conditional Independence Assumption (CIA)</h3>
+                <p>เมื่อ control ตัวแปร W แล้ว:</p>
+                <div class="math-block">Y(0), Y(1) &perp; D | W</div>
+                <p>ผลลัพธ์ที่อาจเกิดขึ้น (potential outcomes) ไม่ขึ้นกับ treatment D เมื่อกำหนด W</p>
+                <p>&rarr; <strong>Selection on observables:</strong> ถ้า CIA ถือ OLS + control W ก็เพียงพอสำหรับ causal inference</p>
+            </div>
+        </div>
+    </div>
+    <div class="example-box fragment" style="margin-top: 4px;">
+        <p><strong>ตัวอย่าง:</strong> ถ้า suppins (ประกันเสริม) ถูกกำหนดโดย income, age, สุขภาพ &mdash; เมื่อเรา control ตัวแปรเหล่านี้แล้ว suppins จะ exogenous &rarr; OLS ให้ causal effect ได้</p>
+    </div>
+</section>
+
+<section>
+    <h2>Linear Simultaneous Equations Model (SEM)</h2>
+    <div class="concept-box">
+        <p><strong>ตัวอย่าง:</strong> Supply &amp; Demand</p>
+        <div class="math-block">
+            Q<sup>d</sup> = &alpha;<sub>0</sub> + &alpha;<sub>1</sub>P + &alpha;<sub>2</sub>Income + u<sub>d</sub><br>
+            Q<sup>s</sup> = &beta;<sub>0</sub> + &beta;<sub>1</sub>P + &beta;<sub>2</sub>Cost + u<sub>s</sub><br>
+            Q<sup>d</sup> = Q<sup>s</sup> (equilibrium)
+        </div>
+    </div>
+    <div class="two-col fragment">
+        <div class="key-insight">
+            <h3>ปัญหา Identification</h3>
+            <p>ถ้า P เป็น endogenous (ถูกกำหนดพร้อมกับ Q) &rarr; OLS ให้ค่า bias</p>
+            <p><strong>Order condition:</strong> ตัวแปร excluded instruments &ge; จำนวน endogenous regressors</p>
+            <p>Income อยู่ใน demand แต่ไม่อยู่ใน supply &rarr; identify supply ได้</p>
+        </div>
+        <div class="concept-box">
+            <h3>Reduced Form</h3>
+            <p>แก้ระบบเพื่อแสดง endogenous variables (P, Q) เป็นฟังก์ชันของ exogenous variables เท่านั้น:</p>
+            <div class="math-block">
+                P = &pi;<sub>0</sub> + &pi;<sub>1</sub>Income + &pi;<sub>2</sub>Cost + v<sub>P</sub><br>
+                Q = &pi;<sub>3</sub> + &pi;<sub>4</sub>Income + &pi;<sub>5</sub>Cost + v<sub>Q</sub>
+            </div>
+            <p>Reduced form ประมาณค่าด้วย OLS ได้เสมอ (consistent)</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>สัญกรณ์และข้อตกลง (Notation)</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ตัวแปรพื้นฐาน</h3>
+                <table class="compare-table">
+                    <tr><th>สัญลักษณ์</th><th>ความหมาย</th></tr>
+                    <tr><td>y<sub>i</sub></td><td>ตัวแปรตาม (dependent variable) ของหน่วยที่ i</td></tr>
+                    <tr><td>x<sub>i</sub></td><td>เวกเตอร์ของตัวแปรอิสระ (1 &times; K)</td></tr>
+                    <tr><td>&beta;</td><td>เวกเตอร์พารามิเตอร์ (K &times; 1)</td></tr>
+                    <tr><td>u<sub>i</sub></td><td>error term (unobservable)</td></tr>
+                    <tr><td>N</td><td>จำนวนหน่วยสังเกต (observations)</td></tr>
+                </table>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>Linear Model</h3>
+                <div class="math-block">
+                    y<sub>i</sub> = x<sub>i</sub>&beta; + u<sub>i</sub>, &emsp; i = 1, ..., N
+                </div>
+                <p>หรือในรูปเมทริกซ์:</p>
+                <div class="math-block">
+                    y = X&beta; + u
+                </div>
+                <p>โดย y เป็น N&times;1, X เป็น N&times;K, &beta; เป็น K&times;1, u เป็น N&times;1</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>สมมติฐาน OLS</h3>
+                <ol>
+                    <li>E[u | X] = 0 (exogeneity)</li>
+                    <li>rank(X) = K (no multicollinearity)</li>
+                    <li>Var(u | X) = &sigma;&sup2;I (homoskedasticity)</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 1 wrapper -->
+
+<!-- ==================== SECTION 2: DATA SUMMARY & EXPLORATION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>2. Data Summary &amp; Exploration</h2>
+    <p>ข้อมูล Medical Expenditure Panel Survey (MEPS)</p>
+</section>
+
+<section>
+    <h2>ข้อมูล MEPS: ตัวแปรหลัก</h2>
+    <div class="concept-box">
+        <p><strong>Medical Expenditure Panel Survey (MEPS)</strong> &mdash; ข้อมูลค่าใช้จ่ายสุขภาพของผู้สูงอายุ 65 ปีขึ้นไป ในสหรัฐอเมริกา</p>
+    </div>
+    <table class="compare-table" style="margin-top: 5px;">
+        <tr><th>ตัวแปร</th><th>คำอธิบาย</th><th>ประเภท</th></tr>
+        <tr><td><strong>totexp</strong></td><td>ค่าใช้จ่ายสุขภาพรวม (total medical expenditure)</td><td>Continuous</td></tr>
+        <tr><td><strong>ltotexp</strong></td><td>log ของค่าใช้จ่าย = ln(totexp)</td><td>Continuous</td></tr>
+        <tr><td><strong>posexp</strong></td><td>= 1 ถ้ามีค่าใช้จ่ายสุขภาพ > 0</td><td>Binary</td></tr>
+        <tr><td><strong>suppins</strong></td><td>= 1 ถ้ามีประกันสุขภาพเสริม (supplementary insurance)</td><td>Binary</td></tr>
+        <tr><td><strong>phylim</strong></td><td>= 1 ถ้ามีข้อจำกัดทางกายภาพ (physical limitation)</td><td>Binary</td></tr>
+        <tr><td><strong>actlim</strong></td><td>= 1 ถ้ามีข้อจำกัดในกิจวัตรประจำวัน (activity limitation)</td><td>Binary</td></tr>
+        <tr><td><strong>totchr</strong></td><td>จำนวนโรคเรื้อรัง (total chronic conditions)</td><td>Count</td></tr>
+        <tr><td><strong>age</strong></td><td>อายุ (ปี)</td><td>Continuous</td></tr>
+        <tr><td><strong>female</strong></td><td>= 1 ถ้าเป็นเพศหญิง</td><td>Binary</td></tr>
+        <tr><td><strong>income</strong></td><td>รายได้ (หน่วยพันดอลลาร์)</td><td>Continuous</td></tr>
+    </table>
+</section>
+
+<section>
+    <h2>Stata: สำรวจข้อมูลเบื้องต้น</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* โหลดข้อมูล</span>
+<span class="cmd">use</span> <span class="opt">"Chap 1 data.dta"</span>
+
+<span class="cmt">* ดูโครงสร้างตัวแปร</span>
+<span class="cmd">describe</span> totexp ltotexp posexp suppins phylim actlim totchr age female income
+
+<span class="cmt">* สถิติเชิงพรรณนา</span>
+<span class="cmd">summarize</span> totexp ltotexp posexp suppins phylim actlim totchr age female income
+
+<span class="cmt">* สถิติแบบละเอียด</span>
+<span class="cmd">summarize</span> totexp, <span class="opt">detail</span>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* ตารางไขว้ (cross tabulation)</span>
+<span class="cmd">tabulate</span> female suppins, <span class="opt">row col chi2</span>
+
+<span class="cmt">* สถิติตาม group</span>
+<span class="cmd">tabstat</span> totexp ltotexp, <span class="opt">stat(count mean p50 sd skew kurt) col(stat)</span>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box fragment">
+                <h3>สิ่งที่ต้องสังเกต</h3>
+                <ul>
+                    <li>totexp มี <strong>right-skewed</strong> อย่างมาก (skewness > 0)</li>
+                    <li>ltotexp กระจายตัวใกล้เคียง normal มากขึ้น</li>
+                    <li>posexp: มีบางคนที่ค่าใช้จ่าย = 0</li>
+                    <li>suppins: สัดส่วนคนมีประกันเสริม</li>
+                    <li>totchr: ค่าเฉลี่ยจำนวนโรคเรื้อรัง</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <h3>ทำไม skewness สำคัญ?</h3>
+                <p>ค่าใช้จ่ายสุขภาพเป็น <strong>right-skewed</strong> อย่างมาก: คนส่วนใหญ่ใช้จ่ายน้อย แต่ส่วนน้อยใช้จ่ายสูงมาก &rarr; ค่าเฉลี่ย >> ค่ามัธยฐาน</p>
+                <p>การใช้ log transformation ช่วยลด skewness</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Kernel Density: Levels vs Log</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* Kernel density plot</span>
+<span class="cmd">kdensity</span> totexp <span class="opt">if</span> posexp==<span class="num">1</span>, generate(kx1 kd1) n(<span class="num">500</span>)
+<span class="cmd">graph twoway</span> (line kd1 kx1) <span class="opt">if</span> kx1 < <span class="num">40000</span>, name(levels)
+
+<span class="cmd">kdensity</span> ltotexp <span class="opt">if</span> posexp==<span class="num">1</span>, generate(kx2 kd2) n(<span class="num">500</span>)
+<span class="cmd">graph twoway</span> (line kd2 kx2) <span class="opt">if</span> kx2 < ln(<span class="num">40000</span>), name(logs)
+
+<span class="cmd">graph combine</span> levels logs, iscale(<span class="num">1.0</span>)
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>Kernel density</strong> คือวิธีประมาณ PDF ของข้อมูลแบบ nonparametric &mdash; ไม่ต้อง assume รูปแบบของ distribution</p>
+                <p>ใช้ kernel function (เช่น Gaussian) เฉลี่ยที่แต่ละจุดด้วย bandwidth h</p>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองดู: Levels vs Log Transformation</h4>
+            <canvas id="kernelCanvas" width="420" height="240"></canvas>
+            <div style="text-align:center; margin-top:6px;">
+                <button class="interactive-btn active" onclick="drawKernel('levels')">Levels (totexp)</button>
+                <button class="interactive-btn" onclick="drawKernel('log')">Log (ltotexp)</button>
+                <button class="interactive-btn" onclick="drawKernel('both')">Both</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 2 wrapper -->
+
+<!-- ==================== SECTION 3: OLS REGRESSION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>3. OLS Regression</h2>
+    <p>คุณสมบัติ OLS, Robust SE, การทดสอบสมมติฐาน</p>
+</section>
+
+<section>
+    <h2>OLS: คุณสมบัติ &amp; ตัวประมาณค่า</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>OLS Estimator</h3>
+                <div class="math-block">
+                    &beta;&#770;<sub>OLS</sub> = (X'X)<sup>&minus;1</sup>X'y
+                </div>
+                <p>minimize ผลรวมของ residual ยกกำลังสอง:</p>
+                <div class="math-block">
+                    min<sub>&beta;</sub> &sum;<sub>i</sub> (y<sub>i</sub> &minus; x<sub>i</sub>&beta;)<sup>2</sup>
+                </div>
+            </div>
+            <div class="key-insight fragment">
+                <h3>คุณสมบัติ (ภายใต้ Gauss-Markov)</h3>
+                <ul>
+                    <li><strong>Unbiased:</strong> E[&beta;&#770;] = &beta;</li>
+                    <li><strong>Consistent:</strong> &beta;&#770; &rarr;<sup>p</sup> &beta; เมื่อ N &rarr; &infin;</li>
+                    <li><strong>BLUE:</strong> Best Linear Unbiased Estimator</li>
+                    <li><strong>Efficient:</strong> มี variance ต่ำสุดในกลุ่ม linear unbiased</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box fragment">
+                <h3>Variance ของ OLS</h3>
+                <p><strong>Default (homoskedastic):</strong></p>
+                <div class="math-block">
+                    Var(&beta;&#770;) = &sigma;&sup2;(X'X)<sup>&minus;1</sup>
+                </div>
+                <p><strong>Robust (Huber-White):</strong></p>
+                <div class="math-block">
+                    Var(&beta;&#770;)<sub>HC</sub> = (X'X)<sup>&minus;1</sup> X'&Omega;&#770;X (X'X)<sup>&minus;1</sup>
+                </div>
+                <p>โดย &Omega;&#770; = diag(e<sub>i</sub>&sup2;) ใช้ residuals ประมาณ heteroskedasticity</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ใน Stata:</strong> เพิ่ม <code>vce(robust)</code> เพื่อใช้ Huber-White SE</p>
+                <p>ถ้ามี clustering: <code>vce(cluster id)</code></p>
+                <p>Robust SE ให้ค่า <strong>consistent</strong> แม้มี heteroskedasticity &rarr; แนะนำให้ใช้เสมอ</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Stata: OLS Regression ของค่าใช้จ่ายสุขภาพ</h2>
+    <div class="stata-code">
+<span class="cmt">* OLS regression with heteroskedasticity-robust standard errors</span>
+<span class="cmd">regress</span> ltotexp suppins phylim actlim totchr age female income, <span class="opt">vce(robust)</span>
+    </div>
+    <div class="two-col" style="margin-top: 5px;">
+        <div>
+            <div class="concept-box">
+                <h3>การตีความสัมประสิทธิ์ (Semi-log Model)</h3>
+                <p>เมื่อ Y = ln(totexp):</p>
+                <ul>
+                    <li><strong>Dummy variable (suppins):</strong> &beta;&#770; = 0.26 &rarr; มีประกันเสริมทำให้ค่าใช้จ่ายสูงขึ้นประมาณ 26%</li>
+                    <li><strong>Continuous (age):</strong> &beta;&#770; = 0.007 &rarr; อายุเพิ่ม 1 ปี ค่าใช้จ่ายเพิ่มประมาณ 0.7%</li>
+                    <li><strong>Count (totchr):</strong> &beta;&#770; = 0.21 &rarr; โรคเรื้อรังเพิ่ม 1 โรค ค่าใช้จ่ายเพิ่มประมาณ 21%</li>
+                </ul>
+                <p><em>หมายเหตุ: สำหรับ dummy ที่มีผลมาก ใช้สูตร (e<sup>&beta;</sup> &minus; 1) &times; 100% จะแม่นกว่า</em></p>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองดู: OLS กับ Robust SE vs Default SE</h4>
+            <canvas id="olsCanvas" width="420" height="220"></canvas>
+            <div style="text-align:center; margin-top:6px;">
+                <button class="interactive-btn active" onclick="drawOLS('robust')">Robust SE</button>
+                <button class="interactive-btn" onclick="drawOLS('default')">Default SE</button>
+                <button class="interactive-btn" onclick="drawOLS('compare')">เปรียบเทียบ</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Wald Test &amp; การทดสอบสมมติฐาน</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* ทดสอบความเท่ากันของสัมประสิทธิ์</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income, <span class="opt">vce(robust)</span>
+<span class="cmd">test</span> phylim = actlim
+
+<span class="cmt">* ทดสอบ joint significance</span>
+<span class="cmd">test</span> phylim actlim totchr
+            </div>
+            <div class="concept-box fragment">
+                <h3>Wald Test</h3>
+                <div class="math-block">
+                    W = (R&beta;&#770; &minus; r)' [R &middot; Var(&beta;&#770;) &middot; R']<sup>&minus;1</sup> (R&beta;&#770; &minus; r) ~ &chi;&sup2;(q)
+                </div>
+                <p>โดย R = restriction matrix, r = restriction value, q = จำนวน restrictions</p>
+                <p>Stata แปลงเป็น F-test: F = W/q ~ F(q, N&minus;K)</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ตัวอย่างการทดสอบ</h3>
+                <p><strong>test phylim = actlim:</strong></p>
+                <ul>
+                    <li>H<sub>0</sub>: &beta;<sub>phylim</sub> = &beta;<sub>actlim</sub></li>
+                    <li>H<sub>1</sub>: &beta;<sub>phylim</sub> &ne; &beta;<sub>actlim</sub></li>
+                    <li>ทดสอบว่า physical limitation กับ activity limitation มีผลต่อค่าใช้จ่ายเท่ากันหรือไม่</li>
+                </ul>
+                <p><strong>test phylim actlim totchr:</strong></p>
+                <ul>
+                    <li>H<sub>0</sub>: &beta;<sub>phylim</sub> = &beta;<sub>actlim</sub> = &beta;<sub>totchr</sub> = 0</li>
+                    <li>ทดสอบว่าตัวแปรสุขภาพทั้งหมดมีนัยสำคัญร่วมกันหรือไม่</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>การเก็บและเปรียบเทียบผลการประมาณค่า</h2>
+    <div class="stata-code">
+<span class="cmt">* เก็บผลจากหลายโมเดล</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income, <span class="opt">vce(robust)</span>
+<span class="cmd">estimates store</span> REG1
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female educyr, <span class="opt">vce(robust)</span>
+<span class="cmd">estimates store</span> REG2
+
+<span class="cmt">* แสดงผลเปรียบเทียบ</span>
+<span class="cmd">estimates table</span> REG1 REG2, <span class="opt">b(%9.4f) se stats(N r2 F ll) keep(suppins income educyr)</span>
+
+<span class="cmt">* ใช้ esttab สำหรับตารางที่สวยงามกว่า</span>
+<span class="cmd">esttab</span> REG1 REG2, <span class="opt">b(%10.4f) se scalars(N r2 F ll) mtitles keep(suppins income educyr)</span> <span class="cmd">///</span>
+  <span class="opt">title("Model comparison of REG1-REG2")</span>
+    </div>
+    <div class="two-col fragment" style="margin-top: 5px;">
+        <div class="concept-box">
+            <h3>estimates store / table</h3>
+            <p><strong>estimates store:</strong> เก็บผลลัพธ์ไว้ในหน่วยความจำ</p>
+            <p><strong>estimates table:</strong> แสดงผลเปรียบเทียบหลายโมเดล</p>
+            <p>ใช้ <code>keep()</code> เลือกแสดงเฉพาะตัวแปรที่สนใจ</p>
+        </div>
+        <div class="key-insight">
+            <h3>esttab (user-written)</h3>
+            <p><strong>esttab</strong> จากแพ็กเกจ <code>estout</code> สร้างตาราง publication-quality</p>
+            <p>ส่งออกเป็น LaTeX, CSV, RTF ได้:</p>
+            <div class="stata-code" style="font-size: 0.42em !important;">
+<span class="cmd">esttab</span> REG1 REG2 <span class="cmd">using</span> table.tex, <span class="opt">replace b(%10.4f) se</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 1 -->
+<section>
+    <h2>Quiz: OLS Properties</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> ในโมเดล ln(totexp) = X&beta; + u เมื่อมี heteroskedasticity ข้อใดถูกต้อง?</p>
+    </div>
+    <div id="quiz1" style="margin-top: 8px;">
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">
+            A. OLS estimator &beta;&#770; จะ biased และ inconsistent
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, true)">
+            B. OLS estimator &beta;&#770; ยังคง consistent แต่ default SE จะผิด &rarr; ต้องใช้ robust SE
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">
+            C. Robust SE จะเล็กกว่า default SE เสมอ
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">
+            D. ต้องใช้ GLS เท่านั้นจึงจะได้ค่าประมาณที่ถูกต้อง
+        </div>
+        <div class="quiz-feedback" id="quiz1-feedback"></div>
+    </div>
+</section>
+
+</section><!-- end Section 3 wrapper -->
+
+<!-- ==================== SECTION 4: SPECIFICATION ANALYSIS ==================== -->
+<section>
+<section class="section-divider">
+    <h2>4. Specification Analysis</h2>
+    <p>Residual Plots, Box-Cox, RESET, Heteroskedasticity Tests</p>
+</section>
+
+<section>
+    <h2>Residual vs Fitted Plot</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* พล็อต residual vs fitted values</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income, <span class="opt">vce(robust)</span>
+<span class="cmd">rvfplot</span>
+
+<span class="cmt">* ตรวจสอบ outliers</span>
+<span class="cmd">predict</span> uhat, <span class="opt">residual</span>
+<span class="cmd">predict</span> yhat, <span class="opt">xb</span>
+<span class="cmd">list</span> totexp ltotexp yhat uhat <span class="opt">if</span> uhat < -<span class="num">5</span>, <span class="opt">clean</span>
+            </div>
+            <div class="concept-box fragment">
+                <h3>สิ่งที่ควรมองหาในกราฟ</h3>
+                <ul>
+                    <li><strong>Pattern:</strong> ถ้าเห็น pattern (โค้ง, พัด) &rarr; อาจ misspecified</li>
+                    <li><strong>Outliers:</strong> จุดที่ residual สูงมาก</li>
+                    <li><strong>Heteroskedasticity:</strong> ความแปรปรวนของ residual เปลี่ยนไปตาม fitted value</li>
+                </ul>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองดู: Residual vs Fitted</h4>
+            <canvas id="residCanvas" width="420" height="230"></canvas>
+            <div style="text-align:center; margin-top:6px;">
+                <button class="interactive-btn" onclick="addOutliers()">เพิ่ม Outliers</button>
+                <button class="interactive-btn" onclick="resetResidual()">Reset</button>
+            </div>
+            <p style="font-size:0.42em; color:var(--text-light); text-align:center; margin-top:3px;">สังเกตว่า outliers ส่งผลต่อ regression line อย่างไร</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>DFITS &amp; Influential Observations</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* คำนวณ DFITS</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income
+<span class="cmd">predict</span> dfits, <span class="opt">dfits</span>
+<span class="cmd">scalar</span> threshold = <span class="num">2</span>*sqrt((e(df_m)+<span class="num">1</span>)/e(N))
+
+<span class="cmt">* แสดงค่า threshold</span>
+<span class="cmd">display</span> "dfits threshold = " %6.3f threshold
+
+<span class="cmt">* สถิติสรุปของ DFITS</span>
+<span class="cmd">tabstat</span> dfits, <span class="opt">stat(min p1 p5 p95 p99 max) format(%9.3f) col(stat)</span>
+
+<span class="cmt">* แสดง influential observations</span>
+<span class="cmd">list</span> dfits totexp ltotexp yhat uhat ///
+  <span class="opt">if</span> abs(dfits) > <span class="num">2</span>*threshold & e(sample), <span class="opt">clean</span>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>DFITS คืออะไร?</h3>
+                <p>DFITS<sub>i</sub> วัดผลกระทบของ observation i ต่อ fitted value ของตัวเอง</p>
+                <div class="math-block">
+                    DFITS<sub>i</sub> = e<sub>i</sub>* &radic;(h<sub>ii</sub> / (1 &minus; h<sub>ii</sub>))
+                </div>
+                <p>รวมทั้ง <strong>outlier</strong> (residual สูง) และ <strong>leverage</strong> (h<sub>ii</sub> สูง)</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>กฎง่ายๆ (Rule of Thumb)</h3>
+                <p>Observation ที่ |DFITS| > 2&radic;((K+1)/N) ถือเป็น <strong>influential</strong></p>
+                <p>ไม่ได้หมายความว่าต้องตัดทิ้ง แต่ควรตรวจสอบว่าเป็นข้อมูลจริงหรือ error</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Box-Cox Transformation</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* Box-Cox model: หา &lambda; ที่เหมาะสมที่สุด</span>
+<span class="cmd">boxcox</span> totexp suppins phylim actlim totchr age female income <span class="opt">if</span> totexp><span class="num">0</span>, <span class="opt">nolog</span>
+            </div>
+            <div class="concept-box">
+                <h3>Box-Cox Transformation</h3>
+                <div class="math-block">
+                    y<sup>(&lambda;)</sup> = (y<sup>&lambda;</sup> &minus; 1) / &lambda; &emsp; (&lambda; &ne; 0)<br>
+                    y<sup>(&lambda;)</sup> = ln(y) &emsp; (&lambda; = 0)
+                </div>
+                <p>ทดสอบว่า <strong>&lambda;</strong> ที่เหมาะที่สุดคืออะไร:</p>
+                <ul>
+                    <li>&lambda; = 1 &rarr; ไม่ต้อง transform (levels)</li>
+                    <li>&lambda; = 0 &rarr; log transformation</li>
+                    <li>&lambda; = 0.5 &rarr; square root</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ผลลัพธ์ Box-Cox</h3>
+                <p>Stata จะทดสอบ restricted models:</p>
+                <table class="compare-table">
+                    <tr><th>H<sub>0</sub></th><th>&lambda;</th><th>Model</th></tr>
+                    <tr><td>&lambda; = &minus;1</td><td>&minus;1</td><td>Reciprocal</td></tr>
+                    <tr><td>&lambda; = 0</td><td>0</td><td>Log</td></tr>
+                    <tr><td>&lambda; = 0.5</td><td>0.5</td><td>Square root</td></tr>
+                    <tr><td>&lambda; = 1</td><td>1</td><td>Linear (levels)</td></tr>
+                </table>
+                <p>สำหรับข้อมูลค่าใช้จ่ายสุขภาพ &lambda;&#770; มักอยู่ใกล้ 0 &rarr; สนับสนุนการใช้ log model</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>RESET Test (Ramsey)</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* RESET test: ทดสอบ functional form</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income, <span class="opt">vce(robust)</span>
+<span class="cmd">estat ovtest</span>
+            </div>
+            <div class="concept-box">
+                <h3>หลักการของ RESET</h3>
+                <p>เพิ่มเทอม <strong>y&#770;&sup2;, y&#770;&sup3;, y&#770;&sup4;</strong> เข้าไปในสมการ:</p>
+                <div class="math-block">
+                    y = X&beta; + &delta;<sub>2</sub>y&#770;&sup2; + &delta;<sub>3</sub>y&#770;&sup3; + &delta;<sub>4</sub>y&#770;&sup4; + error
+                </div>
+                <p>H<sub>0</sub>: &delta;<sub>2</sub> = &delta;<sub>3</sub> = &delta;<sub>4</sub> = 0 (functional form ถูกต้อง)</p>
+                <p>ถ้า reject &rarr; อาจมี nonlinearity ที่ไม่ได้รวมไว้</p>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>RESET Test Intuition</h4>
+            <canvas id="resetCanvas" width="420" height="220"></canvas>
+            <div style="text-align:center; margin-top:6px;">
+                <button class="interactive-btn active" onclick="drawRESET('correct')">Correct Spec</button>
+                <button class="interactive-btn" onclick="drawRESET('misspec')">Misspecified</button>
+            </div>
+            <p style="font-size:0.42em; color:var(--text-light); text-align:center; margin-top:3px;">ถ้า linear fit ไม่พอ y&#770;&sup2; จะมีนัยสำคัญ</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Link Test &amp; Heteroskedasticity Tests</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* Link test</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income, <span class="opt">vce(robust)</span>
+<span class="cmd">linktest</span>
+
+<span class="cmt">* Heteroskedasticity test (Breusch-Pagan)</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income
+<span class="cmd">estat hettest</span>, <span class="opt">iid</span>
+<span class="cmd">estat hettest</span> suppins phylim actlim totchr age female income, <span class="opt">iid</span>
+            </div>
+            <div class="concept-box fragment">
+                <h3>Link Test</h3>
+                <p>Regress y on <strong>y&#770;</strong> (prediction) และ <strong>y&#770;&sup2;</strong> (hatsq)</p>
+                <p>ถ้า y&#770;&sup2; มีนัยสำคัญ &rarr; functional form อาจผิด</p>
+                <p>คล้าย RESET แต่ใช้เฉพาะ y&#770; กับ y&#770;&sup2;</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>Breusch-Pagan / White Test</h3>
+                <p><strong>estat hettest, iid:</strong></p>
+                <p>H<sub>0</sub>: Var(u | X) = &sigma;&sup2; (homoskedastic)</p>
+                <p>H<sub>1</sub>: Var(u | X) = &sigma;&sup2;h(X) (heteroskedastic)</p>
+                <p>ถ้า reject H<sub>0</sub> &rarr; ใช้ <code>vce(robust)</code></p>
+            </div>
+            <div class="concept-box fragment">
+                <h3>Information Matrix Test</h3>
+                <div class="stata-code" style="font-size: 0.42em !important;">
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income
+<span class="cmd">estat imtest</span>
+                </div>
+                <p>ทดสอบทั้ง heteroskedasticity, skewness, และ kurtosis ของ residuals พร้อมกัน</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Simulation: Test Power ในหลายทิศทาง</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* สร้างข้อมูล DGP: y = exp(1 + 0.25x + 4x^2) + u</span>
+<span class="cmd">clear all</span>
+<span class="cmd">set obs</span> <span class="num">50</span>
+<span class="cmd">set seed</span> <span class="num">10101</span>
+<span class="cmd">generate</span> x = runiform()
+<span class="cmd">generate</span> u = rnormal()
+<span class="cmd">generate</span> y = exp(<span class="num">1</span> + <span class="num">0.25</span>*x + <span class="num">4</span>*x^<span class="num">2</span>) + u
+<span class="cmd">generate</span> xsq = x^<span class="num">2</span>
+<span class="cmd">regress</span> y x xsq
+
+<span class="cmt">* ทั้งสอง test reject: misspec + heterosk</span>
+<span class="cmd">estat hettest</span>
+<span class="cmd">estat ovtest</span>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight">
+                <h3>บทเรียนสำคัญ</h3>
+                <p>DGP นี้มีทั้ง <strong>nonlinearity</strong> (exp function) และ <strong>heteroskedasticity</strong> (variance เพิ่มตาม x)</p>
+                <p>&rarr; ทั้ง <code>estat hettest</code> และ <code>estat ovtest</code> จะ reject</p>
+                <p>Specification tests มี <strong>power ในหลายทิศทาง</strong>:</p>
+                <ul>
+                    <li>RESET อาจ reject เพราะ heteroskedasticity (ไม่ใช่แค่ misspecification)</li>
+                    <li>Heterosk test อาจ reject เพราะ functional form ผิด</li>
+                </ul>
+                <p>&rarr; ต้องใช้หลาย tests ร่วมกันเพื่อวินิจฉัย</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 2 -->
+<section>
+    <h2>Quiz: Specification Tests</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> RESET test (estat ovtest) reject H<sub>0</sub> ข้อใดอธิบายสถานการณ์ได้ถูกต้องที่สุด?</p>
+    </div>
+    <div id="quiz2" style="margin-top: 8px;">
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">
+            A. โมเดลมี heteroskedasticity อย่างแน่นอน แต่ functional form ถูกต้อง
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">
+            B. โมเดลมี multicollinearity ที่รุนแรง
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, true)">
+            C. อาจเป็นเพราะ functional form ผิด หรือ heteroskedasticity หรือทั้งสองอย่าง
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">
+            D. RESET test ทดสอบเฉพาะ heteroskedasticity เท่านั้น
+        </div>
+        <div class="quiz-feedback" id="quiz2-feedback"></div>
+    </div>
+</section>
+
+</section><!-- end Section 4 wrapper -->
+
+<!-- ==================== SECTION 5: PREDICTION & RETRANSFORMATION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>5. Prediction &amp; Retransformation</h2>
+    <p>ปัญหาการแปลง log กลับเป็น levels</p>
+</section>
+
+<section>
+    <h2>Prediction: In-Sample</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* Prediction ในโมเดล levels</span>
+<span class="cmd">regress</span> totexp suppins phylim actlim totchr age female income, <span class="opt">vce(robust)</span>
+<span class="cmd">predict</span> yhatlevels
+
+<span class="cmt">* เปรียบเทียบค่าจริงกับค่าทำนาย</span>
+<span class="cmd">summarize</span> totexp yhatlevels
+
+<span class="cmt">* เปรียบเทียบ median</span>
+<span class="cmd">tabstat</span> totexp yhatlevels, <span class="opt">stat(count p50) col(stat)</span>
+            </div>
+            <div class="concept-box fragment">
+                <h3>Standard Error ของ Prediction</h3>
+                <div class="stata-code" style="font-size: 0.42em !important;">
+<span class="cmd">predict</span> yhatstdp, <span class="opt">stdp</span>   <span class="cmt">// SE of prediction (mean)</span>
+<span class="cmd">predict</span> yhatstdf, <span class="opt">stdf</span>   <span class="cmt">// SE of forecast (individual)</span>
+                </div>
+                <p><strong>stdp:</strong> uncertainty ของ E[y|x] &rarr; ใช้สำหรับ confidence interval ของ mean</p>
+                <p><strong>stdf:</strong> uncertainty ของ y<sub>individual</sub> &rarr; รวม &sigma;&sup2; ด้วย (&gt; stdp เสมอ)</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ข้อสังเกต</h3>
+                <ul>
+                    <li>ค่าเฉลี่ยของ y&#770; = ค่าเฉลี่ยของ y (OLS property)</li>
+                    <li>แต่ median ของ y&#770; อาจ &ne; median ของ y</li>
+                    <li>y&#770; อาจติดลบได้ในโมเดล levels &rarr; ปัญหาสำหรับตัวแปรที่ต้อง &ge; 0</li>
+                </ul>
+            </div>
+            <div class="concept-box fragment">
+                <h3>Marginal Effects &amp; Elasticity</h3>
+                <div class="stata-code" style="font-size: 0.42em !important;">
+<span class="cmt">* Average marginal effect ในโมเดลที่มี interaction</span>
+<span class="cmd">margins</span>, <span class="opt">dydx(income)</span>
+
+<span class="cmt">* Elasticity at means</span>
+<span class="cmd">margins</span>, <span class="opt">eyex(totchr) atmean</span>
+                </div>
+                <p><strong>eyex:</strong> elasticity = (dy/dx)(x/y) &rarr; % change in y per % change in x</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Retransformation Problem: Log &rarr; Levels</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ปัญหาหลัก</h3>
+                <p>เมื่อประมาณค่า ln(y) = X&beta; + u แล้วต้องการ E[y]:</p>
+                <div class="math-block" style="font-size: 0.62em;">
+                    exp(E[ln y | X]) &ne; E[y | X]
+                </div>
+                <p>เพราะ Jensen's Inequality: สำหรับฟังก์ชัน convex (exp)</p>
+                <div class="math-block" style="font-size: 0.62em;">
+                    E[exp(z)] &ge; exp(E[z])
+                </div>
+                <p>&rarr; <strong>exp(y&#770;) จะ underestimate E[y] เสมอ</strong></p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>วิธีแก้ 3 แบบ</h3>
+                <table class="compare-table">
+                    <tr><th>วิธี</th><th>สูตร</th><th>สมมติฐาน</th></tr>
+                    <tr><td>Naive</td><td>exp(X&beta;&#770;)</td><td class="highlight">ผิด! Biased down</td></tr>
+                    <tr><td>Normal</td><td>exp(X&beta;&#770;) &middot; exp(&sigma;&#770;&sup2;/2)</td><td>u ~ N(0, &sigma;&sup2;)</td></tr>
+                    <tr><td>Duan</td><td>exp(X&beta;&#770;) &middot; (1/N)&sum;exp(u&#770;<sub>i</sub>)</td><td>u iid (ไม่ต้อง normal)</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="stata-code fragment" style="margin-top: 4px;">
+<span class="cmt">* 3 วิธี retransformation</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income
+<span class="cmd">quietly predict</span> lyhat
+<span class="cmd">generate</span> yhatwrong  = exp(lyhat)                         <span class="cmt">// Naive (biased)</span>
+<span class="cmd">generate</span> yhatnormal = exp(lyhat) * exp(<span class="num">0.5</span>*e(rmse)^<span class="num">2</span>)   <span class="cmt">// Normal correction</span>
+<span class="cmd">quietly predict</span> uhat, <span class="opt">residual</span>
+<span class="cmd">generate</span> expuhat = exp(uhat)
+<span class="cmd">quietly summarize</span> expuhat
+<span class="cmd">generate</span> yhatduan = r(mean) * exp(lyhat)                  <span class="cmt">// Duan smearing</span>
+<span class="cmd">summarize</span> totexp yhatwrong yhatnormal yhatduan yhatlevels
+    </div>
+</section>
+
+<section>
+    <h2>Retransformation: Visual Comparison</h2>
+    <div class="two-col">
+        <div class="interactive-container">
+            <h4>ทำไม exp(E[ln y]) &ne; E[y]?</h4>
+            <canvas id="retransCanvas" width="440" height="260"></canvas>
+            <div style="text-align:center; margin-top:6px;">
+                <button class="interactive-btn active" onclick="drawRetrans('naive')">Naive exp(y&#770;)</button>
+                <button class="interactive-btn" onclick="drawRetrans('normal')">Normal Correction</button>
+                <button class="interactive-btn" onclick="drawRetrans('duan')">Duan Smearing</button>
+                <button class="interactive-btn" onclick="drawRetrans('all')">All Methods</button>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight">
+                <h3>Jensen's Inequality: Intuition</h3>
+                <p>ln y กระจายตัวแบบ symmetric (normal) แต่เมื่อ exp() กลับ ค่าสูงถูกขยายมากกว่าค่าต่ำ</p>
+                <p>&rarr; ค่าเฉลี่ยของ exp(ln y) > exp(ค่าเฉลี่ยของ ln y)</p>
+            </div>
+            <div class="example-box fragment">
+                <h3>ตัวเลขจริงจาก MEPS</h3>
+                <table class="compare-table">
+                    <tr><th>วิธี</th><th>Mean y&#770;</th></tr>
+                    <tr><td>Actual (totexp)</td><td>~$7,500</td></tr>
+                    <tr><td class="highlight">Naive exp(y&#770;)</td><td>~$4,800 (underestimate)</td></tr>
+                    <tr><td>Normal correction</td><td>~$7,200</td></tr>
+                    <tr><td>Duan smearing</td><td>~$7,500</td></tr>
+                    <tr><td>Levels regression</td><td>~$7,500</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ผลกระทบของ Supplementary Insurance</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>3 วิธีวัดผลกระทบ</h3>
+                <ol>
+                    <li><strong>Difference in sample means:</strong><br>
+                        mean(y | suppins=1) &minus; mean(y | suppins=0)<br>
+                        <em>ไม่ได้ control ลักษณะส่วนบุคคล</em></li>
+                    <li><strong>Difference in predicted means:</strong><br>
+                        mean(y&#770; | suppins=1) &minus; mean(y&#770; | suppins=0)<br>
+                        <em>control แล้ว แต่ขึ้นกับ distribution ของ X</em></li>
+                    <li><strong>Average Treatment Effect (ATE):</strong><br>
+                        (1/N)&sum;[y&#770;<sub>i</sub>(suppins=1) &minus; y&#770;<sub>i</sub>(suppins=0)]</li>
+                </ol>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code">
+<span class="cmt">* วิธี 3: ATE จาก log-linear model</span>
+<span class="cmd">quietly regress</span> ltotexp suppins phylim actlim totchr age female income
+<span class="cmd">preserve</span>
+<span class="cmd">quietly replace</span> suppins = <span class="num">1</span>
+<span class="cmd">quietly predict</span> lyhat1
+<span class="cmd">generate</span> yhatnormal1 = exp(lyhat1)*exp(<span class="num">0.5</span>*e(rmse)^<span class="num">2</span>)
+<span class="cmd">quietly replace</span> suppins = <span class="num">0</span>
+<span class="cmd">quietly predict</span> lyhat0
+<span class="cmd">generate</span> yhatnormal0 = exp(lyhat0)*exp(<span class="num">0.5</span>*e(rmse)^<span class="num">2</span>)
+<span class="cmd">generate</span> treateffect = yhatnormal1 - yhatnormal0
+<span class="cmd">summarize</span> yhatnormal1 yhatnormal0 treateffect
+<span class="cmd">restore</span>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ผลลัพธ์:</strong> ประกันเสริมเพิ่มค่าใช้จ่ายสุขภาพเฉลี่ยประมาณ $700&ndash;$1,000 ต่อปี (ATE)</p>
+                <p><em>สมมติว่า suppins exogenous &mdash; ถ้า endogenous ต้องใช้ IV (Chapter 4)</em></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 3 -->
+<section>
+    <h2>Quiz: Retransformation</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> เมื่อประมาณค่า ln(y) = X&beta; + u แล้วต้องการทำนาย E[y | X] ข้อใดถูกต้อง?</p>
+    </div>
+    <div id="quiz3" style="margin-top: 8px;">
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">
+            A. exp(X&beta;&#770;) เป็นตัวประมาณค่าที่ไม่มี bias ของ E[y | X]
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">
+            B. Duan smearing estimator ต้องสมมติ u ~ Normal
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, true)">
+            C. exp(X&beta;&#770;) underestimate E[y | X] เสมอ เพราะ Jensen's Inequality
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">
+            D. Normal correction และ Duan smearing ให้ผลเหมือนกันเสมอ
+        </div>
+        <div class="quiz-feedback" id="quiz3-feedback"></div>
+    </div>
+</section>
+
+</section><!-- end Section 5 wrapper -->
+
+<!-- ==================== SECTION 6: SAMPLING WEIGHTS ==================== -->
+<section>
+<section class="section-divider">
+    <h2>6. Sampling Weights</h2>
+    <p>Probability Weights &amp; Weighted Regression</p>
+</section>
+
+<section>
+    <h2>ทำไมต้องใช้ Sampling Weights?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Probability Weights (pweight)</h3>
+                <p>ในการสำรวจ (survey) มักใช้ <strong>stratified sampling</strong> &mdash; บางกลุ่มถูกสุ่มมากกว่าสัดส่วนจริง (oversampled)</p>
+                <p>Sampling weight = จำนวนประชากรที่ observation นั้น "แทน"</p>
+                <table class="compare-table" style="margin-top: 3px;">
+                    <tr><th>Obs</th><th>pweight</th><th>ความหมาย</th></tr>
+                    <tr><td>1</td><td>1,000</td><td>แทนประชากร 1,000 คน</td></tr>
+                    <tr><td>2</td><td>500</td><td>แทนประชากร 500 คน</td></tr>
+                    <tr><td>3</td><td>50</td><td>แทนประชากร 50 คน</td></tr>
+                </table>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>เมื่อไรต้องใช้ Weight?</h3>
+                <p>ถ้า sampling probability สัมพันธ์กับ Y (outcome) &rarr; <strong>ต้อง weight</strong></p>
+                <p>เช่น oversampling ผู้ป่วยหนัก &rarr; ค่าเฉลี่ยค่ารักษาจะสูงเกินจริงถ้าไม่ weight</p>
+                <p>ถ้า sampling สุ่มล้วน (random) &rarr; weight ไม่จำเป็น</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ในตัวอย่างนี้:</strong> สร้าง artificial pweight = totchr&sup2; + 0.5</p>
+                <p>&rarr; คนที่มีโรคเรื้อรังมาก มี pweight สูง (แทนประชากรมากกว่า) เพราะถูก undersampled</p>
+                <p>&rarr; survey oversampled คนป่วยน้อย (pweight ต่ำ) ค่าเฉลี่ยแบบ weighted จึงแตกต่างจาก unweighted</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Stata: Weighted Regression &amp; Prediction</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* สร้าง sampling weights</span>
+<span class="cmd">generate</span> swght = totchr^<span class="num">2</span> + <span class="num">0.5</span>
+<span class="cmd">summarize</span> swght
+
+<span class="cmt">* เปรียบเทียบ weighted vs unweighted mean</span>
+<span class="cmd">mean</span> totexp <span class="opt">[pw = swght]</span>
+<span class="cmd">mean</span> totexp
+
+<span class="cmt">* Weighted regression</span>
+<span class="cmd">regress</span> totexp suppins phylim actlim totchr age female income <span class="opt">[pweight=swght]</span>
+
+<span class="cmt">* Unweighted regression เพื่อเปรียบเทียบ</span>
+<span class="cmd">regress</span> totexp suppins phylim actlim totchr age female income
+            </div>
+        </div>
+        <div>
+            <div class="concept-box fragment">
+                <h3>ผลกระทบของ Weights</h3>
+                <ul>
+                    <li><strong>Weighted mean:</strong> ให้น้ำหนักแต่ละ obs ตาม pweight &rarr; ค่าเฉลี่ยที่ represent ประชากรจริง</li>
+                    <li><strong>Weighted regression:</strong> ประมาณค่าพารามิเตอร์สำหรับประชากร (ไม่ใช่ sample)</li>
+                    <li>Stata ใช้ pweight &rarr; <strong>robust SE อัตโนมัติ</strong></li>
+                </ul>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* Weighted prediction</span>
+<span class="cmd">quietly predict</span> yhatwols
+<span class="cmd">mean</span> yhatwols <span class="opt">[pweight=swght]</span>, <span class="opt">noheader</span>  <span class="cmt">// weighted</span>
+<span class="cmd">mean</span> yhatwols, <span class="opt">noheader</span>               <span class="cmt">// unweighted</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 4 -->
+<section>
+    <h2>Quiz: Sampling Weights</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> ในการสำรวจที่ oversampled กลุ่มผู้ป่วยหนัก ถ้าเราคำนวณค่าเฉลี่ยค่ารักษาพยาบาลโดยไม่ใช้ sampling weight จะเกิดอะไรขึ้น?</p>
+    </div>
+    <div id="quiz4" style="margin-top: 8px;">
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, true)">
+            A. ค่าเฉลี่ยจะสูงเกินจริง เพราะผู้ป่วยหนักถูก represent มากเกินสัดส่วน
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, false)">
+            B. ค่าเฉลี่ยจะต่ำเกินจริง เพราะ weight ทำให้ค่าสูงขึ้น
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, false)">
+            C. ไม่มีผลกระทบใดๆ เพราะ OLS ปรับค่าเองอัตโนมัติ
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, false)">
+            D. จะเกิด multicollinearity ในโมเดล
+        </div>
+        <div class="quiz-feedback" id="quiz4-feedback"></div>
+    </div>
+</section>
+
+</section><!-- end Section 6 wrapper -->
+
+<!-- ==================== SECTION 7: SUMMARY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>7. Summary</h2>
+    <p>สรุปบทเรียนและขั้นตอนการวิเคราะห์</p>
+</section>
+
+<section>
+    <h2>สรุป: ขั้นตอนการวิเคราะห์ข้อมูลจุลภาค</h2>
+    <div class="decision-tree">
+        <div class="dt-node dt-diamond">1. สำรวจข้อมูล (EDA)</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-action">describe, summarize, tabstat, kdensity</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-diamond">2. ประมาณค่า OLS + Robust SE</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-action">regress y x, vce(robust)</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-diamond">3. Specification Tests</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-node dt-action2">RESET (ovtest)</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-node dt-action2">linktest</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-node dt-action2">hettest</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-node dt-action2">imtest</div>
+            </div>
+        </div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-diamond">4. Prediction &amp; Retransformation</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-node dt-yes">Naive exp(y&#770;)</div>
+                <div class="dt-label">Biased!</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-node dt-no">Normal correction</div>
+                <div class="dt-label">u ~ Normal</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-node dt-action">Duan smearing</div>
+                <div class="dt-label">u iid</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>สรุป: Key Takeaways</h2>
+    <div class="three-col">
+        <div class="concept-box">
+            <h3>Part 1: Overview Concepts</h3>
+            <ul>
+                <li>Microeconometrics ใช้ข้อมูลระดับบุคคล</li>
+                <li>ข้อมูล discrete, nonlinear, heterogeneous</li>
+                <li>Confounding &amp; OVB เป็นปัญหาหลัก</li>
+                <li>Causal inference ต้องการ exogeneity</li>
+                <li>CIA: selection on observables</li>
+                <li>SEM: identification &amp; reduced form</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>Part 2: Linear Models</h3>
+            <ul>
+                <li>OLS: consistent ภายใต้ E[u|X]=0</li>
+                <li>ใช้ <strong>vce(robust)</strong> เสมอ</li>
+                <li>Wald test สำหรับ restrictions</li>
+                <li>Specification tests: RESET, linktest, hettest</li>
+                <li>Tests มี power หลายทิศทาง</li>
+                <li>Box-Cox: หา transformation ที่เหมาะ</li>
+            </ul>
+        </div>
+        <div class="example-box">
+            <h3>Practical Tips</h3>
+            <ul>
+                <li>Log transform สำหรับ skewed data</li>
+                <li>Retransformation: ใช้ Duan smearing</li>
+                <li><strong>อย่าใช้ naive exp(y&#770;)</strong></li>
+                <li>Sampling weights เมื่อ survey oversampled</li>
+                <li>esttab สำหรับตาราง publication-quality</li>
+                <li>ตรวจ influential observations ด้วย DFITS</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>บทต่อไป: Chapter 2 &mdash; Monte Carlo Simulation</h2>
+    <div class="two-col">
+        <div class="concept-box">
+            <h3>เนื้อหาที่จะเรียน</h3>
+            <ul>
+                <li>Monte Carlo simulation ใน Stata</li>
+                <li>การตรวจสอบคุณสมบัติของ estimators ด้วย simulation</li>
+                <li>Finite-sample properties vs asymptotic properties</li>
+                <li>Bootstrap methods</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>เตรียมตัว</h3>
+            <ul>
+                <li>ทบทวน probability distributions</li>
+                <li>ลองใช้คำสั่ง <code>set seed</code>, <code>forvalues</code></li>
+                <li>ทำความเข้าใจ sampling distribution ของ &beta;&#770;</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 7 wrapper -->
+
+</div><!-- end slides -->
+</div><!-- end reveal -->
+
+<!-- Reveal.js -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    width: 1100,
+    height: 700,
+    margin: 0.04,
+    minScale: 0.5,
+    maxScale: 1.2,
+    transition: 'fade',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    pdfMaxPagesPerSlide: 1,
+    disableLayout: false,
+});
+
+// ============================================================
+// COLOR PALETTE
+// ============================================================
+const C = {
+    blue:    '#4a90d9', blueFade: 'rgba(74,144,217,',
+    red:     '#d4534a', redFade:  'rgba(212,83,74,',
+    green:   '#3d9970', greenFade:'rgba(61,153,112,',
+    amber:   '#e8a838', amberFade:'rgba(232,168,56,',
+    purple:  '#8b5cf6',
+    dark:    '#1a2744',
+    gray:    '#718096',
+    gridLine:'#e2e8f0',
+    axis:    '#a0aec0',
+    dotBase: 'rgba(74,144,217,0.3)',
+    font:    "'Sarabun', sans-serif",
+};
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function getCtx(id) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    return el.getContext('2d');
+}
+
+function clearCanvas(ctx, w, h) {
+    ctx.clearRect(0, 0, w, h);
+}
+
+function drawAxes(ctx, x0, y0, xEnd, yEnd, xlabel, ylabel) {
+    ctx.strokeStyle = C.axis;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x0, yEnd); ctx.lineTo(x0, y0);
+    ctx.moveTo(x0, yEnd); ctx.lineTo(xEnd, yEnd);
+    ctx.stroke();
+    ctx.fillStyle = C.gray;
+    ctx.font = '11px Sarabun, sans-serif';
+    if (xlabel) { ctx.textAlign = 'center'; ctx.fillText(xlabel, (x0+xEnd)/2, yEnd+16); }
+    if (ylabel) { ctx.save(); ctx.translate(x0-14, (y0+yEnd)/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillText(ylabel,0,0); ctx.restore(); }
+}
+
+// Seeded pseudo-random for reproducibility
+let seed = 12345;
+function seededRandom() {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+}
+
+function normalRandom() {
+    let u1 = seededRandom(), u2 = seededRandom();
+    return Math.sqrt(-2*Math.log(u1)) * Math.cos(2*Math.PI*u2);
+}
+
+// ============================================================
+// 1. KERNEL DENSITY: LEVELS VS LOG
+// ============================================================
+let kernelMode = 'levels';
+
+function generateSkewedData(n) {
+    seed = 42;
+    let data = [];
+    for (let i = 0; i < n; i++) {
+        let val = Math.exp(7.5 + 1.2 * normalRandom());
+        if (val > 0) data.push(val);
+    }
+    return data;
+}
+
+const skewedData = generateSkewedData(400);
+
+function kernelDensityEstimate(data, points, bandwidth) {
+    let result = [];
+    for (let p of points) {
+        let sum = 0;
+        for (let d of data) {
+            let z = (p - d) / bandwidth;
+            sum += Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+        }
+        result.push(sum / (data.length * bandwidth));
+    }
+    return result;
+}
+
+function drawKernel(mode) {
+    kernelMode = mode;
+    const ctx = getCtx('kernelCanvas');
+    if (!ctx) return;
+    const W = 420, H = 240;
+    clearCanvas(ctx, W, H);
+
+    const x0 = 45, y0 = 15, xEnd = W-15, yEnd = H-30;
+    const plotW = xEnd - x0, plotH = yEnd - y0;
+
+    // Update button states
+    document.querySelectorAll('#kernelCanvas ~ div button, #kernelCanvas + div button').forEach(b => b.classList.remove('active'));
+    if (mode === 'levels') {
+        // Levels data
+        let filteredData = skewedData.filter(d => d < 40000);
+        let minV = 0, maxV = 40000;
+        let nPoints = 200;
+        let points = [];
+        for (let i = 0; i < nPoints; i++) points.push(minV + (maxV - minV) * i / (nPoints - 1));
+        let bw = 2000;
+        let density = kernelDensityEstimate(filteredData, points, bw);
+        let maxD = Math.max(...density);
+
+        drawAxes(ctx, x0, y0, xEnd, yEnd, 'totexp', 'Density');
+        ctx.strokeStyle = C.blue;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let i = 0; i < nPoints; i++) {
+            let px = x0 + plotW * (points[i] - minV) / (maxV - minV);
+            let py = yEnd - plotH * density[i] / (maxD * 1.1);
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = C.blue;
+        ctx.font = 'bold 12px Sarabun';
+        ctx.fillText('Right-skewed (Levels)', x0 + 120, y0 + 20);
+
+        // Mark mean & median
+        let sorted = [...filteredData].sort((a,b)=>a-b);
+        let median = sorted[Math.floor(sorted.length/2)];
+        let mean = filteredData.reduce((a,b)=>a+b,0)/filteredData.length;
+        let mednX = x0 + plotW * median / maxV;
+        let meanX = x0 + plotW * mean / maxV;
+
+        ctx.strokeStyle = C.green; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+        ctx.beginPath(); ctx.moveTo(mednX, y0); ctx.lineTo(mednX, yEnd); ctx.stroke();
+        ctx.strokeStyle = C.red;
+        ctx.beginPath(); ctx.moveTo(meanX, y0); ctx.lineTo(meanX, yEnd); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.font = '10px Sarabun';
+        ctx.fillStyle = C.green; ctx.fillText('Median', mednX-10, yEnd-5);
+        ctx.fillStyle = C.red; ctx.fillText('Mean', meanX+3, yEnd-5);
+
+    } else if (mode === 'log') {
+        let logData = skewedData.filter(d => d > 0).map(d => Math.log(d));
+        let minV = 4, maxV = 12;
+        let nPoints = 200;
+        let points = [];
+        for (let i = 0; i < nPoints; i++) points.push(minV + (maxV - minV) * i / (nPoints - 1));
+        let bw = 0.3;
+        let density = kernelDensityEstimate(logData, points, bw);
+        let maxD = Math.max(...density);
+
+        drawAxes(ctx, x0, y0, xEnd, yEnd, 'ln(totexp)', 'Density');
+        ctx.strokeStyle = C.red;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let i = 0; i < nPoints; i++) {
+            let px = x0 + plotW * (points[i] - minV) / (maxV - minV);
+            let py = yEnd - plotH * density[i] / (maxD * 1.1);
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = C.red;
+        ctx.font = 'bold 12px Sarabun';
+        ctx.fillText('More symmetric (Log)', x0 + 100, y0 + 20);
+    } else {
+        // Both: small versions
+        ctx.fillStyle = C.gray;
+        ctx.font = 'bold 11px Sarabun';
+        ctx.fillText('Levels', x0 + 50, y0 + 10);
+        ctx.fillText('Log', x0 + plotW/2 + 60, y0 + 10);
+
+        // Levels (left half)
+        let halfW = plotW / 2 - 10;
+        let filteredData = skewedData.filter(d => d < 40000);
+        let minV = 0, maxV = 40000, nP = 100;
+        let pts = []; for (let i=0;i<nP;i++) pts.push(minV+(maxV-minV)*i/(nP-1));
+        let dens = kernelDensityEstimate(filteredData, pts, 2000);
+        let maxD = Math.max(...dens);
+
+        ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i=0;i<nP;i++) {
+            let px = x0 + halfW*pts[i]/maxV;
+            let py = yEnd - plotH*dens[i]/(maxD*1.1);
+            if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+        }
+        ctx.stroke();
+
+        // Log (right half)
+        let logData = skewedData.filter(d=>d>0).map(d=>Math.log(d));
+        let minL=4, maxL=12;
+        let pts2=[]; for(let i=0;i<nP;i++) pts2.push(minL+(maxL-minL)*i/(nP-1));
+        let dens2 = kernelDensityEstimate(logData, pts2, 0.3);
+        let maxD2 = Math.max(...dens2);
+
+        ctx.strokeStyle = C.red; ctx.lineWidth = 2;
+        ctx.beginPath();
+        let offX = x0 + halfW + 20;
+        for(let i=0;i<nP;i++){
+            let px = offX + halfW*(pts2[i]-minL)/(maxL-minL);
+            let py = yEnd - plotH*dens2[i]/(maxD2*1.1);
+            if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+        }
+        ctx.stroke();
+
+        drawAxes(ctx, x0, y0, x0+halfW, yEnd, '', '');
+        drawAxes(ctx, offX, y0, offX+halfW, yEnd, '', '');
+    }
+}
+
+// ============================================================
+// 2. OLS WITH ROBUST VS DEFAULT SE
+// ============================================================
+// Simulated coefficient data for visualization
+const olsCoefs = [
+    { name: 'suppins', b: 0.260, se_def: 0.032, se_rob: 0.028 },
+    { name: 'phylim',  b: 0.165, se_def: 0.040, se_rob: 0.038 },
+    { name: 'actlim',  b: 0.128, se_def: 0.045, se_rob: 0.048 },
+    { name: 'totchr',  b: 0.210, se_def: 0.012, se_rob: 0.014 },
+    { name: 'age',     b: 0.007, se_def: 0.003, se_rob: 0.003 },
+    { name: 'female',  b: 0.060, se_def: 0.030, se_rob: 0.029 },
+    { name: 'income',  b: 0.003, se_def: 0.001, se_rob: 0.001 },
+];
+
+function drawOLS(mode) {
+    const ctx = getCtx('olsCanvas');
+    if (!ctx) return;
+    const W = 420, H = 220;
+    clearCanvas(ctx, W, H);
+
+    const x0 = 60, y0 = 15, xEnd = W - 20, yEnd = H - 25;
+    const plotW = xEnd - x0, plotH = yEnd - y0;
+    const n = olsCoefs.length;
+    const barH = plotH / (n + 1);
+
+    // Title
+    ctx.fillStyle = C.dark;
+    ctx.font = 'bold 11px Sarabun';
+    let title = mode === 'compare' ? 'Robust SE (blue) vs Default SE (red)' :
+                mode === 'robust' ? 'Robust Standard Errors' : 'Default Standard Errors';
+    ctx.textAlign = 'center';
+    ctx.fillText(title, (x0+xEnd)/2, y0);
+    ctx.textAlign = 'left';
+
+    // Zero line
+    let zeroX = x0 + plotW * 0.3;
+    ctx.strokeStyle = C.gridLine;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(zeroX, y0+5); ctx.lineTo(zeroX, yEnd); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = C.gray; ctx.font = '9px Fira Code'; ctx.fillText('0', zeroX-3, yEnd+10);
+
+    let scale = plotW * 0.7 / 0.4; // max coef ~0.26
+
+    for (let i = 0; i < n; i++) {
+        let c = olsCoefs[i];
+        let cy = y0 + 10 + (i + 0.5) * barH;
+
+        // Label
+        ctx.fillStyle = C.dark;
+        ctx.font = '10px Fira Code';
+        ctx.textAlign = 'right';
+        ctx.fillText(c.name, x0 - 5, cy + 4);
+        ctx.textAlign = 'left';
+
+        let bx = zeroX + c.b * scale;
+
+        if (mode === 'robust' || mode === 'compare') {
+            let se = c.se_rob;
+            let lo = zeroX + (c.b - 1.96*se) * scale;
+            let hi = zeroX + (c.b + 1.96*se) * scale;
+            ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(lo, cy); ctx.lineTo(hi, cy); ctx.stroke();
+            ctx.fillStyle = C.blue;
+            ctx.beginPath(); ctx.arc(bx, cy, 4, 0, 2*Math.PI); ctx.fill();
+        }
+        if (mode === 'default' || mode === 'compare') {
+            let se = c.se_def;
+            let offset = mode === 'compare' ? 6 : 0;
+            let lo = zeroX + (c.b - 1.96*se) * scale;
+            let hi = zeroX + (c.b + 1.96*se) * scale;
+            ctx.strokeStyle = C.red; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(lo, cy+offset); ctx.lineTo(hi, cy+offset); ctx.stroke();
+            ctx.fillStyle = C.red;
+            ctx.beginPath(); ctx.arc(bx, cy+offset, 4, 0, 2*Math.PI); ctx.fill();
+        }
+    }
+}
+
+// ============================================================
+// 3. RESIDUAL VS FITTED PLOT
+// ============================================================
+let residData = [];
+let residOutliers = [];
+
+function generateResidData() {
+    seed = 77;
+    residData = [];
+    for (let i = 0; i < 150; i++) {
+        let yhat = 6 + 3 * seededRandom();
+        let u = normalRandom() * (0.5 + 0.3 * (yhat - 6));
+        residData.push({ yhat, u });
+    }
+    residOutliers = [];
+}
+
+function drawResidualPlot() {
+    const ctx = getCtx('residCanvas');
+    if (!ctx) return;
+    const W = 420, H = 230;
+    clearCanvas(ctx, W, H);
+
+    const x0 = 45, y0 = 10, xEnd = W-15, yEnd = H-25;
+    drawAxes(ctx, x0, y0, xEnd, yEnd, 'Fitted Values (y-hat)', 'Residuals');
+
+    let allPts = [...residData, ...residOutliers];
+    let minX = 5, maxX = 10, minY = -5, maxY = 5;
+    if (residOutliers.length > 0) { minY = -8; maxY = 8; }
+
+    let plotW = xEnd - x0, plotH = yEnd - y0;
+
+    // Zero line
+    let zeroY = yEnd - plotH * (0 - minY) / (maxY - minY);
+    ctx.strokeStyle = C.gridLine; ctx.lineWidth = 1;
+    ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(x0, zeroY); ctx.lineTo(xEnd, zeroY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Regular points
+    ctx.fillStyle = C.dotBase;
+    for (let p of residData) {
+        let px = x0 + plotW * (p.yhat - minX) / (maxX - minX);
+        let py = yEnd - plotH * (p.u - minY) / (maxY - minY);
+        ctx.beginPath(); ctx.arc(px, py, 3, 0, 2*Math.PI); ctx.fill();
+    }
+
+    // Outlier points
+    ctx.fillStyle = C.redFade + '0.7)';
+    for (let p of residOutliers) {
+        let px = x0 + plotW * (p.yhat - minX) / (maxX - minX);
+        let py = yEnd - plotH * (p.u - minY) / (maxY - minY);
+        ctx.beginPath(); ctx.arc(px, py, 5, 0, 2*Math.PI); ctx.fill();
+        ctx.strokeStyle = C.red; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(px, py, 5, 0, 2*Math.PI); ctx.stroke();
+    }
+
+    // Label
+    if (residOutliers.length > 0) {
+        ctx.fillStyle = C.red;
+        ctx.font = 'bold 11px Sarabun';
+        ctx.fillText('Outliers added! (red dots)', x0 + 10, y0 + 15);
+    }
+}
+
+function addOutliers() {
+    seed = 999;
+    for (let i = 0; i < 5; i++) {
+        let yhat = 6 + 4 * seededRandom();
+        let u = (seededRandom() > 0.5 ? 1 : -1) * (4 + 3 * seededRandom());
+        residOutliers.push({ yhat, u });
+    }
+    drawResidualPlot();
+}
+
+function resetResidual() {
+    generateResidData();
+    drawResidualPlot();
+}
+
+// ============================================================
+// 4. RESET TEST VISUALIZATION
+// ============================================================
+function drawRESET(mode) {
+    const ctx = getCtx('resetCanvas');
+    if (!ctx) return;
+    const W = 420, H = 220;
+    clearCanvas(ctx, W, H);
+
+    const x0 = 45, y0 = 10, xEnd = W-15, yEnd = H-25;
+    let plotW = xEnd - x0, plotH = yEnd - y0;
+    drawAxes(ctx, x0, y0, xEnd, yEnd, 'X', 'Y');
+
+    seed = 123;
+    let n = 80;
+
+    if (mode === 'correct') {
+        // Linear DGP: y = 2 + 3x + u
+        ctx.fillStyle = C.dotBase;
+        let pts = [];
+        for (let i = 0; i < n; i++) {
+            let x = seededRandom() * 5;
+            let y = 2 + 3 * x + normalRandom() * 1.5;
+            pts.push({x, y});
+            let px = x0 + plotW * x / 5;
+            let py = yEnd - plotH * (y + 2) / 22;
+            ctx.beginPath(); ctx.arc(px, py, 3, 0, 2*Math.PI); ctx.fill();
+        }
+        // Fitted line
+        ctx.strokeStyle = C.blue; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(x0, yEnd - plotH * (2 + 2) / 22);
+        ctx.lineTo(xEnd, yEnd - plotH * (17 + 2) / 22);
+        ctx.stroke();
+
+        ctx.fillStyle = C.green;
+        ctx.font = 'bold 12px Sarabun';
+        ctx.fillText('Linear fit ถูกต้อง -> RESET ไม่ reject', x0+10, y0+15);
+        ctx.font = '10px Sarabun';
+        ctx.fillText('y-hat^2, y-hat^3 ไม่มีนัยสำคัญ', x0+10, y0+30);
+    } else {
+        // Nonlinear DGP: y = 1 + 0.5x + 2x^2 + u
+        ctx.fillStyle = C.dotBase;
+        for (let i = 0; i < n; i++) {
+            let x = seededRandom() * 5;
+            let y = 1 + 0.5*x + 0.8*x*x + normalRandom() * 2;
+            let px = x0 + plotW * x / 5;
+            let py = yEnd - plotH * y / 25;
+            ctx.beginPath(); ctx.arc(px, py, 3, 0, 2*Math.PI); ctx.fill();
+        }
+        // Wrong linear fit
+        ctx.strokeStyle = C.red; ctx.lineWidth = 2; ctx.setLineDash([5,3]);
+        ctx.beginPath();
+        ctx.moveTo(x0, yEnd - plotH * 1 / 25);
+        ctx.lineTo(xEnd, yEnd - plotH * 18 / 25);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // True curve
+        ctx.strokeStyle = C.green; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let i = 0; i <= 100; i++) {
+            let x = 5 * i / 100;
+            let y = 1 + 0.5*x + 0.8*x*x;
+            let px = x0 + plotW * x / 5;
+            let py = yEnd - plotH * y / 25;
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = C.red;
+        ctx.font = 'bold 12px Sarabun';
+        ctx.fillText('Linear fit ผิด -> RESET reject!', x0+10, y0+15);
+        ctx.font = '10px Sarabun';
+        ctx.fillStyle = C.green;
+        ctx.fillText('True curve (green) vs linear fit (red dashed)', x0+10, y0+30);
+    }
+}
+
+// ============================================================
+// 5. RETRANSFORMATION DEMO
+// ============================================================
+function drawRetrans(mode) {
+    const ctx = getCtx('retransCanvas');
+    if (!ctx) return;
+    const W = 440, H = 260;
+    clearCanvas(ctx, W, H);
+
+    const x0 = 50, y0 = 15, xEnd = W-15, yEnd = H-30;
+    let plotW = xEnd - x0, plotH = yEnd - y0;
+    drawAxes(ctx, x0, y0, xEnd, yEnd, 'Observation', 'Predicted y (levels)');
+
+    // Simulate: ln(y) = 7.5 + u, u ~ N(0, 1.2^2)
+    seed = 555;
+    let sigma = 1.2;
+    let n = 40;
+    let lnPredictions = [];
+    let actualY = [];
+    for (let i = 0; i < n; i++) {
+        let lnyhat = 7.5;
+        let u = normalRandom() * sigma;
+        lnPredictions.push(lnyhat);
+        actualY.push(Math.exp(lnyhat + u));
+    }
+
+    let naiveY = Math.exp(7.5);
+    let normalY = Math.exp(7.5) * Math.exp(0.5 * sigma * sigma);
+
+    // Duan: mean of exp(u)
+    seed = 555;
+    let expUsum = 0;
+    for (let i = 0; i < n; i++) {
+        let u = normalRandom() * sigma;
+        expUsum += Math.exp(u);
+    }
+    let duanFactor = expUsum / n;
+    let duanY = Math.exp(7.5) * duanFactor;
+
+    let actualMean = actualY.reduce((a,b)=>a+b,0)/n;
+    let maxVal = Math.max(actualMean, normalY, duanY) * 1.5;
+
+    // Draw actual mean line
+    let actLine = yEnd - plotH * actualMean / maxVal;
+    ctx.strokeStyle = C.dark; ctx.lineWidth = 2;
+    ctx.setLineDash([6,3]);
+    ctx.beginPath(); ctx.moveTo(x0, actLine); ctx.lineTo(xEnd, actLine); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = C.dark; ctx.font = 'bold 11px Sarabun';
+    ctx.fillText('Actual E[y] = ' + Math.round(actualMean).toLocaleString(), xEnd - 150, actLine - 5);
+
+    let methods = [];
+    if (mode === 'naive' || mode === 'all') methods.push({label:'Naive exp(y-hat)', val: naiveY, color: C.red});
+    if (mode === 'normal' || mode === 'all') methods.push({label:'Normal correction', val: normalY, color: C.green});
+    if (mode === 'duan' || mode === 'all') methods.push({label:'Duan smearing', val: duanY, color: C.blue});
+
+    let barW = plotW / (methods.length + 1);
+    for (let i = 0; i < methods.length; i++) {
+        let m = methods[i];
+        let cx = x0 + (i + 1) * barW;
+        let bh = plotH * m.val / maxVal;
+        let by = yEnd - bh;
+
+        ctx.fillStyle = m.color + (m.color === C.red ? '' : '');
+        // Use lighter fill
+        ctx.globalAlpha = 0.3;
+        ctx.fillRect(cx - 30, by, 60, bh);
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = m.color; ctx.lineWidth = 2;
+        ctx.strokeRect(cx - 30, by, 60, bh);
+
+        ctx.fillStyle = m.color;
+        ctx.font = 'bold 11px Sarabun';
+        ctx.textAlign = 'center';
+        ctx.fillText(m.label, cx, yEnd + 14);
+        ctx.font = '10px Fira Code';
+        ctx.fillText(Math.round(m.val).toLocaleString(), cx, by - 5);
+        ctx.textAlign = 'left';
+    }
+
+    // Show bias for naive
+    if (mode === 'naive' || mode === 'all') {
+        let naiveBar = yEnd - plotH * naiveY / maxVal;
+        ctx.fillStyle = C.red;
+        ctx.font = 'bold 10px Sarabun';
+        let biasText = 'Bias: ' + Math.round(naiveY - actualMean).toLocaleString();
+        ctx.fillText(biasText, x0 + 5, naiveBar + 15);
+    }
+}
+
+// ============================================================
+// QUIZ SYSTEM
+// ============================================================
+function checkQuiz(quizId, el, isCorrect) {
+    let container = document.getElementById(quizId);
+    let options = container.querySelectorAll('.quiz-option');
+    let feedback = document.getElementById(quizId + '-feedback');
+
+    if (isCorrect) {
+        options.forEach(o => { o.style.pointerEvents = 'none'; o.classList.remove('wrong'); });
+        el.classList.add('correct');
+        feedback.style.display = 'block';
+        feedback.style.background = '#f0faf4';
+        feedback.style.color = C.green;
+
+        if (quizId === 'quiz1') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> Heteroskedasticity ไม่ทำให้ OLS estimator bias แต่ทำให้ default SE ผิด (อาจเล็กเกิน/ใหญ่เกิน) &rarr; robust SE (Huber-White) ให้ค่า consistent ไม่ว่าจะมี heteroskedasticity หรือไม่';
+        } else if (quizId === 'quiz2') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> RESET test มี power ในหลายทิศทาง &mdash; อาจ reject เพราะ functional form ผิด หรือเพราะ heteroskedasticity หรือทั้งสอง ต้องใช้ร่วมกับ estat hettest เพื่อแยกแยะสาเหตุ';
+        } else if (quizId === 'quiz3') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> Jensen\'s Inequality: exp() เป็นฟังก์ชัน convex ดังนั้น E[exp(z)] > exp(E[z]) เสมอ &rarr; ต้องใช้ normal correction หรือ Duan smearing เพื่อแก้ bias';
+        } else if (quizId === 'quiz4') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> เมื่อ oversampled ผู้ป่วยหนัก (ค่ารักษาสูง) กลุ่มนี้จะมีสัดส่วนใน sample มากกว่าในประชากรจริง &rarr; ค่าเฉลี่ยจะถูกดึงขึ้น ต้องใช้ sampling weight เพื่อปรับกลับ';
+        }
+    } else {
+        el.classList.add('wrong');
+        feedback.style.display = 'block';
+        feedback.style.background = '#fdf2f2';
+        feedback.style.color = C.red;
+        feedback.innerHTML = '<strong>ไม่ถูก</strong> ลองคิดอีกครั้ง... (click ตัวเลือกอื่น)';
+        setTimeout(() => {
+            options.forEach(o => { o.style.pointerEvents = 'auto'; o.classList.remove('wrong'); });
+            feedback.style.display = 'none';
+        }, 2000);
+    }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+generateResidData();
+
+let initialized = false;
+function initAll() {
+    if (initialized) return;
+    initialized = true;
+    drawKernel('levels');
+    drawOLS('robust');
+    drawResidualPlot();
+    drawRESET('correct');
+    drawRetrans('naive');
+}
+
+Reveal.on('ready', initAll);
+Reveal.on('slidechanged', () => {
+    requestAnimationFrame(() => {
+        let slide = Reveal.getCurrentSlide();
+        if (slide.querySelector('#kernelCanvas')) drawKernel(kernelMode);
+        if (slide.querySelector('#olsCanvas')) drawOLS('robust');
+        if (slide.querySelector('#residCanvas')) drawResidualPlot();
+        if (slide.querySelector('#resetCanvas')) drawRESET('correct');
+        if (slide.querySelector('#retransCanvas')) drawRetrans('naive');
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: IV Estimation | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            color: var(--text);
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: none;
+            line-height: 1.6;
+            padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree (HTML/CSS) ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px;
+            font-size: 13px; color: rgba(0,0,0,0.35);
+            z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer {
+            position: fixed; bottom: 8px; left: 16px;
+            z-index: 100; pointer-events: none; opacity: 0.45;
+        }
+        .logo-footer img { height: 38px; width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer">
+    <img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University">
+</div>
+<div class="instructor-footer">
+    ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ==================== TITLE ==================== -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>Instrumental Variables</h1>
+    <div class="subtitle">Chapter 4 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Introduction &bull; IV Theory &bull; Estimators &bull; Testing &bull; Application &bull; Summary</p>
+    </div>
+</section>
+
+<!-- ==================== SECTION 1: INTRODUCTION & ENDOGENEITY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>1. Introduction &amp; Endogeneity</h2>
+    <p>เมื่อ OLS ให้ผลลัพธ์ที่ไม่สอดคล้อง (inconsistent)</p>
+</section>
+
+<section>
+    <h2>ปัญหา Endogeneity คืออะไร?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>OLS Assumption:</strong> ตัวแปรอิสระ x ไม่สัมพันธ์กับ error term u</p>
+                <div class="math-block">
+                    <span class="katex">E[u | x] = 0 \implies \text{Cov}(x, u) = 0</span>
+                </div>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Endogeneity:</strong> เมื่อ Cov(x, u) &ne; 0 &rarr; OLS ให้ค่า <strong>inconsistent</strong></p>
+                <p>สาเหตุหลัก:</p>
+                <ul>
+                    <li><strong>Omitted variables</strong> &mdash; ตัวแปรที่ตกหล่น</li>
+                    <li><strong>Measurement error</strong> &mdash; วัดตัวแปรผิดพลาด</li>
+                    <li><strong>Simultaneity</strong> &mdash; x กับ y กำหนดกันและกัน</li>
+                </ul>
+            </div>
+        </div>
+        <div class="fragment">
+            <div class="example-box">
+                <h3>ตัวอย่าง: ประกันสุขภาพ &amp; ค่ายา</h3>
+                <p><strong>ldrugexp</strong> = f(<strong>hi_empunion</strong>, totchr, age, female, ...)</p>
+                <p>hi_empunion (ประกันสุขภาพจากนายจ้าง/สหภาพ) เป็น <strong>endogenous</strong></p>
+                <p>เพราะคนที่เลือกซื้อประกันอาจมี unobserved health status ต่างกัน &rarr; Cov(hi_empunion, u) &ne; 0</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ผลของ Endogeneity ต่อ OLS</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Asymptotic Bias ของ OLS</h3>
+                <div class="math-block">
+                    <span class="katex">\text{plim}(\hat{\beta}_{OLS}) = \beta + \frac{\text{Cov}(x, u)}{\text{Var}(x)}</span>
+                </div>
+                <p>เมื่อ Cov(x, u) &ne; 0 ค่า OLS จะเบี่ยงเบนไม่ว่าจะเพิ่มขนาดตัวอย่างเท่าไร</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ทิศทาง bias:</strong></p>
+                <ul>
+                    <li>Cov(x, u) &gt; 0 &rarr; OLS เกินจริง (overestimate)</li>
+                    <li>Cov(x, u) &lt; 0 &rarr; OLS ต่ำกว่าจริง (underestimate)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองดู: Endogeneity Bias Demo</h4>
+            <canvas id="endogBiasCanvas" width="380" height="210"></canvas>
+            <div class="slider-group">
+                <label>Corr(x,u):</label>
+                <input type="range" id="corrSlider" min="-80" max="80" value="50" oninput="drawEndogBias()">
+                <span class="val" id="corrVal">0.50</span>
+            </div>
+            <p style="font-size:0.42em; text-align:center; margin-top:2px;">
+                <span style="color:#4a90d9;">&#9632;</span> OLS (biased) &nbsp;
+                <span style="color:#3d9970;">&#9632;</span> True slope
+            </p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>OLS: MEPS Data</h2>
+    <div class="concept-box">
+        <h3>ข้อมูล Medical Expenditure Panel Survey (MEPS)</h3>
+        <p>ตัวแปรตาม: <strong>ldrugexp</strong> (log ค่าใช้จ่ายยา) | ตัวแปรหลัก: <strong>hi_empunion</strong> (ประกันจากนายจ้าง/สหภาพ)</p>
+        <p>ตัวแปรควบคุม: totchr, age, female, blhisp, linc</p>
+    </div>
+    <div class="stata-code">
+        <span class="cmt">* OLS regression</span><br>
+        <span class="cmd">regress</span> ldrugexp hi_empunion totchr age female blhisp linc, <span class="opt">vce(robust)</span>
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>ปัญหา:</strong> OLS อาจให้ค่าสัมประสิทธิ์ของ hi_empunion ที่เบี่ยงเบน เพราะ:</p>
+        <ul>
+            <li>คนที่คาดว่าจะใช้ยามากอาจเลือกซื้อประกัน (selection bias)</li>
+            <li>นายจ้างที่ให้ประกันดีอาจจ่ายเงินเดือนสูง (omitted variable: สวัสดิการ)</li>
+        </ul>
+        <p><strong>ทางออก:</strong> ใช้ Instrumental Variables (IV) เพื่อแก้ปัญหา endogeneity</p>
+    </div>
+</section>
+
+<!-- QUIZ 1 -->
+<section>
+    <h2>Quiz: Endogeneity</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> ข้อใดต่อไปนี้ <em>ไม่ใช่</em> สาเหตุของ endogeneity?</p>
+    </div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">A. Omitted variable bias &mdash; ตัวแปรสำคัญถูกละเว้นจากสมการ</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">B. Simultaneity &mdash; ตัวแปร x กับ y กำหนดค่ากันและกัน</div>
+    <div onclick="checkQuiz(this, true)" class="quiz-option">C. Heteroskedasticity &mdash; ความแปรปรวนของ error ไม่คงที่</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">D. Measurement error &mdash; วัดค่าตัวแปรอิสระผิดพลาด</div>
+    <div class="quiz-feedback" id="q1fb">
+        <strong>ถูกต้อง!</strong> Heteroskedasticity ทำให้ OLS ไม่มีประสิทธิภาพ (inefficient) แต่ยังคง consistent ไม่ทำให้เกิด endogeneity
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 2: IV THEORY & 2SLS ==================== -->
+<section>
+<section class="section-divider">
+    <h2>2. IV Theory &amp; 2SLS</h2>
+    <p>ตัวแปรเครื่องมือ (Instrumental Variables) แก้ปัญหา endogeneity อย่างไร</p>
+</section>
+
+<section>
+    <h2>แนวคิด Instrumental Variables</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>เครื่องมือ (Instrument) z ต้องมีคุณสมบัติ 2 ข้อ</h3>
+                <ol>
+                    <li><strong>Relevance:</strong> Cov(z, x) &ne; 0<br>
+                    <span style="font-size:0.9em;">z ต้องสัมพันธ์กับตัวแปร endogenous x</span></li>
+                    <li><strong>Exogeneity:</strong> Cov(z, u) = 0<br>
+                    <span style="font-size:0.9em;">z ต้องไม่สัมพันธ์กับ error term u</span></li>
+                </ol>
+            </div>
+            <div class="key-insight fragment">
+                <h3>Exclusion Restriction</h3>
+                <p>z ส่งผลต่อ y <strong>เฉพาะผ่าน x เท่านั้น</strong> ไม่มีผลตรง</p>
+                <div class="math-block">
+                    <span class="katex">z \rightarrow x \rightarrow y \quad (\text{แต่} \; z \not\rightarrow y \; \text{โดยตรง})</span>
+                </div>
+            </div>
+        </div>
+        <div class="fragment">
+            <div class="example-box">
+                <h3>Instruments ในข้อมูล MEPS</h3>
+                <ul>
+                    <li><strong>ssiratio</strong> &mdash; Social Security income ratio
+                    <br><span style="font-size:0.9em;">สัมพันธ์กับการมีประกัน แต่ไม่ควรกระทบค่ายาโดยตรง</span></li>
+                    <li><strong>multlc</strong> &mdash; Multiple chronic conditions indicator
+                    <br><span style="font-size:0.9em;">สัมพันธ์กับการเลือกซื้อประกัน</span></li>
+                </ul>
+            </div>
+            <div class="concept-box fragment">
+                <h3>จำนวนเครื่องมือ vs. ตัวแปร Endogenous</h3>
+                <ul>
+                    <li><strong>Just-identified:</strong> จำนวน z = จำนวน endogenous x</li>
+                    <li><strong>Overidentified:</strong> จำนวน z &gt; จำนวน endogenous x</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>IV Estimator: สูตรพื้นฐาน</h2>
+    <div class="concept-box">
+        <h3>Simple IV (Just-identified case)</h3>
+        <div class="math-block">
+            <span class="katex">\hat{\beta}_{IV} = \frac{\text{Cov}(z, y)}{\text{Cov}(z, x)} = \frac{\sum (z_i - \bar{z})(y_i - \bar{y})}{\sum (z_i - \bar{z})(x_i - \bar{x})}</span>
+        </div>
+        <p>เมื่อมีตัวแปร endogenous 1 ตัว และ instrument 1 ตัว</p>
+    </div>
+    <div class="two-col fragment">
+        <div class="concept-box">
+            <h3>คุณสมบัติ</h3>
+            <ul>
+                <li><strong>Consistent:</strong> plim(&beta;&#770;<sub>IV</sub>) = &beta; (เมื่อ Cov(z,u)=0)</li>
+                <li><strong>Asymptotically normal</strong></li>
+                <li>มี variance สูงกว่า OLS เสมอ &mdash; "ต้นทุน" ของการแก้ endogeneity</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>Variance ของ IV</h3>
+            <div class="math-block">
+                <span class="katex">\text{Var}(\hat{\beta}_{IV}) \approx \frac{\sigma^2}{n \cdot \text{Var}(x) \cdot R^2_{x,z}}</span>
+            </div>
+            <p>เมื่อ R<sup>2</sup><sub>x,z</sub> ต่ำ (weak instrument) &rarr; variance จะสูงมาก</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Two-Stage Least Squares (2SLS)</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ขั้นตอนที่ 1: First Stage</h3>
+                <p>Regress ตัวแปร endogenous x บน instruments z และ exogenous regressors</p>
+                <div class="math-block">
+                    <span class="katex">x_i = \pi_0 + \pi_1 z_{1i} + \pi_2 z_{2i} + \gamma' w_i + v_i</span>
+                </div>
+                <p>ได้ค่าพยากรณ์ <strong>x&#770;</strong> ที่ "สะอาด" จาก endogeneity</p>
+            </div>
+            <div class="concept-box fragment">
+                <h3>ขั้นตอนที่ 2: Second Stage</h3>
+                <p>Regress y บน <strong>x&#770;</strong> แทน x จริง</p>
+                <div class="math-block">
+                    <span class="katex">y_i = \beta_0 + \beta_1 \hat{x}_i + \delta' w_i + \epsilon_i</span>
+                </div>
+                <p>ค่า &beta;&#770;<sub>2SLS</sub> จะ consistent เมื่อ instruments ถูกต้อง</p>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองดู: 2SLS ทีละขั้นตอน</h4>
+            <canvas id="tsls2Canvas" width="380" height="200"></canvas>
+            <div style="text-align:center; margin-top:6px;">
+                <button class="interactive-btn active" onclick="draw2SLS('stage1')">Stage 1: x on z</button>
+                <button class="interactive-btn" onclick="draw2SLS('stage2')">Stage 2: y on x&#770;</button>
+            </div>
+            <p style="font-size:0.42em; text-align:center; margin-top:3px;" id="tslsInfo">
+                First stage: F-stat แสดงความแข็งแรงของ instrument
+            </p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>2SLS ใน Stata: Just-identified</h2>
+    <div class="concept-box">
+        <p>เครื่องมือ 1 ตัว (ssiratio) สำหรับตัวแปร endogenous 1 ตัว (hi_empunion)</p>
+    </div>
+    <div class="stata-code">
+        <span class="cmt">* Just-identified 2SLS with one instrument</span><br>
+        <span class="cmd">ivregress</span> <span class="num">2sls</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio) totchr age female blhisp linc, <span class="opt">vce(robust)</span> <span class="opt">first</span>
+    </div>
+    <div class="two-col fragment">
+        <div class="key-insight">
+            <h3>ตัวเลือก first</h3>
+            <p>แสดงผล first-stage regression &rarr; ดู F-statistic ว่า instrument ssiratio มีพลังพอหรือไม่</p>
+        </div>
+        <div class="concept-box">
+            <h3>Syntax ของ ivregress</h3>
+            <p><code style="font-size:0.95em;">ivregress 2sls y (<strong>endog</strong> = <strong>instruments</strong>) exog_vars</code></p>
+            <ul>
+                <li>ตัวแปรใน ( ) คือ endogenous</li>
+                <li>หลังเครื่องหมาย = คือ excluded instruments</li>
+                <li>ตัวแปรนอก ( ) คือ included exogenous</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>2SLS: Overidentified</h2>
+    <div class="concept-box">
+        <p>เครื่องมือ 2 ตัว (ssiratio, multlc) สำหรับตัวแปร endogenous 1 ตัว &rarr; <strong>overidentified</strong></p>
+    </div>
+    <div class="stata-code">
+        <span class="cmt">* Overidentified 2SLS with two instruments</span><br>
+        <span class="cmd">ivregress</span> <span class="num">2sls</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio multlc) totchr age female blhisp linc, <span class="opt">vce(robust)</span>
+    </div>
+    <div class="two-col fragment">
+        <div class="concept-box">
+            <h3>ข้อดีของ Overidentification</h3>
+            <ul>
+                <li>ประสิทธิภาพสูงขึ้น (lower variance)</li>
+                <li>ทดสอบ instrument validity ได้ (overid test)</li>
+                <li>เลือก estimator ได้หลากหลาย (GMM, LIML)</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>เปรียบเทียบ OLS vs 2SLS</h3>
+            <p>สัมประสิทธิ์ hi_empunion จาก IV มักแตกต่างจาก OLS อย่างมาก</p>
+            <p>ถ้าต่างกันมาก &rarr; สัญญาณว่า endogeneity เป็นปัญหาจริง</p>
+        </div>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 3: IV ESTIMATORS ==================== -->
+<section>
+<section class="section-divider">
+    <h2>3. IV Estimators</h2>
+    <p>GMM, LIML, JIVE &mdash; ทางเลือกนอกเหนือจาก 2SLS</p>
+</section>
+
+<section>
+    <h2>GMM: Generalized Method of Moments</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>หลักการ GMM</h3>
+                <p>เมื่อ overidentified &rarr; มี moment conditions มากกว่าพารามิเตอร์</p>
+                <div class="math-block">
+                    <span class="katex">E[z_i \cdot u_i] = 0 \quad (\text{moment conditions})</span>
+                </div>
+                <p>GMM หาค่า &beta; ที่ทำให้ sample moments ใกล้ศูนย์ที่สุด (weighted)</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>ข้อดีของ GMM</h3>
+                <ul>
+                    <li><strong>Efficient</strong> กว่า 2SLS เมื่อมี heteroskedasticity</li>
+                    <li>ใช้ <strong>optimal weighting matrix</strong> ให้น้ำหนัก moment conditions</li>
+                    <li>2SLS เป็นกรณีพิเศษของ GMM (identity weight)</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* GMM with robust weighting matrix</span><br>
+                <span class="cmd">ivregress</span> <span class="num">gmm</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio multlc) totchr age female blhisp linc, <span class="opt">wmatrix(robust)</span>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* Iterated GMM</span><br>
+                <span class="cmd">ivregress</span> <span class="num">gmm</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio multlc) totchr age female blhisp linc, <span class="opt">wmatrix(robust)</span> <span class="opt">igmm</span>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* GMM with clustered weighting matrix</span><br>
+                <span class="cmd">ivregress</span> <span class="num">gmm</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio multlc) totchr age female blhisp linc, <span class="opt">wmatrix(cluster age)</span>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>igmm:</strong> ทำซ้ำจนกว่า weighting matrix จะ converge &rarr; ประสิทธิภาพสูงสุด</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>LIML &amp; JIVE</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>LIML (Limited Information Maximum Likelihood)</h3>
+                <p>Likelihood-based estimator ที่มีข้อดีเมื่อ instruments อ่อน</p>
+                <ul>
+                    <li>Median-unbiased (approximate) &mdash; bias น้อยกว่า 2SLS</li>
+                    <li>ทนต่อ <strong>weak instruments</strong> ดีกว่า 2SLS</li>
+                    <li>แต่อาจมี fat tails (moments อาจไม่มี)</li>
+                </ul>
+            </div>
+            <div class="stata-code">
+                <span class="cmt">* LIML estimation</span><br>
+                <span class="cmd">ivregress</span> <span class="num">liml</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio multlc) totchr age female blhisp linc, <span class="opt">vce(robust)</span>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>JIVE (Jackknife IV Estimator)</h3>
+                <p>ใช้ jackknife ในการสร้าง fitted values ของ first stage</p>
+                <ul>
+                    <li>แก้ bias จาก overfitting ใน first stage</li>
+                    <li>ดีกว่า 2SLS เมื่อมี <strong>many instruments</strong></li>
+                    <li>Consistent แม้จำนวน instruments จะเพิ่มตาม n</li>
+                </ul>
+            </div>
+            <div class="stata-code">
+                <span class="cmt">* JIVE estimation (user-written command)</span><br>
+                <span class="cmd">jive</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio lowincome multlc firmsz) totchr age female blhisp linc, <span class="opt">robust</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>เปรียบเทียบ IV Estimators</h2>
+    <div class="stata-code">
+        <span class="cmt">* Compare: 2SLS, LIML, JIVE, GMM, IVREG2</span><br>
+        <span class="cmd">estimates table</span> TWOSLS LIML JIVE GMM_het IVREG2, <span class="opt">b(%7.4f)</span> se
+    </div>
+    <table class="compare-table fragment">
+        <tr><th>Estimator</th><th>Consistency</th><th>Efficiency</th><th>Weak IV</th><th>Heteroskedasticity</th></tr>
+        <tr><td><strong>2SLS</strong></td><td>Yes</td><td>Efficient (homosked)</td><td>Biased</td><td>Robust SE available</td></tr>
+        <tr><td><strong>GMM</strong></td><td>Yes</td><td class="highlight">Efficient (heterosked)</td><td>Biased</td><td class="highlight">Optimal</td></tr>
+        <tr><td><strong>LIML</strong></td><td>Yes</td><td>Similar to 2SLS</td><td class="highlight">Less biased</td><td>Robust SE available</td></tr>
+        <tr><td><strong>JIVE</strong></td><td>Yes</td><td>Less efficient</td><td class="highlight">Less biased</td><td>Robust available</td></tr>
+        <tr><td><strong>ivreg2</strong></td><td>Yes</td><td>Flexible</td><td>Diagnostics</td><td>Multiple options</td></tr>
+    </table>
+    <div class="key-insight fragment">
+        <p><strong>กฎทั่วไป:</strong> ถ้า instruments แข็งแรง &rarr; 2SLS หรือ GMM | ถ้า instruments อ่อน &rarr; LIML หรือ JIVE</p>
+    </div>
+</section>
+
+<!-- QUIZ 2 -->
+<section>
+    <h2>Quiz: IV Estimators</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> เมื่อมี heteroskedasticity และ instruments แข็งแรง ควรใช้ estimator ใด?</p>
+    </div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">A. OLS &mdash; เพราะมีประสิทธิภาพสูงสุดเสมอ</div>
+    <div onclick="checkQuiz(this, true)" class="quiz-option">B. GMM with robust weighting matrix &mdash; efficient ที่สุดภายใต้ heteroskedasticity</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">C. LIML &mdash; เพราะทนต่อ weak instruments</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">D. JIVE &mdash; เพราะแก้ overfitting bias</div>
+    <div class="quiz-feedback" id="q2fb">
+        <strong>ถูกต้อง!</strong> GMM ใช้ optimal weighting matrix ที่ account for heteroskedasticity ทำให้ได้ estimator ที่ efficient ที่สุดในกรณีนี้ (เมื่อ instruments แข็งแรงพอ)
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 4: TESTING ==================== -->
+<section>
+<section class="section-divider">
+    <h2>4. Testing</h2>
+    <p>First Stage, Endogeneity Test, Overidentification Test</p>
+</section>
+
+<section>
+    <h2>First-Stage Regression &amp; Instrument Relevance</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ทำไมต้องดู First Stage?</h3>
+                <p>ถ้า instruments ไม่สัมพันธ์กับ endogenous variable &rarr; IV จะไม่ทำงาน</p>
+                <div class="math-block">
+                    <span class="katex">x_i = \pi_0 + \pi_1 z_{1i} + \pi_2 z_{2i} + \gamma' w_i + v_i</span>
+                </div>
+                <p>ทดสอบ: H<sub>0</sub>: &pi;<sub>1</sub> = &pi;<sub>2</sub> = 0</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>Rule of Thumb: F &gt; 10</h3>
+                <p>Staiger &amp; Stock (1997): ถ้า first-stage F-statistic &lt; 10 &rarr; <strong>weak instruments</strong></p>
+                <p>Stock-Yogo (2005): ให้ critical values ที่เข้มงวดกว่า</p>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* After ivregress, check first stage</span><br>
+                <span class="cmd">estat</span> <span class="opt">firststage</span>, forcenonrobust all
+            </div>
+            <div class="example-box fragment">
+                <h3>ผลลัพธ์ที่ต้องดู</h3>
+                <ul>
+                    <li><strong>F-statistic</strong> &mdash; ยิ่งสูงยิ่งดี (&gt; 10)</li>
+                    <li><strong>Partial R<sup>2</sup></strong> &mdash; ส่วนที่ instruments อธิบาย x ได้</li>
+                    <li><strong>Minimum eigenvalue</strong> &mdash; ใช้เทียบกับ Stock-Yogo critical values</li>
+                </ul>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* Correlation of instrument with endogenous</span><br>
+                <span class="cmd">correlate</span> hi_empunion ssiratio lowincome multlc firmsz <span class="opt">if</span> linc!=.
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Endogeneity Test (Durbin-Wu-Hausman)</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>คำถาม: x เป็น endogenous จริงหรือ?</h3>
+                <p>ถ้า x ไม่ endogenous &rarr; OLS ดีกว่า (efficient กว่า IV)</p>
+                <div class="math-block">
+                    <span class="katex">H_0: \text{Cov}(x, u) = 0 \quad (\text{exogenous})</span>
+                </div>
+                <div class="math-block">
+                    <span class="katex">H_1: \text{Cov}(x, u) \neq 0 \quad (\text{endogenous})</span>
+                </div>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ถ้า reject H<sub>0</sub>:</strong> x เป็น endogenous จริง &rarr; ใช้ IV</p>
+                <p><strong>ถ้า fail to reject:</strong> ไม่มีหลักฐานว่า endogenous &rarr; OLS อาจเพียงพอ</p>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* Durbin-Wu-Hausman test (automatic)</span><br>
+                <span class="cmd">ivregress</span> <span class="num">2sls</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio) totchr age female blhisp linc, <span class="opt">vce(robust)</span><br>
+                <span class="cmd">estat</span> <span class="opt">endogenous</span>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* Manual DWH test</span><br>
+                <span class="cmd">quietly regress</span> hi_empunion ssiratio totchr age female blhisp linc<br>
+                <span class="cmd">quietly predict</span> v1hat, <span class="opt">resid</span><br>
+                <span class="cmd">quietly regress</span> ldrugexp hi_empunion v1hat totchr age female blhisp linc, <span class="opt">vce(robust)</span><br>
+                <span class="cmd">test</span> v1hat
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>วิธี manual:</strong> เพิ่ม residuals จาก first stage เข้าไปใน OLS ถ้า v1hat มีนัยสำคัญ &rarr; x เป็น endogenous</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Overidentification Test (Sargan/Hansen J)</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>คำถาม: Instruments ทั้งหมด valid หรือไม่?</h3>
+                <p>ทดสอบได้เฉพาะเมื่อ <strong>overidentified</strong> (instruments &gt; endogenous)</p>
+                <div class="math-block">
+                    <span class="katex">H_0: \text{All instruments are valid}</span>
+                </div>
+                <div class="math-block">
+                    <span class="katex">J = n \cdot \hat{u}' Z (Z'Z)^{-1} Z' \hat{u} \sim \chi^2_{q-k}</span>
+                </div>
+                <p>q = จำนวน instruments, k = จำนวน endogenous</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ถ้า reject H<sub>0</sub>:</strong> อย่างน้อย 1 instrument ไม่ valid &rarr; ทบทวน</p>
+                <p><strong>ถ้า fail to reject:</strong> ไม่มีหลักฐานว่า instruments ไม่ดี</p>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* Overidentification test after GMM</span><br>
+                <span class="cmd">ivregress</span> <span class="num">gmm</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio multlc) totchr age female blhisp linc, <span class="opt">wmatrix(robust)</span><br>
+                <span class="cmd">estat</span> <span class="opt">overid</span>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* With 4 instruments</span><br>
+                <span class="cmd">ivregress</span> <span class="num">gmm</span> ldrugexp (<span class="opt">hi_empunion</span> = ssiratio lowincome multlc firmsz) totchr age female blhisp linc, <span class="opt">wmatrix(robust)</span><br>
+                <span class="cmd">estat</span> <span class="opt">overid</span>
+            </div>
+            <div class="example-box fragment">
+                <h3>ข้อจำกัด</h3>
+                <p>J-test ทดสอบได้เฉพาะว่า instruments ทั้งหมด <em>ไม่สอดคล้องกัน</em>หรือไม่</p>
+                <p>ถ้า instruments ทั้งหมดไม่ valid ในทิศทางเดียวกัน &rarr; J-test อาจไม่ detect</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Overidentification: Intuition</h2>
+    <div class="interactive-container">
+        <h4>ลองดู: J-test ทำงานอย่างไร?</h4>
+        <p style="font-size:0.46em;">เมื่อมี 2 instruments แต่ละตัวให้ค่า IV estimate ต่างกัน ถ้าทั้งสอง valid &rarr; ค่าใกล้กัน ถ้าตัวใดตัวหนึ่งไม่ valid &rarr; ค่าแตกต่างกันมาก</p>
+        <canvas id="overidCanvas" width="700" height="220"></canvas>
+        <div class="slider-group">
+            <label>IV validity:</label>
+            <button class="interactive-btn active" onclick="drawOverid('valid')">Both Valid</button>
+            <button class="interactive-btn" onclick="drawOverid('invalid')">One Invalid</button>
+            <button class="interactive-btn" onclick="drawOverid('both_bad')">Both Invalid</button>
+        </div>
+        <p style="font-size:0.42em; text-align:center; margin-top:2px;" id="overidInfo">
+            J-test: Instruments ทั้งสองให้ค่าใกล้กัน &rarr; fail to reject H<sub>0</sub>
+        </p>
+    </div>
+</section>
+
+<section>
+    <h2>Decision Tree: เลือก Estimator</h2>
+    <div class="decision-tree">
+        <div class="dt-node dt-diamond">ทดสอบ Endogeneity<br>(DWH test)</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-label">Reject H<sub>0</sub></div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-diamond">First-stage F &gt; 10?</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-row">
+                    <div class="dt-branch">
+                        <div class="dt-label">Yes</div>
+                        <div class="dt-arrow">&darr;</div>
+                        <div class="dt-node dt-action">ใช้ 2SLS / GMM</div>
+                    </div>
+                    <div class="dt-branch">
+                        <div class="dt-label">No</div>
+                        <div class="dt-arrow">&darr;</div>
+                        <div class="dt-node dt-action2">ใช้ LIML / JIVE</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-label">Fail to reject</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-no">ใช้ OLS</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- QUIZ 3 -->
+<section>
+    <h2>Quiz: Testing</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> Overidentification test (J-test) ทดสอบสมมติฐานใด?</p>
+    </div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">A. H<sub>0</sub>: ตัวแปร x เป็น exogenous</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">B. H<sub>0</sub>: Instruments มีความสัมพันธ์กับ x (relevance)</div>
+    <div onclick="checkQuiz(this, true)" class="quiz-option">C. H<sub>0</sub>: Instruments ทั้งหมดเป็น valid (exogenous to error)</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">D. H<sub>0</sub>: 2SLS กับ OLS ให้ผลลัพธ์เหมือนกัน</div>
+    <div class="quiz-feedback" id="q3fb">
+        <strong>ถูกต้อง!</strong> J-test ทดสอบว่า overidentifying restrictions เป็นจริงหรือไม่ กล่าวคือ instruments ทั้งหมด uncorrelated กับ error term
+    </div>
+</section>
+
+<section>
+    <h2>ปัญหา Weak Instruments</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Weak Instruments คืออะไร?</h3>
+                <p>เมื่อ instruments สัมพันธ์กับ endogenous variable <strong>เพียงเล็กน้อย</strong></p>
+                <ul>
+                    <li>First-stage F-statistic ต่ำ (&lt; 10)</li>
+                    <li>Partial R<sup>2</sup> ต่ำมาก</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <h3>ผลเสีย</h3>
+                <ul>
+                    <li>2SLS จะ <strong>biased toward OLS</strong></li>
+                    <li>Standard errors จะ misleading (เล็กเกินจริง)</li>
+                    <li>Confidence intervals ผิดพลาด</li>
+                    <li>t-test มี size distortion มาก</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box">
+                <h3>เปรียบเทียบ 4 Instruments แต่ละตัว</h3>
+                <p>จาก do-file: ใช้ instrument ทีละตัว แล้วดู F-stat</p>
+            </div>
+            <div class="stata-code" style="font-size:0.44em !important;">
+                <span class="cmt">* Compare instruments individually</span><br>
+                <span class="cmd">ivregress</span> <span class="num">2sls</span> ldrugexp (<span class="opt">hi_empunion</span>=ssiratio) $x2list, <span class="opt">vce(robust)</span><br>
+                <span class="cmd">estat</span> <span class="opt">firststage</span>, forcenonrobust<br><br>
+                <span class="cmd">ivregress</span> <span class="num">2sls</span> ldrugexp (<span class="opt">hi_empunion</span>=lowincome) $x2list, <span class="opt">vce(robust)</span><br>
+                <span class="cmd">estat</span> <span class="opt">firststage</span>, forcenonrobust<br><br>
+                <span class="cmd">ivregress</span> <span class="num">2sls</span> ldrugexp (<span class="opt">hi_empunion</span>=multlc) $x2list, <span class="opt">vce(robust)</span><br>
+                <span class="cmd">estat</span> <span class="opt">firststage</span>, forcenonrobust<br><br>
+                <span class="cmd">ivregress</span> <span class="num">2sls</span> ldrugexp (<span class="opt">hi_empunion</span>=firmsz) $x2list, <span class="opt">vce(robust)</span><br>
+                <span class="cmd">estat</span> <span class="opt">firststage</span>, forcenonrobust
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Weak Instruments: Interactive Demo</h2>
+    <div class="interactive-container">
+        <h4>ลองดู: ผลของ Instrument Strength ต่อ IV Estimate</h4>
+        <div class="two-col">
+            <div>
+                <canvas id="weakIVCanvas" width="380" height="220"></canvas>
+            </div>
+            <div>
+                <div class="slider-group">
+                    <label>First-stage F:</label>
+                    <input type="range" id="fstatSlider" min="1" max="100" value="50" oninput="drawWeakIV()">
+                    <span class="val" id="fstatVal">50</span>
+                </div>
+                <div id="weakIVInfo" style="font-size:0.46em; margin-top:6px;">
+                    <p><strong>F = 50:</strong> Instrument แข็งแรง &mdash; IV estimate ใกล้ค่าจริง, CI แคบ</p>
+                </div>
+                <p style="font-size:0.42em; margin-top:4px;">
+                    <span style="color:#d4534a;">&#9632;</span> IV estimates (repeated samples)<br>
+                    <span style="color:#3d9970;">&#9644;</span> True value<br>
+                    <span style="color:#4a90d9;">&#9644;</span> OLS (biased)
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Stock-Yogo Critical Values</h2>
+    <div class="concept-box">
+        <h3>ทดสอบ Weak Instruments อย่างเป็นทางการ</h3>
+        <p>Stock &amp; Yogo (2005) ให้ critical values สำหรับ minimum eigenvalue statistic</p>
+    </div>
+    <table class="compare-table">
+        <tr><th>เกณฑ์</th><th>2SLS (5% max size)</th><th>2SLS (10% max size)</th><th>LIML (5% max size)</th><th>LIML (10% max size)</th></tr>
+        <tr><td>1 endogenous, 2 instruments</td><td>19.93</td><td>11.59</td><td>8.68</td><td>5.33</td></tr>
+        <tr><td>1 endogenous, 3 instruments</td><td>22.30</td><td>12.83</td><td>6.46</td><td>4.42</td></tr>
+        <tr><td>1 endogenous, 4 instruments</td><td>24.58</td><td>13.96</td><td>5.44</td><td>3.92</td></tr>
+    </table>
+    <div class="key-insight fragment">
+        <p><strong>สังเกต:</strong> LIML ต้องการ F-stat ต่ำกว่า 2SLS มาก &rarr; ทนต่อ weak instruments ดีกว่า</p>
+        <p>ใน Stata: <code>estat firststage, forcenonrobust</code> จะแสดง critical values เหล่านี้</p>
+    </div>
+</section>
+
+<section>
+    <h2>Robust SE: เปรียบเทียบ</h2>
+    <div class="concept-box">
+        <p>การเปรียบเทียบผลลัพธ์จากหลาย estimators และ variance estimators</p>
+    </div>
+    <div class="stata-code">
+        <span class="cmt">* Compare estimators with different SE</span><br>
+        <span class="cmd">quietly ivregress</span> <span class="num">2sls</span> ldrugexp (hi_empunion = ssiratio) $x2list, <span class="opt">vce(robust)</span><br>
+        <span class="cmd">estimates store</span> TwoSLSJust<br>
+        <span class="cmd">quietly ivregress</span> <span class="num">2sls</span> $ivmodel, <span class="opt">vce(robust)</span><br>
+        <span class="cmd">estimates store</span> TwoSLS<br>
+        <span class="cmd">quietly ivregress</span> <span class="num">gmm</span> $ivmodel, <span class="opt">wmatrix(robust)</span><br>
+        <span class="cmd">estimates store</span> GMM_het<br>
+        <span class="cmd">quietly ivregress</span> <span class="num">2sls</span> $ivmodel<br>
+        <span class="cmd">estimates store</span> TwoSLS_def<br><br>
+        <span class="cmd">estimates table</span> TwoSLSJust TwoSLS GMM_het TwoSLS_def, <span class="opt">b(%9.5f)</span> se
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>สังเกต:</strong> Robust SE มักใหญ่กว่า default SE &mdash; ใช้ <code>vce(robust)</code> เสมอเมื่อสงสัย heteroskedasticity</p>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 5: APPLICATION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>5. Application: MEPS Data</h2>
+    <p>ขั้นตอนการวิเคราะห์ IV แบบครบวงจร</p>
+</section>
+
+<section>
+    <h2>ข้อมูล MEPS: ตัวแปรสำคัญ</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ตัวแปรตาม</h3>
+                <p><strong>ldrugexp</strong> &mdash; log ค่าใช้จ่ายยา (prescription drugs)</p>
+            </div>
+            <div class="concept-box">
+                <h3>ตัวแปร Endogenous</h3>
+                <p><strong>hi_empunion</strong> &mdash; มีประกันสุขภาพจากนายจ้าง/สหภาพ (0/1)</p>
+            </div>
+            <div class="concept-box">
+                <h3>Instruments</h3>
+                <ul>
+                    <li><strong>ssiratio</strong> &mdash; Social Security income ratio</li>
+                    <li><strong>multlc</strong> &mdash; Multiple chronic conditions</li>
+                    <li><strong>lowincome</strong> &mdash; Low income indicator</li>
+                    <li><strong>firmsz</strong> &mdash; Firm size</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>ตัวแปรควบคุม (Exogenous)</h3>
+                <table class="compare-table" style="font-size:0.95em;">
+                    <tr><th>ตัวแปร</th><th>คำอธิบาย</th></tr>
+                    <tr><td>totchr</td><td>จำนวนโรคเรื้อรัง</td></tr>
+                    <tr><td>age</td><td>อายุ</td></tr>
+                    <tr><td>female</td><td>เพศหญิง (0/1)</td></tr>
+                    <tr><td>blhisp</td><td>Black/Hispanic (0/1)</td></tr>
+                    <tr><td>linc</td><td>log รายได้</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ขั้นตอน 1: OLS Baseline</h2>
+    <div class="stata-code">
+        <span class="cmt">* Step 1: OLS for comparison</span><br>
+        <span class="cmd">use</span> <span class="num">"Chap 4 data.dta"</span>, clear<br>
+        <span class="cmd">global</span> x2list totchr age female blhisp linc<br>
+        <span class="cmd">regress</span> ldrugexp hi_empunion $x2list, <span class="opt">vce(robust)</span>
+    </div>
+    <div class="two-col fragment">
+        <div class="concept-box">
+            <h3>OLS Results</h3>
+            <p>OLS ให้ค่าสัมประสิทธิ์ของ hi_empunion ที่อาจ <strong>biased</strong></p>
+            <p>ถ้า selection bias เป็นบวก (คนป่วยเลือกซื้อประกัน) &rarr; OLS อาจ overestimate</p>
+        </div>
+        <div class="key-insight">
+            <h3>เปรียบเทียบกับ IV</h3>
+            <p>ค่า OLS จะเป็น benchmark สำหรับเปรียบเทียบกับ IV estimates</p>
+            <p>ถ้าค่าต่างกันมาก &rarr; หลักฐานว่า endogeneity สำคัญ</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ขั้นตอน 2: IV Estimation</h2>
+    <div class="stata-code">
+        <span class="cmt">* Step 2: IV estimation with multiple estimators</span><br>
+        <span class="cmd">global</span> ivmodel "ldrugexp (hi_empunion = ssiratio multlc) $x2list"<br><br>
+        <span class="cmd">quietly ivregress</span> <span class="num">2sls</span> $ivmodel, <span class="opt">vce(robust)</span><br>
+        <span class="cmd">estimates store</span> TwoSLS<br><br>
+        <span class="cmd">quietly ivregress</span> <span class="num">gmm</span> $ivmodel, <span class="opt">wmatrix(robust)</span><br>
+        <span class="cmd">estimates store</span> GMM_het<br><br>
+        <span class="cmd">quietly ivregress</span> <span class="num">liml</span> $ivmodel, <span class="opt">vce(robust)</span><br>
+        <span class="cmd">estimates store</span> LIML
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>เคล็ดลับ:</strong> ใช้ <code>quietly</code> เพื่อเก็บผลลัพธ์โดยไม่แสดงทุกครั้ง แล้วใช้ <code>estimates table</code> เปรียบเทียบทีเดียว</p>
+    </div>
+</section>
+
+<section>
+    <h2>ขั้นตอน 3: Diagnostic Tests</h2>
+    <div class="three-col">
+        <div class="stata-code" style="font-size:0.42em !important;">
+            <span class="cmt">* First stage</span><br>
+            <span class="cmd">ivregress</span> <span class="num">2sls</span> $ivmodel, <span class="opt">vce(robust)</span><br>
+            <span class="cmd">estat</span> <span class="opt">firststage</span>, forcenonrobust
+        </div>
+        <div class="stata-code" style="font-size:0.42em !important;">
+            <span class="cmt">* Endogeneity</span><br>
+            <span class="cmd">ivregress</span> <span class="num">2sls</span> $ivmodel, <span class="opt">vce(robust)</span><br>
+            <span class="cmd">estat</span> <span class="opt">endogenous</span>
+        </div>
+        <div class="stata-code" style="font-size:0.42em !important;">
+            <span class="cmt">* Overid</span><br>
+            <span class="cmd">ivregress</span> <span class="num">gmm</span> $ivmodel, <span class="opt">wmatrix(robust)</span><br>
+            <span class="cmd">estat</span> <span class="opt">overid</span>
+        </div>
+    </div>
+    <div class="two-col fragment">
+        <div class="example-box">
+            <h3>Checklist การวิเคราะห์ IV</h3>
+            <ol>
+                <li>First-stage F &gt; 10? &rarr; instruments แข็งแรง</li>
+                <li>DWH test reject? &rarr; x เป็น endogenous จริง</li>
+                <li>J-test fail to reject? &rarr; instruments valid</li>
+                <li>ผลลัพธ์ stable ข้าม estimators? &rarr; น่าเชื่อถือ</li>
+            </ol>
+        </div>
+        <div class="key-insight">
+            <h3>Treatment Regression</h3>
+            <p>อีกทางเลือก: <code>treatreg</code> สำหรับ endogenous dummy</p>
+            <div class="stata-code" style="font-size:0.85em;">
+                <span class="cmd">treatreg</span> ldrugexp $x2list, <span class="opt">treat</span>(hi_empunion = ssiratio $x2list)
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ผลเปรียบเทียบ: OLS vs IV Estimators</h2>
+    <div class="stata-code">
+        <span class="cmd">estimates table</span> OLS TwoSLS GMM_het LIML, <span class="opt">b(%9.5f)</span> se <span class="opt">stats(N)</span>
+    </div>
+    <table class="compare-table fragment">
+        <tr><th>ตัวแปร</th><th>OLS</th><th>2SLS</th><th>GMM</th><th>LIML</th></tr>
+        <tr><td><strong>hi_empunion</strong></td><td class="highlight">OLS biased?</td><td>IV estimate</td><td>IV estimate</td><td>IV estimate</td></tr>
+        <tr><td>totchr</td><td colspan="4">ค่าใกล้เคียงกันในทุก estimator (exogenous)</td></tr>
+        <tr><td>age</td><td colspan="4">ค่าใกล้เคียงกันในทุก estimator (exogenous)</td></tr>
+        <tr><td>female</td><td colspan="4">ค่าใกล้เคียงกันในทุก estimator (exogenous)</td></tr>
+        <tr><td colspan="5" style="text-align:left; font-style:italic;">สัมประสิทธิ์ของตัวแปร exogenous ไม่เปลี่ยนมากระหว่าง OLS กับ IV</td></tr>
+    </table>
+    <div class="key-insight fragment">
+        <p><strong>Interpretation:</strong> ถ้า hi_empunion เปลี่ยนมากจาก OLS &rarr; IV &rarr; endogeneity bias สำคัญ</p>
+        <p>ถ้า 2SLS, GMM, LIML ให้ผลใกล้เคียง &rarr; ผลลัพธ์น่าเชื่อถือ (robust to estimator choice)</p>
+    </div>
+</section>
+
+<!-- QUIZ 4 -->
+<section>
+    <h2>Quiz: Weak Instruments</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> ถ้า first-stage F-statistic = 3 ควรทำอย่างไร?</p>
+    </div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">A. ใช้ 2SLS ต่อไปได้ เพราะ IV ยัง consistent</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">B. ใช้ OLS แทน เพราะ IV ไม่ทำงาน</div>
+    <div onclick="checkQuiz(this, true)" class="quiz-option">C. เปลี่ยนไปใช้ LIML หรือ JIVE ที่ทนต่อ weak instruments ได้ดีกว่า หรือหา instruments ที่ดีกว่า</div>
+    <div onclick="checkQuiz(this, false)" class="quiz-option">D. เพิ่ม instruments ให้มากขึ้นเพื่อเพิ่ม F-statistic</div>
+    <div class="quiz-feedback" id="q4fb">
+        <strong>ถูกต้อง!</strong> เมื่อ F &lt; 10, 2SLS จะ biased toward OLS LIML/JIVE มี bias น้อยกว่า แต่ทางออกที่ดีที่สุดคือหา instruments ที่แข็งแรงกว่า การเพิ่มจำนวน instruments อ่อนๆ อาจทำให้ bias แย่ลง
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 6: SUMMARY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>6. Summary</h2>
+    <p>สรุปเนื้อหา Chapter 4: Instrumental Variables</p>
+</section>
+
+<section>
+    <h2>สรุป: IV Estimation</h2>
+    <div class="three-col">
+        <div class="concept-box">
+            <h3>ปัญหา</h3>
+            <ul>
+                <li>Endogeneity ทำให้ OLS inconsistent</li>
+                <li>สาเหตุ: omitted variables, simultaneity, measurement error</li>
+                <li>Bias ไม่หายไปแม้เพิ่ม n</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <h3>ทางออก: IV</h3>
+            <ul>
+                <li>หา instrument z ที่ relevant &amp; exogenous</li>
+                <li>2SLS, GMM, LIML, JIVE</li>
+                <li>Trade-off: consistency vs. efficiency</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <h3>การทดสอบ</h3>
+            <ul>
+                <li>First-stage F &gt; 10 (relevance)</li>
+                <li>DWH test (endogeneity)</li>
+                <li>J-test (overid/validity)</li>
+                <li>Stock-Yogo (weak IV)</li>
+            </ul>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top:8px;">
+        <p><strong>Key Takeaways:</strong></p>
+        <ul>
+            <li>IV แก้ปัญหา endogeneity แต่ต้อง "จ่าย" ด้วย variance ที่สูงขึ้น</li>
+            <li>Instrument ที่ดีหายาก &mdash; ต้องมีทั้ง relevance และ exogeneity</li>
+            <li>ทดสอบ diagnostic tests ทุกครั้ง: first stage, endogeneity, overid</li>
+            <li>ถ้า instruments อ่อน &rarr; ใช้ LIML/JIVE หรือหา instruments ใหม่</li>
+        </ul>
+    </div>
+</section>
+
+<section>
+    <h2>Stata Commands: Quick Reference</h2>
+    <table class="compare-table">
+        <tr><th>คำสั่ง</th><th>วัตถุประสงค์</th><th>ตัวอย่าง</th></tr>
+        <tr><td><code>ivregress 2sls</code></td><td>2SLS estimation</td><td><code>ivregress 2sls y (x=z) w</code></td></tr>
+        <tr><td><code>ivregress gmm</code></td><td>GMM estimation</td><td><code>ivregress gmm y (x=z) w, wmatrix(robust)</code></td></tr>
+        <tr><td><code>ivregress liml</code></td><td>LIML estimation</td><td><code>ivregress liml y (x=z) w</code></td></tr>
+        <tr><td><code>jive</code></td><td>Jackknife IV</td><td><code>jive y (x=z) w, robust</code></td></tr>
+        <tr><td><code>estat firststage</code></td><td>First-stage F-test</td><td>หลัง ivregress</td></tr>
+        <tr><td><code>estat endogenous</code></td><td>DWH endogeneity test</td><td>หลัง ivregress</td></tr>
+        <tr><td><code>estat overid</code></td><td>Overidentification test</td><td>หลัง ivregress (overid)</td></tr>
+        <tr><td><code>estimates table</code></td><td>เปรียบเทียบหลาย models</td><td><code>estimates table m1 m2, se</code></td></tr>
+        <tr><td><code>treatreg</code></td><td>Treatment regression</td><td><code>treatreg y w, treat(x=z w)</code></td></tr>
+    </table>
+</section>
+
+<section>
+    <h2>แหล่งอ้างอิง</h2>
+    <div class="two-col">
+        <div class="concept-box">
+            <h3>ตำราหลัก</h3>
+            <ul>
+                <li>Cameron &amp; Trivedi (2005). <em>Microeconometrics: Methods and Applications</em></li>
+                <li>Wooldridge (2010). <em>Econometric Analysis of Cross Section and Panel Data</em></li>
+                <li>Angrist &amp; Pischke (2009). <em>Mostly Harmless Econometrics</em></li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <h3>บทความสำคัญ</h3>
+            <ul>
+                <li>Staiger &amp; Stock (1997). IV regression with weak instruments</li>
+                <li>Stock &amp; Yogo (2005). Testing for weak instruments</li>
+                <li>Hansen (1982). GMM estimators</li>
+            </ul>
+        </div>
+    </div>
+</section>
+</section>
+
+</div><!-- end slides -->
+</div><!-- end reveal -->
+
+<!-- Reveal.js -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script>
+Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    width: 1100,
+    height: 700,
+    margin: 0.04,
+    minScale: 0.5,
+    maxScale: 1.2,
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    pdfMaxPagesPerSlide: 1,
+    disableLayout: false,
+});
+
+// ============================================================
+// COLOR PALETTE
+// ============================================================
+const C = {
+    blue:    '#4a90d9', blueFade: 'rgba(74,144,217,',
+    red:     '#d4534a', redFade:  'rgba(212,83,74,',
+    green:   '#3d9970', greenFade:'rgba(61,153,112,',
+    orange:  '#e8a838', orangeFade:'rgba(232,168,56,',
+    purple:  '#8b5cf6',
+    dark:    '#1a2744',
+    text:    '#2d3748',
+    light:   '#718096',
+    grid:    '#e2e8f0',
+};
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function getCtx(id) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    return el.getContext('2d');
+}
+
+function clearCanvas(ctx, w, h) {
+    ctx.clearRect(0, 0, w, h);
+}
+
+// Simple seeded random
+function seededRandom(seed) {
+    let s = seed;
+    return function() {
+        s = (s * 16807 + 0) % 2147483647;
+        return s / 2147483647;
+    };
+}
+
+// Box-Muller normal
+function randNormal(rng) {
+    let u1 = rng(), u2 = rng();
+    if (u1 < 1e-10) u1 = 1e-10;
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+function drawAxes(ctx, ox, oy, w, h, xLabel, yLabel) {
+    ctx.strokeStyle = C.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(ox, oy - h);
+    ctx.lineTo(ox, oy);
+    ctx.lineTo(ox + w, oy);
+    ctx.stroke();
+    ctx.fillStyle = C.light;
+    ctx.font = '10px Sarabun';
+    ctx.textAlign = 'center';
+    ctx.fillText(xLabel, ox + w / 2, oy + 14);
+    ctx.save();
+    ctx.translate(ox - 12, oy - h / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(yLabel, 0, 0);
+    ctx.restore();
+}
+
+// ============================================================
+// 1. ENDOGENEITY BIAS DEMO
+// ============================================================
+function drawEndogBias() {
+    const ctx = getCtx('endogBiasCanvas');
+    if (!ctx) return;
+    const W = 380, H = 210;
+    clearCanvas(ctx, W, H);
+
+    const corrVal = parseInt(document.getElementById('corrSlider').value) / 100;
+    document.getElementById('corrVal').textContent = corrVal.toFixed(2);
+
+    const ox = 40, oy = H - 25, pw = W - 55, ph = H - 45;
+    drawAxes(ctx, ox, oy, pw, ph, 'x (endogenous)', 'y');
+
+    const rng = seededRandom(42);
+    const n = 120;
+    const trueBeta = 1.0;
+    const points = [];
+
+    for (let i = 0; i < n; i++) {
+        const u = randNormal(rng);
+        const xBase = randNormal(rng);
+        const x = xBase + corrVal * u;
+        const y = trueBeta * x + u + randNormal(rng) * 0.3;
+        points.push({ x, y });
+    }
+
+    // Scale
+    const xMin = -3.5, xMax = 3.5, yMin = -5, yMax = 5;
+    const sx = (v) => ox + ((v - xMin) / (xMax - xMin)) * pw;
+    const sy = (v) => oy - ((v - yMin) / (yMax - yMin)) * ph;
+
+    // Points
+    ctx.fillStyle = C.blueFade + '0.35)';
+    for (const p of points) {
+        ctx.beginPath();
+        ctx.arc(sx(p.x), sy(p.y), 2.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // OLS line (compute)
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    for (const p of points) { sumX += p.x; sumY += p.y; sumXY += p.x * p.y; sumX2 += p.x * p.x; }
+    const olsBeta = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const olsAlpha = (sumY - olsBeta * sumX) / n;
+
+    // OLS line
+    ctx.strokeStyle = C.blue;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(sx(xMin), sy(olsAlpha + olsBeta * xMin));
+    ctx.lineTo(sx(xMax), sy(olsAlpha + olsBeta * xMax));
+    ctx.stroke();
+
+    // True line
+    ctx.strokeStyle = C.green;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(sx(xMin), sy(trueBeta * xMin));
+    ctx.lineTo(sx(xMax), sy(trueBeta * xMax));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels
+    ctx.font = 'bold 11px Sarabun';
+    ctx.fillStyle = C.blue;
+    ctx.textAlign = 'left';
+    ctx.fillText('OLS: \u03B2=' + olsBeta.toFixed(2), sx(1.5), sy(olsAlpha + olsBeta * 1.5) - 8);
+    ctx.fillStyle = C.green;
+    ctx.fillText('True: \u03B2=1.00', sx(1.5), sy(trueBeta * 1.5) + 14);
+}
+
+// ============================================================
+// 2. 2SLS STEP-BY-STEP DEMO
+// ============================================================
+let tslsData = null;
+function generate2SLSData() {
+    const rng = seededRandom(123);
+    const n = 100;
+    const data = [];
+    for (let i = 0; i < n; i++) {
+        const z = randNormal(rng) * 1.5;
+        const u = randNormal(rng);
+        const x = 0.8 * z + 0.5 * u + randNormal(rng) * 0.4;
+        const y = 1.2 * x + u + randNormal(rng) * 0.5;
+        data.push({ z, x, y });
+    }
+    // First stage
+    let szz = 0, szx = 0, sz = 0, sx2 = 0, sn = n;
+    for (const d of data) { sz += d.z; szx += d.z * d.x; szz += d.z * d.z; sx2 += d.x; }
+    const pi1 = (sn * szx - sz * sx2) / (sn * szz - sz * sz);
+    const pi0 = (sx2 - pi1 * sz) / sn;
+    // F-stat approximation
+    let ssRes = 0, ssTot = 0;
+    const xMean = sx2 / sn;
+    for (const d of data) {
+        const xhat = pi0 + pi1 * d.z;
+        d.xhat = xhat;
+        ssRes += (d.x - xhat) ** 2;
+        ssTot += (d.x - xMean) ** 2;
+    }
+    const r2 = 1 - ssRes / ssTot;
+    const fstat = (r2 / 1) / ((1 - r2) / (sn - 2));
+    tslsData = { data, pi0, pi1, fstat };
+}
+
+function draw2SLS(stage) {
+    if (!tslsData) generate2SLSData();
+    const ctx = getCtx('tsls2Canvas');
+    if (!ctx) return;
+    const W = 380, H = 200;
+    clearCanvas(ctx, W, H);
+
+    const ox = 40, oy = H - 25, pw = W - 55, ph = H - 45;
+    const d = tslsData.data;
+
+    // Update buttons
+    const canvas2sls = document.getElementById('tsls2Canvas');
+    if (canvas2sls) {
+        const btns = canvas2sls.parentElement.querySelectorAll('button');
+        btns.forEach(b => b.classList.remove('active'));
+        btns.forEach(b => {
+            if (stage === 'stage1' && b.textContent.includes('Stage 1')) b.classList.add('active');
+            if (stage === 'stage2' && b.textContent.includes('Stage 2')) b.classList.add('active');
+        });
+    }
+
+    if (stage === 'stage1') {
+        drawAxes(ctx, ox, oy, pw, ph, 'z (instrument)', 'x (endogenous)');
+        const xMin = -4, xMax = 4, yMin = -4, yMax = 4;
+        const sx = (v) => ox + ((v - xMin) / (xMax - xMin)) * pw;
+        const sy = (v) => oy - ((v - yMin) / (yMax - yMin)) * ph;
+
+        ctx.fillStyle = C.blueFade + '0.4)';
+        for (const p of d) {
+            ctx.beginPath();
+            ctx.arc(sx(p.z), sy(p.x), 2.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // First stage line
+        ctx.strokeStyle = C.red;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(sx(xMin), sy(tslsData.pi0 + tslsData.pi1 * xMin));
+        ctx.lineTo(sx(xMax), sy(tslsData.pi0 + tslsData.pi1 * xMax));
+        ctx.stroke();
+
+        ctx.font = 'bold 10px Sarabun';
+        ctx.fillStyle = C.red;
+        ctx.fillText('First stage: x = ' + tslsData.pi0.toFixed(2) + ' + ' + tslsData.pi1.toFixed(2) + 'z', sx(0.5), sy(3.2));
+        document.getElementById('tslsInfo').innerHTML = 'Stage 1: F-stat = ' + tslsData.fstat.toFixed(1) + (tslsData.fstat > 10 ? ' (strong instrument)' : ' (weak!)');
+    } else {
+        drawAxes(ctx, ox, oy, pw, ph, 'x\u0302 (fitted from stage 1)', 'y');
+        const xMin = -3, xMax = 3, yMin = -6, yMax = 6;
+        const sx = (v) => ox + ((v - xMin) / (xMax - xMin)) * pw;
+        const sy = (v) => oy - ((v - yMin) / (yMax - yMin)) * ph;
+
+        // Plot y vs xhat
+        ctx.fillStyle = C.greenFade + '0.4)';
+        for (const p of d) {
+            ctx.beginPath();
+            ctx.arc(sx(p.xhat), sy(p.y), 2.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Second stage OLS on xhat
+        let sxh = 0, sy2 = 0, sxhy = 0, sxh2 = 0;
+        for (const p of d) { sxh += p.xhat; sy2 += p.y; sxhy += p.xhat * p.y; sxh2 += p.xhat * p.xhat; }
+        const n = d.length;
+        const b1 = (n * sxhy - sxh * sy2) / (n * sxh2 - sxh * sxh);
+        const b0 = (sy2 - b1 * sxh) / n;
+
+        ctx.strokeStyle = C.green;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(sx(xMin), sy(b0 + b1 * xMin));
+        ctx.lineTo(sx(xMax), sy(b0 + b1 * xMax));
+        ctx.stroke();
+
+        ctx.font = 'bold 10px Sarabun';
+        ctx.fillStyle = C.green;
+        ctx.fillText('2SLS: \u03B2\u0302 = ' + b1.toFixed(2) + ' (true = 1.20)', sx(0), sy(5));
+        document.getElementById('tslsInfo').innerHTML = 'Stage 2: y regressed on x\u0302 &rarr; consistent estimate';
+    }
+}
+
+// ============================================================
+// 3. WEAK INSTRUMENTS DEMO
+// ============================================================
+function drawWeakIV() {
+    const ctx = getCtx('weakIVCanvas');
+    if (!ctx) return;
+    const W = 380, H = 220;
+    clearCanvas(ctx, W, H);
+
+    const fstat = parseInt(document.getElementById('fstatSlider').value);
+    document.getElementById('fstatVal').textContent = fstat;
+
+    const ox = 50, oy = H - 25, pw = W - 65, ph = H - 45;
+
+    // Draw histogram-like distribution of IV estimates
+    const trueBeta = 1.0;
+    const olsBeta = 1.5;
+    const rng = seededRandom(77);
+    const nSim = 200;
+    const estimates = [];
+
+    // Simulate: higher F -> tighter distribution around true; lower F -> wider, biased toward OLS
+    const piStrength = Math.sqrt(fstat / 100);
+    for (let i = 0; i < nSim; i++) {
+        const noise = randNormal(rng) / (piStrength + 0.05);
+        const biasPull = (1 - piStrength) * (olsBeta - trueBeta) * 0.5;
+        const est = trueBeta + biasPull + noise * 0.8;
+        estimates.push(est);
+    }
+
+    const xMin = -2, xMax = 4;
+    const sx = (v) => ox + ((v - xMin) / (xMax - xMin)) * pw;
+
+    // Histogram
+    const bins = 30;
+    const binW = (xMax - xMin) / bins;
+    const counts = new Array(bins).fill(0);
+    for (const e of estimates) {
+        const bi = Math.floor((e - xMin) / binW);
+        if (bi >= 0 && bi < bins) counts[bi]++;
+    }
+    const maxCount = Math.max(...counts, 1);
+
+    for (let i = 0; i < bins; i++) {
+        const x1 = sx(xMin + i * binW);
+        const x2 = sx(xMin + (i + 1) * binW);
+        const barH = (counts[i] / maxCount) * ph * 0.85;
+        ctx.fillStyle = C.redFade + '0.5)';
+        ctx.fillRect(x1, oy - barH, x2 - x1 - 1, barH);
+    }
+
+    // True value line
+    ctx.strokeStyle = C.green;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(sx(trueBeta), oy);
+    ctx.lineTo(sx(trueBeta), oy - ph);
+    ctx.stroke();
+
+    // OLS line
+    ctx.strokeStyle = C.blue;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    ctx.moveTo(sx(olsBeta), oy);
+    ctx.lineTo(sx(olsBeta), oy - ph);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // X axis
+    ctx.strokeStyle = C.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.lineTo(ox + pw, oy);
+    ctx.stroke();
+
+    // Ticks
+    ctx.fillStyle = C.light;
+    ctx.font = '9px Fira Code';
+    ctx.textAlign = 'center';
+    for (let v = -2; v <= 4; v++) {
+        ctx.fillText(v.toString(), sx(v), oy + 12);
+    }
+    ctx.fillText('\u03B2\u0302 (IV estimates)', ox + pw / 2, oy + 22);
+
+    // Labels
+    ctx.font = 'bold 10px Sarabun';
+    ctx.fillStyle = C.green;
+    ctx.fillText('True \u03B2=1.0', sx(trueBeta) + 3, oy - ph + 12);
+    ctx.fillStyle = C.blue;
+    ctx.fillText('OLS=1.5', sx(olsBeta) + 3, oy - ph + 24);
+
+    // Info text
+    const info = document.getElementById('weakIVInfo');
+    if (fstat >= 30) {
+        info.innerHTML = '<p><strong>F = ' + fstat + ':</strong> Instrument แข็งแรง &mdash; IV estimate ใกล้ค่าจริง, distribution แคบ</p>';
+    } else if (fstat >= 10) {
+        info.innerHTML = '<p><strong>F = ' + fstat + ':</strong> Instrument พอใช้ &mdash; IV estimate ยังใกล้ค่าจริง แต่กว้างขึ้น</p>';
+    } else {
+        info.innerHTML = '<p style="color:#d4534a;"><strong>F = ' + fstat + ' &lt; 10:</strong> Weak instrument! &mdash; IV estimate กระจายมาก, เบี่ยงเข้าหา OLS</p>';
+    }
+}
+
+// ============================================================
+// 4. OVERIDENTIFICATION TEST DEMO
+// ============================================================
+function drawOverid(mode) {
+    const ctx = getCtx('overidCanvas');
+    if (!ctx) return;
+    const W = 700, H = 220;
+    clearCanvas(ctx, W, H);
+
+    // Update buttons
+    const overidBtns = document.querySelectorAll('#overidCanvas ~ .slider-group button');
+    overidBtns.forEach(b => b.classList.remove('active'));
+    overidBtns.forEach(b => {
+        if (mode === 'valid' && b.textContent.includes('Both Valid')) b.classList.add('active');
+        if (mode === 'invalid' && b.textContent.includes('One Invalid')) b.classList.add('active');
+        if (mode === 'both_bad' && b.textContent.includes('Both Invalid')) b.classList.add('active');
+    });
+
+    const trueBeta = 1.0;
+    let iv1, iv2, jStat, jP;
+
+    const rng = seededRandom(55);
+    if (mode === 'valid') {
+        iv1 = trueBeta + randNormal(rng) * 0.15;
+        iv2 = trueBeta + randNormal(rng) * 0.15;
+        jStat = 0.3;
+        jP = 0.58;
+    } else if (mode === 'invalid') {
+        iv1 = trueBeta + randNormal(rng) * 0.15;
+        iv2 = trueBeta + 0.8 + randNormal(rng) * 0.15;
+        jStat = 6.2;
+        jP = 0.013;
+    } else {
+        iv1 = trueBeta + 0.5 + randNormal(rng) * 0.15;
+        iv2 = trueBeta + 0.5 + randNormal(rng) * 0.15;
+        jStat = 0.4;
+        jP = 0.53;
+    }
+
+    const cx = W / 2, barY = 80, barH = 30;
+    const scale = 100;
+
+    // Number line
+    const xMin = -0.5, xMax = 3.0;
+    const sx = (v) => 60 + ((v - xMin) / (xMax - xMin)) * (W - 120);
+
+    ctx.strokeStyle = C.grid;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(sx(xMin), barY + barH / 2);
+    ctx.lineTo(sx(xMax), barY + barH / 2);
+    ctx.stroke();
+
+    // Ticks
+    ctx.fillStyle = C.light;
+    ctx.font = '10px Fira Code';
+    ctx.textAlign = 'center';
+    for (let v = 0; v <= 2.5; v += 0.5) {
+        ctx.beginPath();
+        ctx.moveTo(sx(v), barY + barH / 2 - 4);
+        ctx.lineTo(sx(v), barY + barH / 2 + 4);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(1), sx(v), barY + barH / 2 + 16);
+    }
+    ctx.fillText('\u03B2\u0302', sx((xMax + xMin) / 2), barY + barH / 2 + 28);
+
+    // True value
+    ctx.strokeStyle = C.green;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(sx(trueBeta), barY - 15);
+    ctx.lineTo(sx(trueBeta), barY + barH + 5);
+    ctx.stroke();
+    ctx.fillStyle = C.green;
+    ctx.font = 'bold 11px Sarabun';
+    ctx.fillText('True \u03B2=1.0', sx(trueBeta), barY - 20);
+
+    // IV1 estimate
+    ctx.fillStyle = C.blue;
+    ctx.beginPath();
+    ctx.arc(sx(iv1), barY + barH / 2, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 9px Fira Code';
+    ctx.fillText('z1', sx(iv1), barY + barH / 2 + 3);
+    ctx.fillStyle = C.blue;
+    ctx.font = '10px Sarabun';
+    ctx.fillText('IV(z\u2081)=' + iv1.toFixed(2), sx(iv1), barY - 5);
+
+    // IV2 estimate
+    ctx.fillStyle = C.red;
+    ctx.beginPath();
+    ctx.arc(sx(iv2), barY + barH / 2, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 9px Fira Code';
+    ctx.fillText('z2', sx(iv2), barY + barH / 2 + 3);
+    ctx.fillStyle = C.red;
+    ctx.font = '10px Sarabun';
+    ctx.fillText('IV(z\u2082)=' + iv2.toFixed(2), sx(iv2), barY + barH + 22);
+
+    // Distance bracket
+    const diff = Math.abs(iv2 - iv1);
+    ctx.strokeStyle = C.orange;
+    ctx.lineWidth = 1.5;
+    const bracketY = barY + barH + 32;
+    ctx.beginPath();
+    ctx.moveTo(sx(Math.min(iv1, iv2)), bracketY);
+    ctx.lineTo(sx(Math.max(iv1, iv2)), bracketY);
+    ctx.stroke();
+    ctx.fillStyle = C.orange;
+    ctx.font = 'bold 10px Sarabun';
+    ctx.textAlign = 'center';
+    ctx.fillText('diff = ' + diff.toFixed(2), (sx(iv1) + sx(iv2)) / 2, bracketY + 14);
+
+    // J-stat box
+    const boxX = W / 2 - 100, boxY = H - 55, boxW = 200, boxH = 42;
+    ctx.fillStyle = jP < 0.05 ? C.redFade + '0.12)' : C.greenFade + '0.12)';
+    ctx.strokeStyle = jP < 0.05 ? C.red : C.green;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(boxX, boxY, boxW, boxH, 6);
+    } else {
+        const r = 6;
+        ctx.moveTo(boxX + r, boxY);
+        ctx.lineTo(boxX + boxW - r, boxY);
+        ctx.quadraticCurveTo(boxX + boxW, boxY, boxX + boxW, boxY + r);
+        ctx.lineTo(boxX + boxW, boxY + boxH - r);
+        ctx.quadraticCurveTo(boxX + boxW, boxY + boxH, boxX + boxW - r, boxY + boxH);
+        ctx.lineTo(boxX + r, boxY + boxH);
+        ctx.quadraticCurveTo(boxX, boxY + boxH, boxX, boxY + boxH - r);
+        ctx.lineTo(boxX, boxY + r);
+        ctx.quadraticCurveTo(boxX, boxY, boxX + r, boxY);
+        ctx.closePath();
+    }
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = C.text;
+    ctx.font = 'bold 12px Sarabun';
+    ctx.textAlign = 'center';
+    ctx.fillText('J-stat = ' + jStat.toFixed(2) + '   p-value = ' + jP.toFixed(3), W / 2, boxY + 17);
+    ctx.font = '11px Sarabun';
+    ctx.fillStyle = jP < 0.05 ? C.red : C.green;
+    ctx.fillText(jP < 0.05 ? 'Reject H\u2080: instruments may not all be valid' : 'Fail to reject H\u2080: instruments appear valid', W / 2, boxY + 34);
+
+    // Info
+    const infoEl = document.getElementById('overidInfo');
+    if (mode === 'valid') {
+        infoEl.innerHTML = 'Both instruments valid &rarr; IV estimates ใกล้กัน &rarr; J-test fail to reject';
+    } else if (mode === 'invalid') {
+        infoEl.innerHTML = 'One instrument invalid &rarr; IV estimates ต่างกัน &rarr; J-test <strong style="color:#d4534a;">reject</strong>';
+    } else {
+        infoEl.innerHTML = 'Both invalid in same direction &rarr; IV estimates ใกล้กัน แต่ทั้งคู่ biased &rarr; J-test <strong>ไม่ detect!</strong>';
+    }
+}
+
+// ============================================================
+// QUIZ LOGIC
+// ============================================================
+function checkQuiz(el, isCorrect) {
+    const parent = el.parentElement;
+    const options = parent.querySelectorAll('.quiz-option');
+    const feedback = parent.querySelector('.quiz-feedback');
+
+    options.forEach(opt => {
+        opt.style.pointerEvents = 'none';
+        opt.classList.remove('correct', 'wrong');
+    });
+
+    if (isCorrect) {
+        el.classList.add('correct');
+        if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.background = '#f0faf4';
+            feedback.style.borderLeft = '3px solid #3d9970';
+        }
+    } else {
+        el.classList.add('wrong');
+        // Highlight the correct one
+        options.forEach(opt => {
+            if (opt.getAttribute('onclick') && opt.getAttribute('onclick').includes('true')) {
+                opt.classList.add('correct');
+            }
+        });
+        if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.background = '#fef5f4';
+            feedback.style.borderLeft = '3px solid #d4534a';
+            feedback.innerHTML = '<strong>ไม่ถูกต้อง</strong> &mdash; ' + feedback.innerHTML;
+        }
+    }
+}
+
+// ============================================================
+// KATEX RENDERING
+// ============================================================
+function renderKatex() {
+    document.querySelectorAll('.katex').forEach(el => {
+        if (el.dataset.rendered) return;
+        const tex = el.textContent;
+        const isDisplay = el.closest('.math-block') !== null;
+        try {
+            katex.render(tex, el, { throwOnError: false, displayMode: isDisplay });
+            el.dataset.rendered = 'true';
+        } catch (e) { /* fallback: leave text as-is */ }
+    });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+let initialized = false;
+function initAll() {
+    if (initialized) return;
+    initialized = true;
+    renderKatex();
+    drawEndogBias();
+    generate2SLSData();
+    draw2SLS('stage1');
+    drawWeakIV();
+    drawOverid('valid');
+}
+
+Reveal.on('ready', initAll);
+Reveal.on('slidechanged', () => {
+    requestAnimationFrame(() => {
+        renderKatex();
+        let slide = Reveal.getCurrentSlide();
+        if (slide.querySelector('#endogBiasCanvas')) drawEndogBias();
+        if (slide.querySelector('#tsls2Canvas')) draw2SLS('stage1');
+        if (slide.querySelector('#weakIVCanvas')) drawWeakIV();
+        if (slide.querySelector('#overidCanvas')) drawOverid('valid');
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: GLS Regression | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            color: var(--text);
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: none;
+            line-height: 1.6;
+            padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree (HTML/CSS) ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px;
+            font-size: 13px; color: rgba(0,0,0,0.35);
+            z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer {
+            position: fixed; bottom: 8px; left: 16px;
+            z-index: 100; pointer-events: none; opacity: 0.45;
+        }
+        .logo-footer img { height: 38px; width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer">
+    <img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University">
+</div>
+<div class="instructor-footer">
+    ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ==================== TITLE ==================== -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>GLS Regression</h1>
+    <div class="subtitle">Chapter 3 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Introduction &bull; Heteroskedasticity &amp; FGLS &bull; SUR &bull; Survey Data &bull; Summary</p>
+    </div>
+</section>
+
+<!-- ==================== SECTION 1: INTRODUCTION TO GLS ==================== -->
+<section>
+<section class="section-divider">
+    <h2>1. Introduction to GLS</h2>
+    <p>เมื่อ OLS ไม่ใช่ตัวประมาณค่าที่ดีที่สุดอีกต่อไป</p>
+</section>
+
+<section>
+    <h2>ทบทวน: สมมติฐานของ OLS</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Gauss-Markov Assumptions</strong></p>
+                <p>OLS เป็น BLUE (Best Linear Unbiased Estimator) เมื่อ:</p>
+                <ul>
+                    <li><span class="katex">E[u|X] = 0</span> (exogeneity)</li>
+                    <li><span class="katex">Var[u|X] = \sigma^2 I_n</span> (spherical errors)</li>
+                </ul>
+                <p>สมมติฐานข้อสอง = <strong>homoskedasticity</strong> + <strong>noncorrelation</strong></p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ถ้าสมมติฐานข้อสองผิด?</strong></p>
+                <p>OLS ยังคง consistent แต่ไม่ efficient อีกต่อไป และ default SE จะ <strong>ผิดพลาด</strong></p>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box fragment">
+                <p><strong>กรณีที่ spherical errors ล้มเหลว:</strong></p>
+                <ul>
+                    <li><strong>Heteroskedasticity:</strong> <span class="katex">Var[u_i|x_i] = \sigma_i^2</span> แปรผันตาม x</li>
+                    <li><strong>Correlation:</strong> <span class="katex">Cov[u_i, u_j|X] \neq 0</span></li>
+                    <li><strong>ทั้งสอง:</strong> <span class="katex">Var[u|X] = \Omega \neq \sigma^2 I</span></li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ตัวอย่างในทางปฏิบัติ:</strong></p>
+                <ul>
+                    <li>ค่าใช้จ่ายทางการแพทย์ &mdash; ผู้มีรายได้สูงมี variance สูงกว่า</li>
+                    <li>ข้อมูล cross-equation &mdash; ค่าความผิดพลาดของสมการต่าง ๆ สัมพันธ์กัน</li>
+                    <li>ข้อมูลสำรวจ &mdash; clustering ทำให้ errors สัมพันธ์กัน</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>GLS: แนวคิดหลัก</h2>
+    <div class="concept-box">
+        <p><strong>Generalized Least Squares (GLS)</strong> แก้ปัญหาโดยการ transform model ให้กลับมามี spherical errors</p>
+    </div>
+    <div class="two-col">
+        <div>
+            <p><strong>โมเดลเดิม:</strong></p>
+            <div class="math-block"><span class="katex">y = X\beta + u, \quad Var[u|X] = \Omega</span></div>
+            <p class="fragment"><strong>Transform ด้วย</strong> <span class="katex">\Omega^{-1/2}</span>:</p>
+            <div class="math-block fragment"><span class="katex">\Omega^{-1/2}y = \Omega^{-1/2}X\beta + \Omega^{-1/2}u</span></div>
+            <p class="fragment">โมเดลใหม่: <span class="katex">y^* = X^*\beta + u^*</span></p>
+            <div class="math-block fragment"><span class="katex">Var[u^*|X] = \Omega^{-1/2}\Omega\Omega^{-1/2} = I</span></div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>GLS estimator:</strong></p>
+                <div class="math-block"><span class="katex">\hat{\beta}_{GLS} = (X'\Omega^{-1}X)^{-1}X'\Omega^{-1}y</span></div>
+                <p>คือ OLS ที่ทำบน transformed model</p>
+                <p>ถ้า <span class="katex">\Omega</span> ถูกกำหนดถูกต้อง GLS จะ efficient กว่า OLS</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ในทางปฏิบัติ:</strong> เราไม่รู้ <span class="katex">\Omega</span> จริง ต้องประมาณค่า</p>
+                <p>จึงใช้ <strong>FGLS (Feasible GLS)</strong> &mdash; ใช้ <span class="katex">\hat{\Omega}</span> แทน <span class="katex">\Omega</span></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>บทนี้ครอบคลุม 3 หัวข้อหลัก</h2>
+    <div class="three-col">
+        <div class="concept-box" style="text-align:center;">
+            <p><strong>Heteroskedasticity</strong></p>
+            <p style="font-size:0.9em;">ความแปรปรวนไม่คงที่</p>
+            <p><span class="katex">Var[u_i|x_i] = \sigma^2(x_i)</span></p>
+            <p>แก้ด้วย WLS/FGLS</p>
+        </div>
+        <div class="concept-box" style="text-align:center;">
+            <p><strong>SUR</strong></p>
+            <p style="font-size:0.9em;">สมการร่วม (Seemingly Unrelated Regressions)</p>
+            <p><span class="katex">Cov[u_{1i}, u_{2i}] \neq 0</span></p>
+            <p>แก้ด้วย sureg</p>
+        </div>
+        <div class="concept-box" style="text-align:center;">
+            <p><strong>Survey Data</strong></p>
+            <p style="font-size:0.9em;">ข้อมูลสำรวจ</p>
+            <p>clustering + stratification + weighting</p>
+            <p>แก้ด้วย svyset + svy:</p>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="text-align:center; margin-top:10px;">
+        <p><strong>แนวคิดร่วม:</strong> ทั้ง 3 กรณีมีปัญหาคือ <span class="katex">Var[u|X] \neq \sigma^2 I</span> &mdash; OLS ไม่ efficient และ default SE ผิดพลาด</p>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 2: HETEROSKEDASTICITY & FGLS ==================== -->
+<section>
+<section class="section-divider">
+    <h2>2. Heteroskedasticity &amp; FGLS</h2>
+    <p>เมื่อ variance ขึ้นกับตัวแปรอิสระ</p>
+</section>
+
+<section>
+    <h2>Heteroskedasticity คืออะไร?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Homoskedasticity:</strong> <span class="katex">Var[u_i|x_i] = \sigma^2</span> (คงที่)</p>
+                <p><strong>Heteroskedasticity:</strong> <span class="katex">Var[u_i|x_i] = \sigma^2(x_i)</span> (แปรผัน)</p>
+            </div>
+            <p class="fragment"><strong>Skedasticity function:</strong> <span class="katex">\sigma^2(x_i)</span> คือฟังก์ชันที่อธิบายว่า variance เปลี่ยนตาม x อย่างไร</p>
+            <div class="key-insight fragment">
+                <p><strong>ผลกระทบของ heteroskedasticity:</strong></p>
+                <ul>
+                    <li>OLS ยังคง <strong>unbiased</strong> และ <strong>consistent</strong></li>
+                    <li>แต่ไม่ <strong>efficient</strong> (ไม่ใช่ BLUE)</li>
+                    <li>Default SE <strong>ผิด</strong> &rarr; t-test, F-test ผิดพลาด</li>
+                </ul>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>Heteroskedasticity Visualizer</h4>
+            <canvas id="heteroCanvas" width="420" height="220"></canvas>
+            <div class="slider-group">
+                <label>Skedasticity (a):</label>
+                <input type="range" id="heteroSlider" min="0" max="1" step="0.05" value="0.3">
+                <span class="val" id="heteroVal">0.30</span>
+            </div>
+            <div style="text-align:center; margin-top:4px;">
+                <button class="interactive-btn active" onclick="drawHetero('scatter')">Scatter</button>
+                <button class="interactive-btn" onclick="drawHetero('residual')">|Residuals|</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ตัวอย่าง: Generated Data</h2>
+    <div class="concept-box">
+        <p><strong>DGP (Data Generating Process):</strong></p>
+        <div class="math-block"><span class="katex">y = 1 + x_2 + x_3 + u, \quad u = \sqrt{\exp(-1 + 0.2x_2)} \cdot e</span></div>
+        <p>โดย <span class="katex">x_2, x_3, e \sim N(0, 5^2)</span> &mdash; ดังนั้น <span class="katex">Var[u|x] = \exp(-1 + 0.2x_2)</span> (heteroskedastic ใน <span class="katex">x_2</span>)</p>
+    </div>
+    <div class="stata-code fragment">
+        <span class="cmt">* สร้างข้อมูล heteroskedastic</span><br>
+        <span class="cmd">set seed</span> <span class="num">10101</span><br>
+        <span class="cmd">quietly set obs</span> <span class="num">500</span><br>
+        <span class="cmd">generate</span> double x2 = <span class="num">5</span>*rnormal(<span class="num">0</span>)<br>
+        <span class="cmd">generate</span> double x3 = <span class="num">5</span>*rnormal(<span class="num">0</span>)<br>
+        <span class="cmd">generate</span> double e  = <span class="num">5</span>*rnormal(<span class="num">0</span>)<br>
+        <span class="cmd">generate</span> double u  = sqrt(exp(<span class="num">-1</span>+<span class="num">0.2</span>*x2))*e<br>
+        <span class="cmd">generate</span> double y  = <span class="num">1</span> + <span class="num">1</span>*x2 + <span class="num">1</span>*x3 + u
+    </div>
+</section>
+
+<section>
+    <h2>OLS: Default SE vs Robust SE</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* OLS with default SE</span><br>
+                <span class="cmd">regress</span> y x2 x3<br><br>
+                <span class="cmt">* OLS with robust SE</span><br>
+                <span class="cmd">regress</span> y x2 x3, <span class="opt">vce(robust)</span>
+            </div>
+            <table class="compare-table fragment">
+                <tr><th>Variable</th><th>Coef</th><th>Default SE</th><th>Robust SE</th></tr>
+                <tr><td>x2</td><td>1.007</td><td>0.058</td><td class="highlight">0.110</td></tr>
+                <tr><td>x3</td><td>1.003</td><td>0.058</td><td>0.057</td></tr>
+                <tr><td>_cons</td><td>0.976</td><td>0.130</td><td>0.127</td></tr>
+            </table>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>สังเกต:</strong> Robust SE ของ x2 = 0.110 สูงกว่า default SE = 0.058 เกือบ 2 เท่า!</p>
+                <p>เพราะ heteroskedasticity ขึ้นกับ x2 ทำให้ default SE <strong>ประเมินต่ำไป</strong></p>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>Robust SE ของ x3</strong> ใกล้เคียง default SE</p>
+                <p>เพราะ variance ไม่ขึ้นกับ x3 &mdash; heteroskedasticity มีผลน้อย</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>บทเรียน:</strong> ถ้าใช้ default SE กับ x2 อาจ reject H0 ทั้งที่ไม่ควร (Type I error สูงขึ้น)</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>การวินิจฉัย Heteroskedasticity</h2>
+    <div class="two-col">
+        <div>
+            <h3>1. กราฟ: Scatter |residuals| vs x</h3>
+            <div class="stata-code">
+                <span class="cmd">quietly regress</span> y x2 x3<br>
+                <span class="cmd">predict</span> double uhat, <span class="opt">resid</span><br>
+                <span class="cmd">generate</span> double absu = abs(uhat)<br>
+                <span class="cmd">twoway</span> (scatter absu x2) (lowess absu x2)
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ถ้า lowess line มีแนวโน้มขึ้น/ลง</strong> &rarr; สัญญาณของ heteroskedasticity</p>
+                <p>|residuals| กว้างขึ้นเมื่อ x2 สูง = variance เพิ่มตาม x2</p>
+            </div>
+        </div>
+        <div>
+            <h3>2. Breusch-Pagan Test</h3>
+            <div class="stata-code">
+                <span class="cmt">* ทดสอบ heteroskedasticity แยกตามตัวแปร</span><br>
+                <span class="cmd">estat hettest</span> x2 x3, <span class="opt">mtest</span><br><br>
+                <span class="cmt">* ผลลัพธ์:</span><br>
+                <span class="cmt">*   x2: chi2 = 85.81, p = 0.000 (reject)</span><br>
+                <span class="cmt">*   x3: chi2 = 0.38,  p = 0.538 (not reject)</span>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ยืนยัน:</strong> heteroskedasticity มาจาก x2 เท่านั้น ไม่ใช่ x3</p>
+                <p>สอดคล้องกับ DGP: <span class="katex">Var[u|x] = \exp(-1 + 0.2x_2)</span></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>FGLS: ขั้นตอนที่ 1 &mdash; ประมาณ Skedasticity Function</h2>
+    <div class="concept-box">
+        <p><strong>Feasible GLS (FGLS)</strong> มี 2 ขั้นตอน: (1) ประมาณค่า <span class="katex">\sigma^2(x_i)</span> แล้ว (2) ใช้ WLS ด้วยน้ำหนัก <span class="katex">w_i = 1/\hat{\sigma}^2(x_i)</span></p>
+    </div>
+    <div class="two-col">
+        <div>
+            <h3>Step 1: ประมาณ skedasticity function</h3>
+            <div class="stata-code">
+                <span class="cmt">* OLS เพื่อได้ residuals</span><br>
+                <span class="cmd">quietly regress</span> y x2 x3<br>
+                <span class="cmd">predict</span> double uhat, <span class="opt">resid</span><br>
+                <span class="cmd">generate</span> double uhatsq = uhat^<span class="num">2</span><br><br>
+                <span class="cmt">* NLS: uhatsq = exp(a0 + a1*x2)</span><br>
+                <span class="cmd">generate</span> double one = <span class="num">1</span><br>
+                <span class="cmd">nl</span> (uhatsq = exp({xb: x2 one})), <span class="opt">nolog</span><br>
+                <span class="cmd">predict</span> double varu, <span class="opt">yhat</span>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>ทำไมใช้ exp()?</strong></p>
+                <p>เพราะ variance ต้องเป็น <strong>บวกเสมอ</strong></p>
+                <p>Exponential function รับประกันว่า <span class="katex">\hat{\sigma}^2(x) = \exp(\hat{\alpha}_0 + \hat{\alpha}_1 x_2) > 0</span></p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ผลลัพธ์จาก NLS:</strong></p>
+                <ul>
+                    <li><span class="katex">\hat{\alpha}_0 \approx 2.22</span> (ค่าจริง = -1 + ln(25) = 2.22)</li>
+                    <li><span class="katex">\hat{\alpha}_1 \approx 0.20</span> (ค่าจริง = 0.20)</li>
+                </ul>
+                <p>NLS สามารถกู้คืนค่าจริงได้!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>FGLS: ขั้นตอนที่ 2 &mdash; WLS Estimation</h2>
+    <div class="two-col">
+        <div>
+            <h3>Step 2: WLS ด้วย estimated weights</h3>
+            <div class="stata-code">
+                <span class="cmt">* FGLS (WLS without robust SE)</span><br>
+                <span class="cmd">regress</span> y x2 x3 [<span class="opt">aweight</span>=<span class="num">1</span>/varu]<br><br>
+                <span class="cmt">* WLS = FGLS + robust SE</span><br>
+                <span class="cmd">regress</span> y x2 x3 [<span class="opt">aweight</span>=<span class="num">1</span>/varu], <span class="opt">vce(robust)</span>
+            </div>
+            <table class="compare-table fragment">
+                <tr><th>Method</th><th>SE(x2)</th><th>SE(x3)</th><th>Note</th></tr>
+                <tr><td>OLS default</td><td>0.058</td><td>0.058</td><td>ผิด</td></tr>
+                <tr><td>OLS robust</td><td>0.110</td><td>0.057</td><td>ถูกแต่ไม่ efficient</td></tr>
+                <tr><td>FGLS</td><td>0.062</td><td>0.042</td><td>efficient ถ้า model ถูก</td></tr>
+                <tr class="highlight"><td>WLS (FGLS+robust)</td><td>0.068</td><td>0.042</td><td>แนะนำ</td></tr>
+            </table>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>WLS = ทางเลือกที่ดีที่สุด</strong></p>
+                <ul>
+                    <li>ใช้ FGLS เพื่อ <strong>efficiency</strong> (SE เล็กลง)</li>
+                    <li>ใช้ robust SE เพื่อ <strong>ความถูกต้อง</strong> (ถ้า skedasticity function ผิด ก็ยังไม่เป็นไร)</li>
+                </ul>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>Working variance matrix:</strong></p>
+                <p>WLS ใช้ <span class="katex">\hat{\Omega}</span> เป็น "working model" เท่านั้น</p>
+                <p>ถ้า model ผิด ค่าสัมประสิทธิ์ยังคง consistent</p>
+                <p>Robust SE ปรับให้ inference ถูกต้อง</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>FGLS: ขั้นตอนแบบ Interactive</h2>
+    <div class="interactive-container">
+        <h4>FGLS Step-by-Step</h4>
+        <div style="text-align:center; margin-bottom:6px;">
+            <button class="interactive-btn active" id="fglsBtn1" onclick="showFGLSStep(1)">Step 1: OLS Residuals</button>
+            <button class="interactive-btn" id="fglsBtn2" onclick="showFGLSStep(2)">Step 2: Estimate Variance</button>
+            <button class="interactive-btn" id="fglsBtn3" onclick="showFGLSStep(3)">Step 3: WLS</button>
+        </div>
+        <div class="two-col">
+            <canvas id="fglsCanvas" width="460" height="240"></canvas>
+            <div id="fglsInfo" style="font-size:0.5em;">
+                <div class="concept-box" id="fglsDesc">
+                    <p><strong>Step 1:</strong> ทำ OLS ก่อนเพื่อได้ residuals <span class="katex">\hat{u}_i</span></p>
+                    <p>จุดสีน้ำเงิน = ข้อมูล, เส้นแดง = OLS fit</p>
+                    <p>สังเกตว่า residuals กว้างขึ้นทางขวา</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>สรุป: ขั้นตอนจัดการ Heteroskedasticity</h2>
+    <div class="decision-tree">
+        <div class="dt-node dt-diamond">ทำ OLS แล้วตรวจ Heteroskedasticity</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-diamond">estat hettest &rarr; Reject H0?</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-label">ใช่ (มี heteroskedasticity)</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-yes">ประมาณ skedasticity function<br>nl (...=exp(z'a))</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-action">FGLS: regress [aweight=1/varu]</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-action2">WLS = FGLS + vce(robust)</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-label">ไม่ (homoskedastic)</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-no">OLS ปกติ (ใช้ robust SE ก็ดี)</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 1 -->
+<section>
+    <h2>Quiz: Heteroskedasticity &amp; FGLS</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> เมื่อมี heteroskedasticity, OLS estimator มีคุณสมบัติอะไร?</p>
+    </div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q1')">ก. Biased และ inconsistent</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q1')">ข. Unbiased แต่ SE ถูกต้อง</div>
+    <div class="quiz-option" onclick="checkQuiz(this, true, 'q1')">ค. Consistent แต่ไม่ efficient, default SE ผิด</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q1')">ง. Efficient เสมอไม่ว่าจะมี heteroskedasticity หรือไม่</div>
+    <div class="quiz-feedback" id="q1-feedback"></div>
+</section>
+</section>
+
+<!-- ==================== SECTION 3: SUR ==================== -->
+<section>
+<section class="section-divider">
+    <h2>3. Seemingly Unrelated Regressions</h2>
+    <p>เมื่อความผิดพลาดของหลายสมการสัมพันธ์กัน</p>
+</section>
+
+<section>
+    <h2>SUR: แนวคิดพื้นฐาน</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Seemingly Unrelated Regressions (SUR)</strong></p>
+                <p>ระบบ m สมการสำหรับ individual i:</p>
+                <div class="math-block"><span class="katex">y_{mi} = x_{mi}'\beta_m + u_{mi}</span></div>
+                <p>แต่ละสมการอาจมี regressors ต่างกัน</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>จุดสำคัญ:</strong> errors ข้ามสมการสัมพันธ์กัน</p>
+                <div class="math-block"><span class="katex">E[u_{mi} \cdot u_{ni}] = \sigma_{mn} \neq 0 \text{ for } m \neq n</span></div>
+                <p>"Seemingly unrelated" เพราะดูเหมือนไม่เกี่ยวกัน แต่จริง ๆ มี correlation ผ่าน errors</p>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box fragment">
+                <p><strong>ทำไม SUR ดีกว่า OLS แยกสมการ?</strong></p>
+                <ul>
+                    <li>ถ้า <span class="katex">\sigma_{mn} \neq 0</span> &rarr; SUR (GLS) efficient กว่า OLS</li>
+                    <li>SUR ใช้ข้อมูลจาก <strong>ความสัมพันธ์ข้ามสมการ</strong></li>
+                    <li>ยิ่ง correlation สูง &rarr; SUR ยิ่งดีกว่า OLS</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>กรณีพิเศษ:</strong> ถ้า regressors เหมือนกันทุกสมการ</p>
+                <p>SUR = OLS แยกสมการ (ไม่มี efficiency gain)</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>SUR: Error Correlation Demo</h2>
+    <div class="interactive-container">
+        <h4>SUR vs OLS: ผลของ Cross-equation Correlation</h4>
+        <div class="two-col">
+            <div>
+                <canvas id="surCanvas" width="420" height="220"></canvas>
+                <div class="slider-group">
+                    <label>Correlation (r):</label>
+                    <input type="range" id="surCorrSlider" min="0" max="0.95" step="0.05" value="0.5">
+                    <span class="val" id="surCorrVal">0.50</span>
+                </div>
+            </div>
+            <div id="surResults" style="font-size:0.48em;">
+                <div class="concept-box">
+                    <p><strong>Efficiency Ratio (SE_OLS / SE_SUR):</strong></p>
+                    <p id="surRatioText">เมื่อ correlation สูง SUR จะ efficient กว่า OLS มาก</p>
+                </div>
+                <canvas id="surBarCanvas" width="300" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ตัวอย่าง: ค่าใช้จ่ายยา vs ค่าใช้จ่ายอื่น</h2>
+    <div class="concept-box">
+        <p><strong>ข้อมูล:</strong> Medical Expenditure Panel Survey</p>
+        <p>สมการที่ 1: <span class="katex">\text{ldrugexp} = f(\text{age, age2, actlim, totchr, medicaid, private})</span></p>
+        <p>สมการที่ 2: <span class="katex">\text{ltotothr} = f(\text{age, age2, educyr, actlim, totchr, private})</span></p>
+    </div>
+    <div class="stata-code fragment">
+        <span class="cmd">use</span> surdata.dta<br>
+        <span class="cmd">sureg</span> (ldrugexp age age2 actlim totchr medicaid private) ///<br>
+        &nbsp;&nbsp;(ltotothr age age2 educyr actlim totchr private), <span class="opt">corr</span>
+    </div>
+    <div class="two-col fragment">
+        <div class="example-box">
+            <p><strong>Correlation ของ errors:</strong></p>
+            <p><span class="katex">\hat{\rho}_{12} \approx 0.35</span> &mdash; errors ของ 2 สมการสัมพันธ์กันปานกลาง</p>
+            <p>จึงมี efficiency gain จาก SUR</p>
+        </div>
+        <div class="key-insight">
+            <p><strong>Regressors ต่างกันบางส่วน:</strong></p>
+            <ul>
+                <li>สมการ 1 มี medicaid (สมการ 2 ไม่มี)</li>
+                <li>สมการ 2 มี educyr (สมการ 1 ไม่มี)</li>
+            </ul>
+            <p>ทำให้ SUR ให้ผลต่างจาก OLS</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>SUR: Bootstrap สำหรับ Robust SE</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* Bootstrap robust SE สำหรับ SUR</span><br>
+                <span class="cmd">bootstrap</span>, <span class="opt">reps(400) seed(10101)</span> nodots: <span class="cmd">sureg</span> ///<br>
+                &nbsp;&nbsp;(ldrugexp age age2 actlim totchr medicaid private) ///<br>
+                &nbsp;&nbsp;(ltotothr age age2 educyr actlim totchr private)
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>ทำไมใช้ Bootstrap?</strong></p>
+                <p>sureg ใน Stata ไม่มี option robust โดยตรง</p>
+                <p>Bootstrap ให้ SE ที่ robust ต่อ heteroskedasticity</p>
+                <p>เทียบเท่ากับ WLS ในกรณี single equation</p>
+            </div>
+        </div>
+        <div>
+            <h3>Cross-equation Tests</h3>
+            <div class="stata-code fragment">
+                <span class="cmt">* ทดสอบ age, age2 ในทั้ง 2 สมการ</span><br>
+                <span class="cmd">test</span> age age2<br><br>
+                <span class="cmt">* ทดสอบ age, age2 เฉพาะสมการ 1</span><br>
+                <span class="cmd">test</span> [ldrugexp]age [ldrugexp]age2<br><br>
+                <span class="cmt">* ทดสอบข้ามสมการ</span><br>
+                <span class="cmd">test</span> [ldrugexp]private = [ltotothr]private
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Cross-equation test</strong> เป็นจุดแข็งของ SUR</p>
+                <p>สามารถทดสอบว่า effect ของ private insurance <strong>เท่ากันหรือไม่</strong>ในทั้ง 2 สมการ</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>SUR: Constraints ข้ามสมการ</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* กำหนด constraint ข้ามสมการ</span><br>
+                <span class="cmd">constraint</span> <span class="num">1</span> [ldrugexp]private = [ltotothr]private<br><br>
+                <span class="cmt">* ประมาณค่าภายใต้ constraint</span><br>
+                <span class="cmd">sureg</span> (ldrugexp age age2 actlim totchr medicaid private) ///<br>
+                &nbsp;&nbsp;(ltotothr age age2 educyr actlim totchr private), <span class="opt">constraints(1)</span>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <p><strong>ประโยชน์ของ Constrained SUR:</strong></p>
+                <ul>
+                    <li>ถ้า constraint ถูก &rarr; efficient กว่า unconstrained</li>
+                    <li>บังคับให้ผลของ private insurance เท่ากันทั้ง 2 สมการ</li>
+                    <li>ใช้ข้อมูลร่วมกันอย่างมีประสิทธิภาพ</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>หลักการ:</strong> SUR เป็น GLS ในระดับ system of equations</p>
+                <p><span class="katex">\Omega</span> คือ block-diagonal matrix ของ <span class="katex">\Sigma \otimes I_n</span></p>
+                <p>โดย <span class="katex">\Sigma</span> เป็น <span class="katex">m \times m</span> cross-equation covariance matrix</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 2 -->
+<section>
+    <h2>Quiz: SUR</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> ในกรณีใดที่ SUR ให้ผลเท่ากับ OLS แยกสมการ?</p>
+    </div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q2')">ก. เมื่อ errors ข้ามสมการมี correlation สูง</div>
+    <div class="quiz-option" onclick="checkQuiz(this, true, 'q2')">ข. เมื่อ regressors เหมือนกันทุกสมการ</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q2')">ค. เมื่อ sample size น้อย</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q2')">ง. เมื่อมี heteroskedasticity ในแต่ละสมการ</div>
+    <div class="quiz-feedback" id="q2-feedback"></div>
+</section>
+</section>
+
+<!-- ==================== SECTION 4: SURVEY DATA ==================== -->
+<section>
+<section class="section-divider">
+    <h2>4. Survey Data</h2>
+    <p>Weighting, Clustering, และ Stratification</p>
+</section>
+
+<section>
+    <h2>ทำไมข้อมูลสำรวจต้องวิเคราะห์แบบพิเศษ?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Complex Survey Design</strong> มี 3 องค์ประกอบ:</p>
+                <ul>
+                    <li><strong>Weighting (pweight):</strong> แต่ละคนมีโอกาสถูกเลือกไม่เท่ากัน</li>
+                    <li><strong>Clustering (PSU):</strong> สุ่มเป็นกลุ่ม ไม่ใช่สุ่มรายคน</li>
+                    <li><strong>Stratification:</strong> แบ่งประชากรเป็นชั้น สุ่มภายในชั้น</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ถ้าไม่ปรับ:</strong></p>
+                <ul>
+                    <li>Point estimates อาจ <strong>biased</strong> (ไม่มี weight)</li>
+                    <li>SE อาจ <strong>ต่ำเกินไป</strong> (ไม่ปรับ clustering)</li>
+                    <li>SE อาจ <strong>สูงเกินไป</strong> (ไม่ปรับ stratification)</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <p><strong>ตัวอย่าง: NHANES II</strong></p>
+                <p>National Health and Nutrition Examination Survey</p>
+                <ul>
+                    <li>สุ่มแบบ multi-stage cluster sampling</li>
+                    <li><strong>PSU</strong> = primary sampling unit (เช่น county)</li>
+                    <li><strong>Strata</strong> = geographic regions</li>
+                    <li><strong>pweight</strong> = probability weight (inverse of selection probability)</li>
+                </ul>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmd">use</span> nhanes2.dta<br>
+                <span class="cmd">svyset</span> psu [<span class="opt">pweight</span>=finalwgt], <span class="opt">strata</span>(strata)
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Survey Design Effects: Interactive</h2>
+    <div class="interactive-container">
+        <h4>Design Effect = Var(survey) / Var(SRS)</h4>
+        <div class="two-col">
+            <div>
+                <canvas id="deffCanvas" width="420" height="220"></canvas>
+                <div class="slider-group">
+                    <label>ICC (clustering):</label>
+                    <input type="range" id="iccSlider" min="0" max="0.5" step="0.02" value="0.1">
+                    <span class="val" id="iccVal">0.10</span>
+                </div>
+                <div class="slider-group">
+                    <label>Cluster size (m):</label>
+                    <input type="range" id="clusterSlider" min="2" max="50" step="1" value="20">
+                    <span class="val" id="clusterVal">20</span>
+                </div>
+            </div>
+            <div>
+                <div class="concept-box">
+                    <p><strong>Design Effect (DEFF):</strong></p>
+                    <div class="math-block"><span class="katex">DEFF \approx 1 + (m-1)\rho</span></div>
+                    <p>โดย <span class="katex">m</span> = cluster size, <span class="katex">\rho</span> = intraclass correlation</p>
+                </div>
+                <div id="deffResult" style="font-size:0.5em;">
+                    <div class="key-insight">
+                        <p><strong>DEFF = <span id="deffValue">2.90</span></strong></p>
+                        <p>SE(survey) = <span id="deffSE">1.70</span> x SE(SRS)</p>
+                        <p>Effective sample size = <span id="deffN">34%</span> ของ nominal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Clustering: ทำไม SE ถึงเพิ่มขึ้น</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Clustering</strong> = การสุ่มเป็นกลุ่ม</p>
+                <p>คนในกลุ่มเดียวกัน (PSU) มีลักษณะคล้ายกัน</p>
+                <p>&rarr; observations ไม่ independent</p>
+                <p>&rarr; "effective sample size" น้อยกว่า nominal</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ผลลัพธ์:</strong></p>
+                <p>SE จาก survey &gt; SE จาก SRS</p>
+                <p>ถ้า ICC = 0.1 และ cluster size = 20</p>
+                <p>DEFF = 1 + 19(0.1) = 2.9</p>
+                <p>SE เพิ่มขึ้น <span class="katex">\sqrt{2.9} \approx 1.7</span> เท่า</p>
+            </div>
+        </div>
+        <div>
+            <h3>Stratification: SE ลดลง</h3>
+            <div class="concept-box fragment">
+                <p><strong>Stratification</strong> = แบ่งประชากรเป็นชั้นก่อนสุ่ม</p>
+                <p>ทำให้ sample "representative" มากขึ้น</p>
+                <p>&rarr; ลด sampling variability</p>
+                <p>&rarr; SE ลดลง</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ผลสุทธิ:</strong></p>
+                <p>Clustering เพิ่ม SE &uarr;</p>
+                <p>Stratification ลด SE &darr;</p>
+                <p>ผลสุทธิขึ้นกับ design &mdash; ใน NHANES II clustering มีผลมากกว่า จึง SE สุทธิเพิ่มขึ้น</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Stata: การวิเคราะห์ Survey Data</h2>
+    <div class="two-col">
+        <div>
+            <h3>svyset &amp; svy: prefix</h3>
+            <div class="stata-code">
+                <span class="cmt">* ประกาศ survey design</span><br>
+                <span class="cmd">svyset</span> psu [<span class="opt">pweight</span>=finalwgt], <span class="opt">strata</span>(strata)<br><br>
+                <span class="cmt">* ค่าเฉลี่ยประชากร</span><br>
+                <span class="cmd">svy:</span> <span class="cmd">mean</span> hgb<br><br>
+                <span class="cmt">* Regression with survey design</span><br>
+                <span class="cmd">svy:</span> <span class="cmd">regress</span> hgb age female
+            </div>
+        </div>
+        <div>
+            <h3>เทียบกับไม่ใช้ survey design</h3>
+            <div class="stata-code">
+                <span class="cmt">* ไม่ใช้ weight, ไม่ปรับ clustering</span><br>
+                <span class="cmd">mean</span> hgb<br><br>
+                <span class="cmt">* ใช้ weight + cluster แต่ไม่ใช้ strata</span><br>
+                <span class="cmd">generate</span> uniqpsu = <span class="num">2</span>*strata + psu<br>
+                <span class="cmd">regress</span> hgb age female [<span class="opt">pweight</span>=finalwgt], <span class="opt">vce(cluster uniqpsu)</span>
+            </div>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top:8px;">
+        <p><strong>เปรียบเทียบ SE:</strong></p>
+        <table class="compare-table">
+            <tr><th>Method</th><th>SE(age)</th><th>SE(female)</th><th>Note</th></tr>
+            <tr><td>svy: regress</td><td>0.0042</td><td>0.155</td><td>ถูกต้อง</td></tr>
+            <tr><td>pweight + cluster</td><td>0.0042</td><td>0.155</td><td>ใกล้เคียง</td></tr>
+            <tr><td>regress (ไม่ปรับ)</td><td>0.0020</td><td>0.075</td><td class="highlight">ต่ำเกินไป!</td></tr>
+        </table>
+    </div>
+</section>
+
+<section>
+    <h2>ทำไม Default SE ผิด: ตัวอย่าง NHANES II</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>svy: mean hgb</strong></p>
+                <table class="compare-table">
+                    <tr><th>Method</th><th>Mean</th><th>SE</th></tr>
+                    <tr><td>svy: mean</td><td>14.02</td><td>0.038</td></tr>
+                    <tr><td>mean (no weight)</td><td>13.95</td><td>0.024</td></tr>
+                </table>
+                <p class="fragment">ค่าเฉลี่ยต่างกัน (เพราะ weight) และ SE ต่างกัน (เพราะ clustering)</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>สรุป:</strong></p>
+                <ul>
+                    <li>ไม่ใช้ weight &rarr; point estimate ผิด</li>
+                    <li>ไม่ปรับ clustering &rarr; SE ต่ำเกินไป &rarr; CI แคบเกินไป &rarr; reject H0 บ่อยเกินไป</li>
+                    <li>ไม่ปรับ stratification &rarr; SE สูงเกินไปเล็กน้อย</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>แนวปฏิบัติ:</strong></p>
+                <p>ใช้ <code style="background:#eee;padding:1px 4px;border-radius:3px;font-size:0.95em;">svyset</code> ก่อนวิเคราะห์ข้อมูลสำรวจ <strong>ทุกครั้ง</strong></p>
+                <p>ใช้ <code style="background:#eee;padding:1px 4px;border-radius:3px;font-size:0.95em;">svy:</code> prefix สำหรับทุกคำสั่ง</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 3 -->
+<section>
+    <h2>Quiz: Survey Data</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> Clustering ในข้อมูลสำรวจมีผลอย่างไรต่อ SE?</p>
+    </div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q3')">ก. ทำให้ SE ลดลง เพราะมีข้อมูลจากหลายกลุ่ม</div>
+    <div class="quiz-option" onclick="checkQuiz(this, true, 'q3')">ข. ทำให้ SE เพิ่มขึ้น เพราะ observations ในกลุ่มเดียวกันไม่ independent</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q3')">ค. ไม่มีผลต่อ SE แต่มีผลต่อ point estimate</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q3')">ง. ทำให้ SE เพิ่มขึ้นก็ต่อเมื่อมี heteroskedasticity</div>
+    <div class="quiz-feedback" id="q3-feedback"></div>
+</section>
+
+<!-- Quiz 4 -->
+<section>
+    <h2>Quiz: GLS ภาพรวม</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> ข้อใดเป็นจริงเกี่ยวกับ WLS (Weighted Least Squares)?</p>
+    </div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q4')">ก. WLS ต้องใช้ skedasticity function ที่ถูกต้องจึงจะ consistent</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q4')">ข. WLS ให้ SE ที่ถูกต้องเสมอแม้ไม่ใช้ robust SE</div>
+    <div class="quiz-option" onclick="checkQuiz(this, true, 'q4')">ค. WLS = FGLS + robust SE ทำให้ได้ทั้ง efficiency gain และ inference ที่ถูกต้อง</div>
+    <div class="quiz-option" onclick="checkQuiz(this, false, 'q4')">ง. WLS ใช้ได้เฉพาะกับ heteroskedasticity ไม่ใช้กับ SUR</div>
+    <div class="quiz-feedback" id="q4-feedback"></div>
+</section>
+</section>
+
+<!-- ==================== SECTION 5: SUMMARY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>5. Summary</h2>
+    <p>สรุปเนื้อหาทั้งหมดของ Chapter 3</p>
+</section>
+
+<section>
+    <h2>สรุป: GLS Regression</h2>
+    <div class="three-col">
+        <div class="concept-box">
+            <p style="text-align:center;"><strong>Heteroskedasticity</strong></p>
+            <ul>
+                <li><span class="katex">Var[u_i|x_i] = \sigma^2(x_i)</span></li>
+                <li>วินิจฉัย: scatter, estat hettest</li>
+                <li>FGLS: (1) ประมาณ <span class="katex">\sigma^2(x)</span> (2) WLS</li>
+                <li>แนะนำ: WLS + robust SE</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <p style="text-align:center;"><strong>SUR</strong></p>
+            <ul>
+                <li>หลายสมการ, errors สัมพันธ์กัน</li>
+                <li>sureg ใน Stata</li>
+                <li>Bootstrap สำหรับ robust SE</li>
+                <li>Cross-equation tests &amp; constraints</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <p style="text-align:center;"><strong>Survey Data</strong></p>
+            <ul>
+                <li>svyset: PSU, strata, pweight</li>
+                <li>Clustering &rarr; SE เพิ่ม</li>
+                <li>Stratification &rarr; SE ลด</li>
+                <li>svy: prefix ทุกครั้ง</li>
+            </ul>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="text-align:center; margin-top:10px;">
+        <p><strong>แนวคิดรวม:</strong> เมื่อ <span class="katex">Var[u|X] \neq \sigma^2 I</span> &mdash; OLS ไม่ efficient, default SE ผิด &rarr; ใช้ GLS/FGLS + robust SE</p>
+    </div>
+</section>
+
+<section>
+    <h2>Stata Commands สรุป</h2>
+    <table class="compare-table">
+        <tr><th>หัวข้อ</th><th>คำสั่ง</th><th>หมายเหตุ</th></tr>
+        <tr><td>Heteroskedasticity Test</td><td><code>estat hettest x2 x3, mtest</code></td><td>หลัง regress</td></tr>
+        <tr><td>NLS สำหรับ skedasticity</td><td><code>nl (uhatsq = exp({xb: x2 one}))</code></td><td>ประมาณ variance function</td></tr>
+        <tr><td>FGLS</td><td><code>regress y x2 x3 [aw=1/varu]</code></td><td>Weighted Least Squares</td></tr>
+        <tr><td>WLS</td><td><code>regress y x2 [aw=1/varu], vce(robust)</code></td><td>FGLS + robust SE</td></tr>
+        <tr><td>SUR</td><td><code>sureg (eq1) (eq2), corr</code></td><td>Seemingly Unrelated Reg</td></tr>
+        <tr><td>SUR Bootstrap</td><td><code>bootstrap, reps(400): sureg ...</code></td><td>Robust SE สำหรับ SUR</td></tr>
+        <tr><td>Cross-eq Test</td><td><code>test [eq1]var = [eq2]var</code></td><td>ทดสอบข้ามสมการ</td></tr>
+        <tr><td>Survey Setup</td><td><code>svyset psu [pw=wgt], strata(str)</code></td><td>ประกาศ design</td></tr>
+        <tr><td>Survey Regression</td><td><code>svy: regress y x1 x2</code></td><td>ปรับ SE อัตโนมัติ</td></tr>
+    </table>
+</section>
+
+<section>
+    <h2>Flowchart: เลือกวิธีการที่เหมาะสม</h2>
+    <div class="decision-tree">
+        <div class="dt-node dt-diamond">ข้อมูลแบบไหน?</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-label">Cross-section<br>สมการเดียว</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-diamond">มี heteroskedasticity?</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-row">
+                    <div class="dt-branch">
+                        <div class="dt-label">ใช่</div>
+                        <div class="dt-arrow">&darr;</div>
+                        <div class="dt-node dt-action">WLS + robust SE</div>
+                    </div>
+                    <div class="dt-branch">
+                        <div class="dt-label">ไม่</div>
+                        <div class="dt-arrow">&darr;</div>
+                        <div class="dt-node dt-no">OLS + robust SE</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-label">หลายสมการ<br>errors สัมพันธ์</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-action2">SUR + bootstrap SE</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-label">Survey data<br>complex design</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-yes">svyset + svy:</div>
+            </div>
+        </div>
+    </div>
+</section>
+</section>
+
+</div><!-- .slides -->
+</div><!-- .reveal -->
+
+<!-- ============================================================ -->
+<!-- Scripts                                                       -->
+<!-- ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+<script>
+// ============================================================
+// Reveal.js init
+// ============================================================
+Reveal.initialize({
+    hash: true, slideNumber: true,
+    width: 1100, height: 700, margin: 0.04,
+    transition: 'fade', transitionSpeed: 'fast',
+    plugins: []
+});
+
+// ============================================================
+// KaTeX render
+// ============================================================
+function renderKaTeX() {
+    document.querySelectorAll('.katex').forEach(el => {
+        if (el.querySelector('.katex-mathml')) return;
+        try { katex.render(el.textContent, el, { throwOnError: false, displayMode: false }); } catch(e) {}
+    });
+    document.querySelectorAll('.math-block').forEach(el => {
+        if (el.querySelector('.katex-mathml')) return;
+        let span = el.querySelector('.katex');
+        if (!span) {
+            try { katex.render(el.textContent, el, { throwOnError: false, displayMode: true }); } catch(e) {}
+        }
+    });
+}
+
+// ============================================================
+// Quiz system
+// ============================================================
+function checkQuiz(el, correct, qid) {
+    let parent = el.parentElement;
+    let opts = parent.querySelectorAll('.quiz-option');
+    opts.forEach(o => { o.style.pointerEvents = 'none'; });
+    if (correct) {
+        el.classList.add('correct');
+        let fb = document.getElementById(qid + '-feedback');
+        fb.style.display = 'block';
+        fb.style.background = '#f0faf4';
+        fb.style.color = '#276749';
+        fb.textContent = 'ถูกต้อง!';
+    } else {
+        el.classList.add('wrong');
+        // highlight correct
+        opts.forEach(o => {
+            if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) {
+                o.classList.add('correct');
+            }
+        });
+        let fb = document.getElementById(qid + '-feedback');
+        fb.style.display = 'block';
+        fb.style.background = '#fef5f4';
+        fb.style.color = '#9b2c2c';
+        fb.textContent = 'ไม่ถูกต้อง ลองดูคำตอบที่ถูกเน้นไว้';
+    }
+}
+
+// ============================================================
+// Utility: seeded random
+// ============================================================
+let _seed = 42;
+function seededRandom() {
+    _seed = (_seed * 16807 + 0) % 2147483647;
+    return (_seed - 1) / 2147483646;
+}
+function gaussRandom() {
+    let u1 = seededRandom(), u2 = seededRandom();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+// ============================================================
+// Interactive 1: Heteroskedasticity Visualizer
+// ============================================================
+let heteroMode = 'scatter';
+let heteroData = null;
+
+function generateHeteroData(a) {
+    _seed = 101;
+    let data = [];
+    for (let i = 0; i < 150; i++) {
+        let x = gaussRandom() * 5;
+        let sigma = Math.sqrt(Math.exp(-1 + a * x));
+        let e = gaussRandom() * sigma;
+        let y = 1 + x + e;
+        data.push({ x, y, e, sigma });
+    }
+    return data;
+}
+
+function drawHetero(mode) {
+    if (mode) heteroMode = mode;
+    let a = parseFloat(document.getElementById('heteroSlider').value);
+    document.getElementById('heteroVal').textContent = a.toFixed(2);
+
+    // Update button states
+    let hetBtns = document.getElementById('heteroCanvas').closest('.interactive-container').querySelectorAll('.interactive-btn');
+    hetBtns.forEach(b => b.classList.remove('active'));
+    hetBtns.forEach(b => {
+        if (heteroMode === 'scatter' && b.textContent.includes('Scatter')) b.classList.add('active');
+        if (heteroMode === 'residual' && b.textContent.includes('Residual')) b.classList.add('active');
+    });
+
+    let canvas = document.getElementById('heteroCanvas');
+    if (!canvas) return;
+    let ctx = canvas.getContext('2d');
+    let W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    heteroData = generateHeteroData(a);
+    let data = heteroData;
+
+    // axes
+    let pad = { l: 45, r: 15, t: 15, b: 30 };
+    let pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H - pad.b); ctx.lineTo(W - pad.r, H - pad.b); ctx.stroke();
+
+    let xMin = -15, xMax = 15;
+    let toX = v => pad.l + (v - xMin) / (xMax - xMin) * pw;
+
+    if (heteroMode === 'scatter') {
+        let yMin = -30, yMax = 40;
+        let toY = v => H - pad.b - (v - yMin) / (yMax - yMin) * ph;
+
+        // data points
+        data.forEach(d => {
+            ctx.beginPath();
+            ctx.arc(toX(d.x), toY(d.y), 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(74,144,217,0.5)';
+            ctx.fill();
+        });
+
+        // OLS line
+        ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toX(xMin), toY(1 + xMin));
+        ctx.lineTo(toX(xMax), toY(1 + xMax));
+        ctx.stroke();
+
+        // variance envelope
+        ctx.strokeStyle = 'rgba(232,168,56,0.6)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.3) {
+            let s = 2 * Math.sqrt(Math.exp(-1 + a * x));
+            let py = 1 + x + s;
+            if (x === xMin) ctx.moveTo(toX(x), toY(py)); else ctx.lineTo(toX(x), toY(py));
+        }
+        ctx.stroke();
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.3) {
+            let s = 2 * Math.sqrt(Math.exp(-1 + a * x));
+            let py = 1 + x - s;
+            if (x === xMin) ctx.moveTo(toX(x), toY(py)); else ctx.lineTo(toX(x), toY(py));
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // labels
+        ctx.fillStyle = '#2d3748'; ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+        ctx.fillText('x', W - pad.r, H - pad.b + 18);
+        ctx.save(); ctx.translate(12, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('y', 0, 0); ctx.restore();
+        ctx.fillStyle = '#d4534a'; ctx.fillText('OLS', toX(10), toY(1 + 10) - 8);
+        ctx.fillStyle = '#e8a838'; ctx.fillText('+/- 2 SD', toX(10), toY(1 + 10 + 2 * Math.sqrt(Math.exp(-1 + a * 10))) - 5);
+
+    } else {
+        // residual plot
+        let absMax = 0;
+        data.forEach(d => { let a = Math.abs(d.e); if (a > absMax) absMax = a; });
+        absMax = Math.max(absMax, 5);
+        let toY = v => H - pad.b - (v / absMax) * ph;
+
+        data.forEach(d => {
+            ctx.beginPath();
+            ctx.arc(toX(d.x), toY(Math.abs(d.e)), 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(74,144,217,0.5)';
+            ctx.fill();
+        });
+
+        // lowess-like: moving average
+        ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2;
+        ctx.beginPath();
+        let first = true;
+        for (let bx = xMin + 1; bx <= xMax - 1; bx += 0.5) {
+            let sum = 0, cnt = 0;
+            data.forEach(d => {
+                if (Math.abs(d.x - bx) < 3) { sum += Math.abs(d.e); cnt++; }
+            });
+            if (cnt > 3) {
+                let v = sum / cnt;
+                if (first) { ctx.moveTo(toX(bx), toY(v)); first = false; } else ctx.lineTo(toX(bx), toY(v));
+            }
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = '#2d3748'; ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+        ctx.fillText('x', W - pad.r, H - pad.b + 18);
+        ctx.save(); ctx.translate(12, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('|residuals|', 0, 0); ctx.restore();
+    }
+}
+
+document.getElementById('heteroSlider').addEventListener('input', () => drawHetero());
+
+// ============================================================
+// Interactive 2: FGLS Step-by-Step
+// ============================================================
+let fglsStep = 1;
+
+function showFGLSStep(step) {
+    fglsStep = step;
+    ['fglsBtn1', 'fglsBtn2', 'fglsBtn3'].forEach((id, i) => {
+        document.getElementById(id).classList.toggle('active', i + 1 === step);
+    });
+    drawFGLS();
+    updateFGLSInfo();
+}
+
+function updateFGLSInfo() {
+    let desc = document.getElementById('fglsDesc');
+    if (fglsStep === 1) {
+        desc.innerHTML = '<p><strong>Step 1:</strong> ทำ OLS ก่อนเพื่อได้ residuals <span class="katex">\\hat{u}_i</span></p>' +
+            '<p>จุดสีน้ำเงิน = ข้อมูล, เส้นแดง = OLS fit</p>' +
+            '<p>สังเกตว่า residuals กว้างขึ้นทางขวา &rarr; heteroskedasticity</p>';
+    } else if (fglsStep === 2) {
+        desc.innerHTML = '<p><strong>Step 2:</strong> ใช้ <span class="katex">\\hat{u}^2_i</span> ประมาณ skedasticity function</p>' +
+            '<p>จุดเทา = <span class="katex">\\hat{u}^2_i</span>, เส้นส้ม = <span class="katex">\\exp(\\hat{\\alpha}_0 + \\hat{\\alpha}_1 x_2)</span></p>' +
+            '<p>NLS จะประมาณ variance function ที่ fit กับ squared residuals</p>';
+    } else {
+        desc.innerHTML = '<p><strong>Step 3:</strong> WLS ด้วยน้ำหนัก <span class="katex">w_i = 1/\\hat{\\sigma}^2(x_i)</span></p>' +
+            '<p>ข้อมูลถูกให้น้ำหนัก &mdash; จุดที่มี variance สูงได้น้ำหนักน้อย</p>' +
+            '<p>ขนาดจุด = น้ำหนัก (จุดใหญ่ = น้ำหนักมาก = variance ต่ำ)</p>';
+    }
+    renderKaTeX();
+}
+
+function drawFGLS() {
+    let canvas = document.getElementById('fglsCanvas');
+    if (!canvas) return;
+    let ctx = canvas.getContext('2d');
+    let W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    _seed = 202;
+    let data = [];
+    for (let i = 0; i < 120; i++) {
+        let x = gaussRandom() * 5;
+        let sigma = Math.sqrt(Math.exp(-1 + 0.2 * x));
+        let e = gaussRandom() * sigma;
+        let y = 1 + x + e;
+        data.push({ x, y, e, sigma, w: 1 / Math.exp(-1 + 0.2 * x) });
+    }
+
+    let pad = { l: 45, r: 15, t: 10, b: 30 };
+    let pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+    let xMin = -15, xMax = 15;
+    let toX = v => pad.l + (v - xMin) / (xMax - xMin) * pw;
+
+    // axes
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H - pad.b); ctx.lineTo(W - pad.r, H - pad.b); ctx.stroke();
+
+    if (fglsStep === 1) {
+        let yMin = -20, yMax = 30;
+        let toY = v => H - pad.b - (v - yMin) / (yMax - yMin) * ph;
+
+        data.forEach(d => {
+            ctx.beginPath(); ctx.arc(toX(d.x), toY(d.y), 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(74,144,217,0.5)'; ctx.fill();
+        });
+        // OLS line
+        ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(toX(xMin), toY(1 + xMin)); ctx.lineTo(toX(xMax), toY(1 + xMax)); ctx.stroke();
+
+        // residual lines for a few points
+        let shown = 0;
+        data.forEach((d, i) => {
+            if (i % 8 === 0 && shown < 15) {
+                ctx.strokeStyle = 'rgba(200,200,200,0.6)'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(toX(d.x), toY(d.y)); ctx.lineTo(toX(d.x), toY(1 + d.x)); ctx.stroke();
+                shown++;
+            }
+        });
+
+        ctx.fillStyle = '#2d3748'; ctx.font = '11px Sarabun';
+        ctx.fillText('x', W - pad.r - 5, H - pad.b + 16);
+        ctx.fillStyle = '#d4534a'; ctx.fillText('OLS', toX(8), toY(1 + 8) - 8);
+
+    } else if (fglsStep === 2) {
+        let sq = data.map(d => d.e * d.e);
+        let sqMax = Math.max(...sq) * 1.1;
+        let toY = v => H - pad.b - (v / sqMax) * ph;
+
+        data.forEach((d, i) => {
+            ctx.beginPath(); ctx.arc(toX(d.x), toY(sq[i]), 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(150,150,150,0.4)'; ctx.fill();
+        });
+
+        // fitted variance function
+        ctx.strokeStyle = '#e8a838'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.3) {
+            let v = Math.exp(-1 + 0.2 * x);
+            if (x === xMin) ctx.moveTo(toX(x), toY(v)); else ctx.lineTo(toX(x), toY(v));
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = '#2d3748'; ctx.font = '11px Sarabun';
+        ctx.fillText('x', W - pad.r - 5, H - pad.b + 16);
+        ctx.fillStyle = '#e8a838'; ctx.fillText('exp(a0+a1*x)', toX(6), toY(Math.exp(-1 + 0.2 * 6)) - 8);
+
+    } else {
+        let yMin = -20, yMax = 30;
+        let toY = v => H - pad.b - (v - yMin) / (yMax - yMin) * ph;
+        let wMax = Math.max(...data.map(d => d.w));
+
+        data.forEach(d => {
+            let r = 1.5 + (d.w / wMax) * 5;
+            ctx.beginPath(); ctx.arc(toX(d.x), toY(d.y), r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(61,153,112,0.45)'; ctx.fill();
+            ctx.strokeStyle = 'rgba(61,153,112,0.7)'; ctx.lineWidth = 0.5; ctx.stroke();
+        });
+
+        // WLS line (close to OLS in this case)
+        ctx.strokeStyle = '#3d9970'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(toX(xMin), toY(1 + xMin)); ctx.lineTo(toX(xMax), toY(1 + xMax)); ctx.stroke();
+
+        ctx.fillStyle = '#2d3748'; ctx.font = '11px Sarabun';
+        ctx.fillText('x', W - pad.r - 5, H - pad.b + 16);
+        ctx.fillStyle = '#3d9970'; ctx.fillText('WLS', toX(8), toY(1 + 8) - 8);
+    }
+}
+
+// ============================================================
+// Interactive 3: SUR Correlation Demo
+// ============================================================
+function drawSUR() {
+    let corr = parseFloat(document.getElementById('surCorrSlider').value);
+    document.getElementById('surCorrVal').textContent = corr.toFixed(2);
+
+    let canvas = document.getElementById('surCanvas');
+    if (!canvas) return;
+    let ctx = canvas.getContext('2d');
+    let W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Generate correlated errors
+    _seed = 303;
+    let n = 80;
+    let errors1 = [], errors2 = [];
+    for (let i = 0; i < n; i++) {
+        let z1 = gaussRandom(), z2 = gaussRandom();
+        let e1 = z1;
+        let e2 = corr * z1 + Math.sqrt(1 - corr * corr) * z2;
+        errors1.push(e1); errors2.push(e2);
+    }
+
+    let pad = { l: 45, r: 15, t: 15, b: 30 };
+    let pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+    let rng = 4;
+    let toX = v => pad.l + (v + rng) / (2 * rng) * pw;
+    let toY = v => H - pad.b - (v + rng) / (2 * rng) * ph;
+
+    // axes
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.l, H / 2); ctx.lineTo(W - pad.r, H / 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l + pw / 2, pad.t); ctx.lineTo(pad.l + pw / 2, H - pad.b); ctx.stroke();
+
+    // scatter
+    for (let i = 0; i < n; i++) {
+        ctx.beginPath(); ctx.arc(toX(errors1[i]), toY(errors2[i]), 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(74,144,217,0.6)'; ctx.fill();
+    }
+
+    ctx.fillStyle = '#2d3748'; ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+    ctx.fillText('u1 (eq.1 error)', pad.l + pw / 2, H - 5);
+    ctx.save(); ctx.translate(12, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('u2 (eq.2 error)', 0, 0); ctx.restore();
+
+    // bar chart: efficiency ratio
+    let barCanvas = document.getElementById('surBarCanvas');
+    if (!barCanvas) return;
+    let bctx = barCanvas.getContext('2d');
+    let BW = barCanvas.width, BH = barCanvas.height;
+    bctx.clearRect(0, 0, BW, BH);
+
+    // Approximate efficiency ratio
+    let effRatio = 1 / Math.sqrt(1 - corr * corr);
+    effRatio = Math.min(effRatio, 5);
+
+    let barW = 80, barGap = 50;
+    let barMaxH = BH - 50;
+    let olsH = Math.min(barMaxH, barMaxH * (1 / effRatio));
+    let surH = barMaxH;
+
+    let x1 = BW / 2 - barW - barGap / 2;
+    let x2 = BW / 2 + barGap / 2;
+
+    // SUR bar (efficiency = 1, reference)
+    bctx.fillStyle = '#3d9970';
+    bctx.fillRect(x1, BH - 25 - surH, barW, surH);
+    // OLS bar
+    bctx.fillStyle = '#4a90d9';
+    bctx.fillRect(x2, BH - 25 - olsH, barW, olsH);
+
+    bctx.fillStyle = '#2d3748'; bctx.font = '11px Sarabun'; bctx.textAlign = 'center';
+    bctx.fillText('SUR', x1 + barW / 2, BH - 8);
+    bctx.fillText('OLS', x2 + barW / 2, BH - 8);
+    bctx.fillText('Efficiency', BW / 2, 12);
+
+    bctx.font = 'bold 12px Fira Code';
+    bctx.fillStyle = '#3d9970';
+    bctx.fillText('1.00', x1 + barW / 2, BH - 25 - surH - 5);
+    bctx.fillStyle = '#4a90d9';
+    bctx.fillText((1 / effRatio).toFixed(2), x2 + barW / 2, BH - 25 - olsH - 5);
+
+    document.getElementById('surRatioText').textContent =
+        'Correlation = ' + corr.toFixed(2) + ': SE(OLS)/SE(SUR) = ' + effRatio.toFixed(2) + 'x';
+}
+
+document.getElementById('surCorrSlider').addEventListener('input', drawSUR);
+
+// ============================================================
+// Interactive 4: Survey Design Effect
+// ============================================================
+function drawDEFF() {
+    let icc = parseFloat(document.getElementById('iccSlider').value);
+    let m = parseInt(document.getElementById('clusterSlider').value);
+    document.getElementById('iccVal').textContent = icc.toFixed(2);
+    document.getElementById('clusterVal').textContent = m;
+
+    let deff = 1 + (m - 1) * icc;
+    let seFactor = Math.sqrt(deff);
+    let effN = 100 / deff;
+
+    document.getElementById('deffValue').textContent = deff.toFixed(2);
+    document.getElementById('deffSE').textContent = seFactor.toFixed(2);
+    document.getElementById('deffN').textContent = effN.toFixed(0) + '%';
+
+    let canvas = document.getElementById('deffCanvas');
+    if (!canvas) return;
+    let ctx = canvas.getContext('2d');
+    let W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    let pad = { l: 55, r: 15, t: 25, b: 35 };
+    let pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+
+    // Draw two normal distributions: SRS and Survey
+    let srs_se = 1;
+    let survey_se = seFactor;
+
+    function normalPDF(x, mu, sigma) {
+        return Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI));
+    }
+
+    let xMin = -5, xMax = 5;
+    let yMax = normalPDF(0, 0, srs_se) * 1.2;
+    let toX = v => pad.l + (v - xMin) / (xMax - xMin) * pw;
+    let toY = v => H - pad.b - (v / yMax) * ph;
+
+    // axes
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.l, H - pad.b); ctx.lineTo(W - pad.r, H - pad.b); ctx.stroke();
+
+    // SRS distribution
+    ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = xMin; x <= xMax; x += 0.05) {
+        let v = normalPDF(x, 0, srs_se);
+        if (x === xMin) ctx.moveTo(toX(x), toY(v)); else ctx.lineTo(toX(x), toY(v));
+    }
+    ctx.stroke();
+
+    // fill SRS
+    ctx.fillStyle = 'rgba(74,144,217,0.15)';
+    ctx.beginPath(); ctx.moveTo(toX(xMin), toY(0));
+    for (let x = xMin; x <= xMax; x += 0.05) ctx.lineTo(toX(x), toY(normalPDF(x, 0, srs_se)));
+    ctx.lineTo(toX(xMax), toY(0)); ctx.fill();
+
+    // Survey distribution
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = xMin; x <= xMax; x += 0.05) {
+        let v = normalPDF(x, 0, survey_se);
+        if (x === xMin) ctx.moveTo(toX(x), toY(v)); else ctx.lineTo(toX(x), toY(v));
+    }
+    ctx.stroke();
+
+    // fill Survey
+    ctx.fillStyle = 'rgba(212,83,74,0.12)';
+    ctx.beginPath(); ctx.moveTo(toX(xMin), toY(0));
+    for (let x = xMin; x <= xMax; x += 0.05) ctx.lineTo(toX(x), toY(normalPDF(x, 0, survey_se)));
+    ctx.lineTo(toX(xMax), toY(0)); ctx.fill();
+
+    // labels
+    ctx.font = '12px Sarabun'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#4a90d9'; ctx.fillText('SRS (SE=1)', toX(1.5), toY(normalPDF(1.5, 0, srs_se)) - 5);
+    ctx.fillStyle = '#d4534a'; ctx.fillText('Survey (SE=' + seFactor.toFixed(1) + ')', toX(2.2), toY(normalPDF(2.2, 0, survey_se)) - 5);
+    ctx.fillStyle = '#2d3748'; ctx.font = 'bold 12px Sarabun'; ctx.textAlign = 'center';
+    ctx.fillText('DEFF = ' + deff.toFixed(1), W / 2, 15);
+}
+
+document.getElementById('iccSlider').addEventListener('input', drawDEFF);
+document.getElementById('clusterSlider').addEventListener('input', drawDEFF);
+
+// ============================================================
+// Init
+// ============================================================
+function initAll() {
+    renderKaTeX();
+    drawHetero('scatter');
+    drawFGLS();
+    drawSUR();
+    drawDEFF();
+}
+
+Reveal.on('ready', initAll);
+Reveal.on('slidechanged', () => {
+    requestAnimationFrame(() => {
+        let slide = Reveal.getCurrentSlide();
+        if (slide.querySelector('#heteroCanvas')) drawHetero();
+        if (slide.querySelector('#fglsCanvas')) drawFGLS();
+        if (slide.querySelector('#surCanvas')) drawSUR();
+        if (slide.querySelector('#deffCanvas')) drawDEFF();
+    });
+});
+</script>
+
+</body>
+</html>

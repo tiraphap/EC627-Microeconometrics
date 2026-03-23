@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2: Data Simulation (Monte Carlo Methods) | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            color: var(--text);
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: none;
+            line-height: 1.6;
+            padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree (HTML/CSS) ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px;
+            font-size: 13px; color: rgba(0,0,0,0.35);
+            z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer {
+            position: fixed; bottom: 8px; left: 16px;
+            z-index: 100; pointer-events: none; opacity: 0.45;
+        }
+        .logo-footer img { height: 38px; width: auto; }
+
+        /* ---- Stats display ---- */
+        .stats-display {
+            font-family: 'Fira Code', monospace; font-size: 0.46em;
+            background: #f7fafc; border: 1px solid var(--border);
+            border-radius: 4px; padding: 4px 8px; margin: 3px 0;
+        }
+        .stats-display .stat-label { color: var(--text-light); }
+        .stats-display .stat-value { color: var(--accent); font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer">
+    <img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University">
+</div>
+<div class="instructor-footer">
+    ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ==================== TITLE ==================== -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>Data Simulation</h1>
+    <div class="subtitle">Chapter 2 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Introduction &bull; Random Numbers &bull; CLT &bull; Regression Sim &bull; Endogeneity &bull; Summary</p>
+    </div>
+</section>
+
+<!-- ==================== SECTION 1: INTRODUCTION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>1. Introduction to Simulation</h2>
+    <p>ทำไมต้อง "จำลองข้อมูล" ในเศรษฐมิติ?</p>
+</section>
+
+<section>
+    <h2>Monte Carlo Experimentation</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Monte Carlo Simulation</strong> คือเทคนิคการสร้างข้อมูลจำลองซ้ำ ๆ หลายรอบ เพื่อศึกษาคุณสมบัติของตัวประมาณค่า (estimator) ทางสถิติ</p>
+                <p>ตั้งชื่อตาม Casino Monte Carlo ในโมนาโก เนื่องจากใช้ <strong>ความน่าจะเป็น</strong> เป็นหัวใจสำคัญ</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ทำไมต้อง Simulate?</strong></p>
+                <ul>
+                    <li>ตรวจสอบว่า estimator มี <strong>unbiasedness</strong> หรือไม่</li>
+                    <li>ดูว่า <strong>standard errors</strong> ที่คำนวณได้ถูกต้องไหม</li>
+                    <li>ทดสอบว่า <strong>rejection rate</strong> ของ t-test ตรงตาม nominal size หรือไม่</li>
+                    <li>เข้าใจพฤติกรรมของ estimator เมื่อ assumptions ถูกละเมิด</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ขั้นตอนหลัก</h3>
+                <ol>
+                    <li><strong>กำหนด DGP</strong> (Data Generating Process) &mdash; กำหนดสมการที่สร้างข้อมูล เช่น y = 1 + 2x + u</li>
+                    <li><strong>สุ่มข้อมูล</strong> จาก DGP ตาม distribution ที่กำหนด</li>
+                    <li><strong>ประมาณค่า</strong> ด้วยวิธีที่ต้องการ (เช่น OLS)</li>
+                    <li><strong>เก็บผลลัพธ์</strong> (coefficient, SE, t-stat)</li>
+                    <li><strong>ทำซ้ำ</strong> 1,000&ndash;10,000 รอบ</li>
+                    <li><strong>วิเคราะห์</strong> distribution ของผลลัพธ์ทั้งหมด</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Data Generating Process (DGP)</h2>
+    <div class="concept-box">
+        <p><strong>DGP</strong> คือ "กฎ" ที่กำหนดว่าข้อมูลถูกสร้างขึ้นมาอย่างไร &mdash; ในโลกจริงเราไม่รู้ DGP แต่ใน simulation เรา <em>กำหนดเอง</em></p>
+    </div>
+    <div class="two-col" style="margin-top: 5px;">
+        <div>
+            <div class="example-box">
+                <h3>ตัวอย่าง DGP แบบง่าย</h3>
+                <div class="math-block">
+                    \(y_i = \beta_0 + \beta_1 x_i + u_i\)
+                </div>
+                <p>โดยที่:</p>
+                <ul>
+                    <li>\(\beta_0 = 1, \beta_1 = 2\) (ค่าพารามิเตอร์ที่แท้จริง)</li>
+                    <li>\(x_i \sim \chi^2(1)\)</li>
+                    <li>\(u_i \sim \chi^2(1) - 1\) (mean = 0 แต่ skewed)</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ข้อได้เปรียบของ Simulation</h3>
+                <p>เนื่องจากเรารู้ค่าแท้จริงของพารามิเตอร์ เราจึงสามารถ:</p>
+                <ul>
+                    <li>ตรวจสอบว่า \(\hat{\beta}_1\) มีค่าเฉลี่ยเท่ากับ 2 หรือไม่ (<strong>unbiasedness</strong>)</li>
+                    <li>เปรียบเทียบ estimated SE กับ actual SD ของ \(\hat{\beta}_1\)</li>
+                    <li>ดูว่าเมื่อ \(H_0: \beta_1 = 2\) เป็นจริง test ปฏิเสธ ~5% ไหม</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="stata-code fragment">
+        <span class="cmt">* ตัวอย่าง DGP ใน Stata</span><br>
+        <span class="cmd">clear all</span><br>
+        <span class="cmd">set obs</span> <span class="num">100</span><br>
+        <span class="cmd">generate</span> x = <span class="cmd">rchi2</span>(<span class="num">1</span>)<br>
+        <span class="cmd">generate</span> u = <span class="cmd">rchi2</span>(<span class="num">1</span>) - <span class="num">1</span><br>
+        <span class="cmd">generate</span> y = <span class="num">1</span> + <span class="num">2</span>*x + u
+    </div>
+</section>
+
+<section>
+    <h2>ทำไม Simulation สำคัญในเศรษฐมิติ?</h2>
+    <div class="three-col">
+        <div class="concept-box fragment">
+            <h3>1. ทฤษฎี Asymptotic</h3>
+            <p>ผลลัพธ์ทางทฤษฎีมักเป็น asymptotic &mdash; ใช้ได้เมื่อ n &rarr; &infin;</p>
+            <p>Simulation ช่วยบอกว่า <strong>finite sample</strong> จะเป็นอย่างไร</p>
+        </div>
+        <div class="concept-box fragment">
+            <h3>2. ตรวจสอบ Estimators ใหม่</h3>
+            <p>เมื่อพัฒนา estimator ใหม่ ก่อนใช้กับข้อมูลจริง ต้อง simulate เพื่อยืนยันว่าทำงานถูกต้อง</p>
+        </div>
+        <div class="concept-box fragment">
+            <h3>3. Power Analysis</h3>
+            <p>คำนวณ <strong>statistical power</strong> ของ test ที่ซับซ้อน ซึ่งไม่มีสูตร closed-form</p>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top: 5px;">
+        <p><strong>บทเรียนสำคัญ:</strong> Simulation ไม่ได้ "พิสูจน์" ทฤษฎี แต่เป็นเครื่องมือ <em>ตรวจสอบ</em> และ <em>สร้างความเข้าใจ</em> &mdash; ช่วยให้เห็นว่าทฤษฎีทำงานจริงอย่างไรในทางปฏิบัติ</p>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 2: RANDOM NUMBER GENERATION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>2. Random Number Generation</h2>
+    <p>Pseudorandom Numbers &mdash; หัวใจของ Simulation</p>
+</section>
+
+<section>
+    <h2>Pseudorandom Number Generators (PRNG)</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Pseudorandom numbers</strong> คือตัวเลขที่คอมพิวเตอร์สร้างจาก algorithm &mdash; ดู "สุ่ม" แต่จริง ๆ เป็น <em>deterministic</em> ถ้ารู้ seed</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>set seed &mdash; Reproducibility</h3>
+                <p>การกำหนด <strong>seed</strong> ทำให้ได้ผลลัพธ์เหมือนกันทุกครั้งที่รัน</p>
+                <p>สำคัญมากสำหรับ <strong>replication</strong> ในงานวิจัย</p>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmd">set seed</span> <span class="num">10101</span> <span class="cmt">// กำหนด seed</span><br>
+                <span class="cmd">set obs</span> <span class="num">10000</span><br>
+                <span class="cmd">generate</span> x = <span class="cmd">runiform</span>() <span class="cmt">// U(0,1)</span><br>
+                <span class="cmd">generate</span> z = <span class="cmd">rnormal</span>() <span class="cmt">// N(0,1)</span>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>Distributions ที่ใช้บ่อย</h3>
+                <table class="compare-table">
+                    <tr><th>คำสั่ง Stata</th><th>Distribution</th><th>พารามิเตอร์</th></tr>
+                    <tr><td><code>runiform()</code></td><td>Uniform(0,1)</td><td>&mdash;</td></tr>
+                    <tr><td><code>rnormal()</code></td><td>Normal(0,1)</td><td>&mu;, &sigma;</td></tr>
+                    <tr><td><code>rt(k)</code></td><td>Student-t</td><td>df = k</td></tr>
+                    <tr><td><code>rchi2(k)</code></td><td>Chi-squared</td><td>df = k</td></tr>
+                    <tr><td><code>rpoisson(m)</code></td><td>Poisson</td><td>&mu; = m</td></tr>
+                    <tr><td><code>rbinomial(n,p)</code></td><td>Binomial</td><td>n, p</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ตัวอย่าง: สร้างตัวแปรจาก Distributions ต่าง ๆ</h2>
+    <div class="stata-code">
+        <span class="cmd">clear all</span><br>
+        <span class="cmd">set seed</span> <span class="num">10101</span><br>
+        <span class="cmd">set obs</span> <span class="num">10000</span><br>
+        <br>
+        <span class="cmd">generate</span> x = <span class="cmd">runiform</span>() <span class="cmt">// Uniform(0,1)</span><br>
+        <span class="cmd">generate</span> stnormal = <span class="cmd">rnormal</span>() <span class="cmt">// Standard Normal N(0,1)</span><br>
+        <span class="cmd">generate</span> xt = <span class="cmd">rt</span>(<span class="num">10</span>) <span class="cmt">// Student-t with df=10</span><br>
+        <span class="cmd">generate</span> xc = <span class="cmd">rchi2</span>(<span class="num">10</span>) <span class="cmt">// Chi-squared with df=10</span><br>
+        <span class="cmd">generate</span> xp = <span class="cmd">rpoisson</span>(<span class="num">5</span>) <span class="cmt">// Poisson with mean=5</span><br>
+        <br>
+        <span class="cmt">* ตรวจสอบคุณสมบัติ</span><br>
+        <span class="cmd">summarize</span> x stnormal xt xc xp<br>
+        <span class="cmd">pwcorr</span> x stnormal xt xc xp <span class="cmt">// ตรวจสอบ autocorrelation</span>
+    </div>
+    <div class="two-col fragment" style="margin-top: 5px;">
+        <div class="concept-box">
+            <h3>คุณสมบัติที่คาดหวัง</h3>
+            <ul>
+                <li>Uniform: mean &asymp; 0.5, SD &asymp; 0.289</li>
+                <li>Normal: mean &asymp; 0, SD &asymp; 1</li>
+                <li>t(10): mean &asymp; 0, heavier tails กว่า normal</li>
+                <li>Chi-squared(10): mean &asymp; 10, skewed right</li>
+                <li>Poisson(5): mean &asymp; 5, discrete</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>Autocorrelation Check</h3>
+            <p>ตัวเลขสุ่มที่ดีต้อง <strong>ไม่มี autocorrelation</strong> &mdash; ใช้ <code>pwcorr</code> หรือ <code>ac</code> ตรวจสอบ</p>
+            <p>ถ้าพบ correlation สูง แสดงว่า PRNG อาจมีปัญหา</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Interactive: สำรวจ Distributions</h2>
+    <div class="interactive-container">
+        <h4>สร้างตัวเลขสุ่มจาก Distribution ต่าง ๆ</h4>
+        <div class="slider-group">
+            <label>Sample Size:</label>
+            <input type="range" id="distN" min="100" max="10000" value="1000" step="100" oninput="document.getElementById('distNVal').textContent=this.value">
+            <span class="val" id="distNVal">1000</span>
+        </div>
+        <div style="text-align:center; margin: 4px 0;">
+            <button class="interactive-btn active" onclick="drawDistDemo('uniform', this)">Uniform</button>
+            <button class="interactive-btn" onclick="drawDistDemo('normal', this)">Normal</button>
+            <button class="interactive-btn" onclick="drawDistDemo('chi2', this)">Chi-squared(3)</button>
+            <button class="interactive-btn" onclick="drawDistDemo('t', this)">t(5)</button>
+            <button class="interactive-btn" onclick="drawDistDemo('poisson', this)">Poisson(5)</button>
+        </div>
+        <canvas id="distCanvas" width="700" height="220"></canvas>
+        <div class="stats-display" id="distStats" style="text-align:center;">
+            <span class="stat-label">Mean:</span> <span class="stat-value" id="distMean">-</span> &nbsp;|&nbsp;
+            <span class="stat-label">SD:</span> <span class="stat-value" id="distSD">-</span> &nbsp;|&nbsp;
+            <span class="stat-label">Skewness:</span> <span class="stat-value" id="distSkew">-</span>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Histogram และ Kernel Density</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Histogram</strong> แบ่งข้อมูลเป็น bins แล้วนับจำนวนใน bin &mdash; วิธีง่ายที่สุดในการดู distribution</p>
+                <p><strong>Kernel Density</strong> ประมาณค่า density แบบ smooth โดยใช้ kernel function (มักเป็น Gaussian)</p>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmd">histogram</span> stnormal, <span class="opt">normal</span> <span class="opt">name</span>(h1)<br>
+                <span class="cmd">kdensity</span> stnormal, <span class="opt">normal</span> <span class="opt">name</span>(k1)<br>
+                <span class="cmd">histogram</span> xc, <span class="opt">normal</span> <span class="opt">name</span>(h2)<br>
+                <span class="cmd">kdensity</span> xc, <span class="opt">normal</span> <span class="opt">name</span>(k2)<br>
+                <span class="cmd">graph combine</span> h1 k1 h2 k2
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>การอ่านผล</h3>
+                <ul>
+                    <li><strong>Normal data:</strong> histogram จะสมมาตร, kernel density ซ้อนทับกับ normal curve ได้ดี</li>
+                    <li><strong>Chi-squared data:</strong> histogram เบ้ขวา, kernel density จะแสดง skewness ชัดเจน</li>
+                </ul>
+                <p>ใน Stata ใช้ option <code>normal</code> เพื่อวาด theoretical normal curve ซ้อนทับเปรียบเทียบ</p>
+            </div>
+            <div class="example-box fragment">
+                <h3>Bandwidth ของ Kernel Density</h3>
+                <p>Bandwidth เล็ก &rarr; curve หยัก (overfit)<br>
+                Bandwidth ใหญ่ &rarr; curve เรียบเกินไป (oversmooth)<br>
+                Stata ใช้ <strong>optimal bandwidth</strong> อัตโนมัติ</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Negative Binomial จาก Gamma Mixing</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Negative Binomial</strong> สามารถสร้างจาก Poisson-Gamma mixture:</p>
+                <ol>
+                    <li>สุ่ม \(\delta_i \sim \text{Gamma}(1/\alpha, \alpha)\)</li>
+                    <li>ให้ \(\mu_i = \exp(x_i'\beta) \cdot \delta_i\)</li>
+                    <li>สุ่ม \(y_i \sim \text{Poisson}(\mu_i)\)</li>
+                </ol>
+                <p>ผลลัพธ์คือ \(y_i \sim \text{NB}(\mu_i, \alpha)\)</p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ทำไม Negative Binomial?</h3>
+                <p>Poisson สมมติ <strong>equidispersion</strong>: Var(y) = E(y)</p>
+                <p>ข้อมูลจริงมักมี <strong>overdispersion</strong>: Var(y) > E(y)</p>
+                <p>NB เพิ่ม heterogeneity ผ่าน \(\delta_i\) ทำให้ Var(y) = &mu; + &alpha;&mu;&sup2;</p>
+            </div>
+        </div>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 3: CENTRAL LIMIT THEOREM ==================== -->
+<section>
+<section class="section-divider">
+    <h2>3. Central Limit Theorem</h2>
+    <p>จาก Uniform สู่ Normal &mdash; พลังของการเฉลี่ย</p>
+</section>
+
+<section>
+    <h2>Central Limit Theorem (CLT)</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ทฤษฎีบท</h3>
+                <p>ถ้า \(X_1, X_2, \ldots, X_n\) เป็น iid จาก distribution ใด ๆ ที่มี mean &mu; และ variance &sigma;&sup2; แล้ว:</p>
+                <div class="math-block">
+                    \(\sqrt{n}(\bar{X}_n - \mu) \xrightarrow{d} N(0, \sigma^2)\)
+                </div>
+                <p>เมื่อ \(n \to \infty\)</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ความหมาย:</strong> ไม่ว่าข้อมูลดั้งเดิมจะมี distribution อะไร <strong>ค่าเฉลี่ยของตัวอย่าง</strong> จะเข้าใกล้ Normal distribution เมื่อ sample size ใหญ่พอ</p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ตัวอย่าง: Uniform &rarr; Normal</h3>
+                <ul>
+                    <li>สุ่ม n = 30 ตัวจาก Uniform(0,1)</li>
+                    <li>คำนวณค่าเฉลี่ย \(\bar{X}\)</li>
+                    <li>ทำซ้ำ 10,000 ครั้ง</li>
+                    <li>Distribution ของ \(\bar{X}\) จะเป็น Normal!</li>
+                </ul>
+                <div class="math-block">
+                    \(\bar{X} \approx N\left(0.5, \frac{1/12}{30}\right)\)
+                </div>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmd">program</span> onesample, <span class="opt">rclass</span><br>
+                &nbsp;&nbsp;<span class="cmd">drop</span> _all<br>
+                &nbsp;&nbsp;<span class="cmd">set obs</span> <span class="num">30</span><br>
+                &nbsp;&nbsp;<span class="cmd">generate</span> x = <span class="cmd">runiform</span>()<br>
+                &nbsp;&nbsp;<span class="cmd">summarize</span> x<br>
+                &nbsp;&nbsp;<span class="cmd">return scalar</span> meanforonesample = r(mean)<br>
+                <span class="cmd">end</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Stata: คำสั่ง simulate</h2>
+    <div class="concept-box">
+        <p><strong>simulate</strong> เป็นคำสั่งที่ช่วยทำ Monte Carlo ได้ง่าย &mdash; เรียก program ซ้ำ ๆ แล้วเก็บผลลัพธ์อัตโนมัติ</p>
+    </div>
+    <div class="stata-code" style="margin-top: 5px;">
+        <span class="cmt">* เรียก program onesample ซ้ำ 10,000 ครั้ง</span><br>
+        <span class="cmd">simulate</span> xbar = r(meanforonesample), <span class="opt">seed</span>(<span class="num">10101</span>) <span class="opt">reps</span>(<span class="num">10000</span>): onesample<br>
+        <br>
+        <span class="cmt">* ดูผลลัพธ์</span><br>
+        <span class="cmd">summarize</span> xbar<br>
+        <span class="cmd">histogram</span> xbar, <span class="opt">normal</span> <span class="opt">title</span>("Distribution of Sample Mean")<br>
+    </div>
+    <div class="two-col fragment" style="margin-top: 5px;">
+        <div class="concept-box">
+            <h3>ผลลัพธ์ที่คาดหวัง</h3>
+            <ul>
+                <li>Mean ของ xbar &asymp; 0.5 (= &mu; ของ Uniform)</li>
+                <li>SD ของ xbar &asymp; 0.0527 (= &sigma;/&radic;n = &radic;(1/12)/&radic;30)</li>
+                <li>Histogram มีรูปร่าง bell-shaped</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>โครงสร้าง simulate</h3>
+            <p><code>simulate <em>results</em>, reps(<em>N</em>): <em>program</em></code></p>
+            <ul>
+                <li><strong>results:</strong> ชื่อตัวแปรที่เก็บ = r(scalar)</li>
+                <li><strong>reps:</strong> จำนวนรอบ</li>
+                <li><strong>program:</strong> program ที่ต้อง return scalar</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Interactive: Central Limit Theorem</h2>
+    <div class="interactive-container">
+        <h4>จำลอง CLT: สุ่มจาก Uniform(0,1) แล้วดู distribution ของค่าเฉลี่ย</h4>
+        <div class="two-col">
+            <div>
+                <div class="slider-group">
+                    <label>Sample size (n):</label>
+                    <input type="range" id="cltN" min="2" max="100" value="30" step="1" oninput="document.getElementById('cltNVal').textContent=this.value">
+                    <span class="val" id="cltNVal">30</span>
+                </div>
+                <div style="margin: 4px 0;">
+                    <button class="interactive-btn" onclick="cltDraw(1)">สุ่ม 1 ครั้ง</button>
+                    <button class="interactive-btn" onclick="cltDraw(100)">สุ่ม 100 ครั้ง</button>
+                    <button class="interactive-btn" onclick="cltDraw(1000)">สุ่ม 1,000 ครั้ง</button>
+                    <button class="interactive-btn" onclick="cltReset()">เริ่มใหม่</button>
+                </div>
+                <div class="stats-display" id="cltStats">
+                    <span class="stat-label">จำนวนรอบ:</span> <span class="stat-value" id="cltCount">0</span> &nbsp;|&nbsp;
+                    <span class="stat-label">Mean:</span> <span class="stat-value" id="cltMean">-</span> &nbsp;|&nbsp;
+                    <span class="stat-label">SD:</span> <span class="stat-value" id="cltSD">-</span>
+                </div>
+            </div>
+            <div>
+                <canvas id="cltCanvas" width="420" height="230"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Quiz: Central Limit Theorem</h2>
+    <div id="quiz1">
+        <div class="concept-box">
+            <p><strong>คำถาม:</strong> ถ้าเราสุ่มตัวอย่างขนาด n = 30 จาก Uniform(0,1) แล้วคำนวณค่าเฉลี่ย ทำซ้ำ 10,000 ครั้ง ข้อใดถูกต้อง?</p>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">A) Distribution ของค่าเฉลี่ยจะเป็น Uniform เหมือนเดิม</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, true)">B) Distribution ของค่าเฉลี่ยจะเป็น Normal โดยประมาณ มี mean = 0.5</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">C) Distribution ของค่าเฉลี่ยจะเป็น Chi-squared</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">D) CLT ใช้ได้เฉพาะกับข้อมูลที่เป็น Normal เท่านั้น</div>
+        <div class="quiz-feedback" id="quiz1-feedback"></div>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 4: SIMULATION FOR REGRESSION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>4. Simulation for Regression</h2>
+    <p>OLS กับ errors ที่ไม่เป็น Normal &mdash; ยังใช้ได้ไหม?</p>
+</section>
+
+<section>
+    <h2>DGP: OLS กับ Chi-squared Errors</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Data Generating Process</h3>
+                <div class="math-block">
+                    \(y_i = 1 + 2x_i + u_i\)
+                </div>
+                <p>โดยที่:</p>
+                <ul>
+                    <li>\(x_i \sim \chi^2(1)\)</li>
+                    <li>\(u_i = \chi^2(1) - 1\) (mean = 0, skewed)</li>
+                    <li><strong>True values:</strong> \(\beta_0 = 1, \beta_1 = 2\)</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <h3>ทำไมใช้ Chi-squared Error?</h3>
+                <p>เพื่อทดสอบว่า OLS ยังทำงานดีไหมเมื่อ error <strong>ไม่เป็น Normal</strong> (skewed distribution)</p>
+                <p>CLT บอกว่า \(\hat{\beta}\) ยังควรจะ <strong>approximately normal</strong></p>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code fragment">
+                <span class="cmd">program</span> chi2data, <span class="opt">rclass</span><br>
+                &nbsp;&nbsp;<span class="cmd">drop</span> _all<br>
+                &nbsp;&nbsp;<span class="cmd">set obs</span> $numobs<br>
+                &nbsp;&nbsp;<span class="cmd">generate</span> x = <span class="cmd">rchi2</span>(<span class="num">1</span>)<br>
+                &nbsp;&nbsp;<span class="cmd">generate</span> u = <span class="cmd">rchi2</span>(<span class="num">1</span>) - <span class="num">1</span><br>
+                &nbsp;&nbsp;<span class="cmd">generate</span> y = <span class="num">1</span> + <span class="num">2</span>*x + u<br>
+                &nbsp;&nbsp;<span class="cmd">regress</span> y x<br>
+                &nbsp;&nbsp;<span class="cmd">return scalar</span> b2 = _b[x]<br>
+                &nbsp;&nbsp;<span class="cmd">return scalar</span> se2 = _se[x]<br>
+                &nbsp;&nbsp;<span class="cmd">return scalar</span> t2 = (_b[x]-<span class="num">2</span>)/_se[x]<br>
+                &nbsp;&nbsp;<span class="cmd">return scalar</span> r2 = abs(return(t2)) > <span class="cmd">invttail</span>($numobs-<span class="num">2</span>,.<span class="num">025</span>)<br>
+                <span class="cmd">end</span>
+            </div>
+            <div class="example-box fragment">
+                <h3>ตัวแปรที่เก็บ</h3>
+                <ul>
+                    <li><strong>b2:</strong> ค่าประมาณ \(\hat{\beta}_1\)</li>
+                    <li><strong>se2:</strong> standard error ของ \(\hat{\beta}_1\)</li>
+                    <li><strong>t2:</strong> t-statistic สำหรับ H<sub>0</sub>: &beta;<sub>1</sub> = 2</li>
+                    <li><strong>r2:</strong> reject indicator (1 ถ้าปฏิเสธ H<sub>0</sub>)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>เรียก simulate &mdash; ทำ 1,000 รอบ</h2>
+    <div class="stata-code">
+        <span class="cmd">global</span> numobs = <span class="num">100</span><br>
+        <span class="cmd">simulate</span> b2f=r(b2) se2f=r(se2) t2f=r(t2) reject2f=r(r2), <span class="opt">reps</span>(<span class="num">1000</span>): chi2data<br>
+        <br>
+        <span class="cmt">* ตรวจสอบ unbiasedness</span><br>
+        <span class="cmd">summarize</span> b2f <span class="cmt">// mean ควร ≈ 2</span><br>
+        <br>
+        <span class="cmt">* ตรวจสอบ SE accuracy</span><br>
+        <span class="cmd">summarize</span> se2f <span class="cmt">// mean ≈ SD of b2f</span><br>
+        <br>
+        <span class="cmt">* ตรวจสอบ test size</span><br>
+        <span class="cmd">summarize</span> reject2f <span class="cmt">// mean ควร ≈ 0.05</span><br>
+        <br>
+        <span class="cmt">* เปรียบเทียบ t-statistic กับ theoretical t distribution</span><br>
+        <span class="cmd">histogram</span> t2f, <span class="opt">normal</span>
+    </div>
+    <div class="three-col fragment" style="margin-top: 5px;">
+        <div class="concept-box">
+            <h3>Unbiasedness</h3>
+            <p>ถ้า mean ของ \(\hat{\beta}_1\) &asymp; 2</p>
+            <p>&rarr; OLS เป็น <strong>unbiased</strong></p>
+        </div>
+        <div class="concept-box">
+            <h3>SE Accuracy</h3>
+            <p>ถ้า mean(SE) &asymp; SD(\(\hat{\beta}_1\))</p>
+            <p>&rarr; SE formula <strong>ถูกต้อง</strong></p>
+        </div>
+        <div class="key-insight">
+            <h3>Test Size</h3>
+            <p>ถ้า rejection rate &asymp; 5%</p>
+            <p>&rarr; t-test มี <strong>correct size</strong></p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Interactive: OLS Simulation</h2>
+    <div class="interactive-container">
+        <h4>จำลอง OLS Regression: y = 1 + 2x + u (u = Chi-squared(1) - 1)</h4>
+        <div class="two-col">
+            <div>
+                <div class="slider-group">
+                    <label>Sample size (n):</label>
+                    <input type="range" id="olsN" min="20" max="500" value="100" step="10" oninput="document.getElementById('olsNVal').textContent=this.value">
+                    <span class="val" id="olsNVal">100</span>
+                </div>
+                <div style="margin: 4px 0;">
+                    <button class="interactive-btn" onclick="olsDraw(1)">Run 1</button>
+                    <button class="interactive-btn" onclick="olsDraw(50)">Run 50</button>
+                    <button class="interactive-btn" onclick="olsDraw(500)">Run 500</button>
+                    <button class="interactive-btn" onclick="olsReset()">Reset</button>
+                </div>
+                <div class="stats-display" id="olsStatsBox">
+                    <span class="stat-label">Reps:</span> <span class="stat-value" id="olsReps">0</span><br>
+                    <span class="stat-label">Mean(\(\hat{\beta}_1\)):</span> <span class="stat-value" id="olsMeanB">-</span><br>
+                    <span class="stat-label">SD(\(\hat{\beta}_1\)):</span> <span class="stat-value" id="olsSDB">-</span><br>
+                    <span class="stat-label">Mean(SE):</span> <span class="stat-value" id="olsMeanSE">-</span><br>
+                    <span class="stat-label">Rejection rate:</span> <span class="stat-value" id="olsReject">-</span>
+                </div>
+            </div>
+            <div>
+                <canvas id="olsCanvas" width="420" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>การเปรียบเทียบ t-statistic กับ Theoretical Distribution</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p>ถ้า OLS assumptions เป็นจริงทั้งหมด (รวมถึง normality ของ error):</p>
+                <div class="math-block">
+                    \(t = \frac{\hat{\beta}_1 - \beta_1}{SE(\hat{\beta}_1)} \sim t(n-2)\)
+                </div>
+                <p>แต่เมื่อ error เป็น (\chi^2(1) - 1) (ไม่ใช่ normal) CLT ทำให้:</p>
+                <div class="math-block">
+                    \(t \xrightarrow{d} N(0,1) \text{ เมื่อ } n \text{ ใหญ่พอ}\)
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>สิ่งที่ต้องตรวจสอบ</h3>
+                <ul>
+                    <li>Histogram ของ t-statistic ควรมีรูปร่างคล้าย bell curve</li>
+                    <li>n เล็ก (&lt;30): t-distribution อาจไม่ approximate ได้ดี เพราะ error เบ้มาก</li>
+                    <li>n ใหญ่ (&ge;100): CLT ทำงานได้ดี แม้ error จะ skewed</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <h3>ผลลัพธ์ที่ดี</h3>
+                <ul>
+                    <li>Mean(b2) &asymp; 2.00</li>
+                    <li>Mean(SE) &asymp; SD(b2)</li>
+                    <li>Rejection rate &asymp; 0.05</li>
+                    <li>t-stat histogram ซ้อนกับ N(0,1) ได้ดี</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Quiz: Simulation Properties</h2>
+    <div id="quiz2">
+        <div class="concept-box">
+            <p><strong>คำถาม:</strong> ในการจำลอง OLS ด้วย DGP: y = 1 + 2x + u (u = &chi;&sup2;(1)-1) จำนวน 1,000 รอบ ถ้าพบว่า mean(&beta;&#770;<sub>1</sub>) = 2.003 หมายความว่าอย่างไร?</p>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, true)">A) OLS estimator เป็น unbiased สำหรับ &beta;<sub>1</sub></div>
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">B) OLS estimator เป็น biased เพราะ error ไม่เป็น Normal</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">C) ต้องเพิ่ม reps เป็น 100,000 จึงจะสรุปได้</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">D) ค่า 2.003 แตกต่างจาก 2 อย่างมีนัยสำคัญทางสถิติ</div>
+        <div class="quiz-feedback" id="quiz2-feedback"></div>
+    </div>
+</section>
+
+<section>
+    <h2>Quiz: Test Size</h2>
+    <div id="quiz3">
+        <div class="concept-box">
+            <p><strong>คำถาม:</strong> เมื่อทดสอบ H<sub>0</sub>: &beta;<sub>1</sub> = 2 ที่ระดับนัยสำคัญ 5% ค่า rejection rate จากการจำลองควรมีค่าประมาณเท่าใด?</p>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">A) 0 เพราะ H<sub>0</sub> เป็นจริง ดังนั้นไม่ควรปฏิเสธเลย</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, true)">B) ประมาณ 0.05 เพราะ test ที่มี correct size จะ reject ผิดพลาด ~5% เมื่อ H<sub>0</sub> จริง</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">C) ประมาณ 0.50 เพราะมีโอกาส 50-50</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">D) ประมาณ 0.95 เพราะ confidence level คือ 95%</div>
+        <div class="quiz-feedback" id="quiz3-feedback"></div>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 5: ENDOGENOUS REGRESSORS ==================== -->
+<section>
+<section class="section-divider">
+    <h2>5. Endogenous Regressors</h2>
+    <p>เมื่อ x สัมพันธ์กับ u &mdash; OLS ล้มเหลว</p>
+</section>
+
+<section>
+    <h2>ปัญหา Endogeneity</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>DGP ที่มี Endogeneity</h3>
+                <div class="math-block">
+                    \(y_i = 1 + 2x_i + u_i\)
+                </div>
+                <p>โดยที่ \(\text{Corr}(x_i, u_i) = \rho \neq 0\)</p>
+                <p>สร้างได้โดย:</p>
+                <ul>
+                    <li>\(x_i = \pi z_i + v_i\)</li>
+                    <li>\(u_i = \gamma v_i + e_i\)</li>
+                    <li>\(z_i\) เป็น instrument (ไม่สัมพันธ์กับ u)</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ผลของ Endogeneity</h3>
+                <p>เมื่อ \(\text{Cov}(x, u) \neq 0\):</p>
+                <ul>
+                    <li>OLS เป็น <strong>biased</strong> &mdash; \(E(\hat{\beta}_{OLS}) \neq \beta\)</li>
+                    <li>OLS เป็น <strong>inconsistent</strong> &mdash; bias ไม่หายไปแม้ n &rarr; &infin;</li>
+                    <li>\(\text{plim } \hat{\beta}_{OLS} = \beta + \frac{\text{Cov}(x,u)}{\text{Var}(x)}\)</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <h3>ทางแก้: IV Estimation</h3>
+                <p>ใช้ <strong>Instrumental Variable (IV)</strong> ที่สัมพันธ์กับ x แต่ไม่สัมพันธ์กับ u</p>
+                <p>\(\hat{\beta}_{IV}\) เป็น <strong>consistent</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Simulation: OLS vs IV เมื่อมี Endogeneity</h2>
+    <div class="stata-code">
+        <span class="cmt">* DGP: y = 1 + 2*x + u, Corr(x,u) ≠ 0</span><br>
+        <span class="cmd">program</span> endogdata, <span class="opt">rclass</span><br>
+        &nbsp;&nbsp;<span class="cmd">drop</span> _all<br>
+        &nbsp;&nbsp;<span class="cmd">set obs</span> <span class="num">200</span><br>
+        &nbsp;&nbsp;<span class="cmd">generate</span> z = <span class="cmd">rnormal</span>() <span class="cmt">// instrument</span><br>
+        &nbsp;&nbsp;<span class="cmd">generate</span> v = <span class="cmd">rnormal</span>() <span class="cmt">// ส่วนที่ทำให้ endog</span><br>
+        &nbsp;&nbsp;<span class="cmd">generate</span> e = <span class="cmd">rnormal</span>()<br>
+        &nbsp;&nbsp;<span class="cmd">generate</span> x = <span class="num">1</span>*z + v <span class="cmt">// x ขึ้นกับ z และ v</span><br>
+        &nbsp;&nbsp;<span class="cmd">generate</span> u = <span class="num">0.8</span>*v + e <span class="cmt">// u ขึ้นกับ v → Corr(x,u)≠0</span><br>
+        &nbsp;&nbsp;<span class="cmd">generate</span> y = <span class="num">1</span> + <span class="num">2</span>*x + u<br>
+        &nbsp;&nbsp;<span class="cmd">regress</span> y x<br>
+        &nbsp;&nbsp;<span class="cmd">return scalar</span> b_ols = _b[x]<br>
+        &nbsp;&nbsp;<span class="cmd">ivregress</span> <span class="opt">2sls</span> y (x = z)<br>
+        &nbsp;&nbsp;<span class="cmd">return scalar</span> b_iv = _b[x]<br>
+        <span class="cmd">end</span>
+    </div>
+    <div class="key-insight fragment" style="margin-top: 5px;">
+        <p><strong>ผลที่คาดหวัง:</strong> Mean(&beta;&#770;<sub>OLS</sub>) &ne; 2 (biased) แต่ Mean(&beta;&#770;<sub>IV</sub>) &asymp; 2 (consistent)</p>
+    </div>
+</section>
+
+<section>
+    <h2>Interactive: Endogeneity Demo</h2>
+    <div class="interactive-container">
+        <h4>แสดงผลของ Endogeneity: OLS vs IV</h4>
+        <div class="two-col">
+            <div>
+                <div class="slider-group">
+                    <label>Corr(x, u):</label>
+                    <input type="range" id="endogRho" min="0" max="90" value="50" step="5" oninput="updateEndogLabel(this.value)">
+                    <span class="val" id="endogRhoVal">0.50</span>
+                </div>
+                <div class="slider-group">
+                    <label>Sample size:</label>
+                    <input type="range" id="endogN" min="50" max="500" value="200" step="50" oninput="document.getElementById('endogNVal').textContent=this.value">
+                    <span class="val" id="endogNVal">200</span>
+                </div>
+                <div style="margin: 4px 0;">
+                    <button class="interactive-btn" onclick="endogRun(1)">Run 1</button>
+                    <button class="interactive-btn" onclick="endogRun(100)">Run 100</button>
+                    <button class="interactive-btn" onclick="endogRun(500)">Run 500</button>
+                    <button class="interactive-btn" onclick="endogReset()">Reset</button>
+                </div>
+                <div class="stats-display" id="endogStatsBox">
+                    <span class="stat-label">Reps:</span> <span class="stat-value" id="endogReps">0</span><br>
+                    <span class="stat-label">Mean OLS &beta;&#770;:</span> <span class="stat-value" id="endogOLS">-</span><br>
+                    <span class="stat-label">Mean IV &beta;&#770;:</span> <span class="stat-value" id="endogIV">-</span><br>
+                    <span class="stat-label">True &beta;:</span> <span class="stat-value">2.00</span>
+                </div>
+            </div>
+            <div>
+                <canvas id="endogCanvas" width="420" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ผลของ Endogeneity: OLS Inconsistency</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ข้อสังเกตจาก Simulation</h3>
+                <ul>
+                    <li>OLS: histogram ของ \(\hat{\beta}_1\) จะ <strong>ไม่ centered ที่ 2</strong></li>
+                    <li>IV: histogram ของ \(\hat{\beta}_1\) จะ <strong>centered ที่ 2</strong> แต่กว้างกว่า</li>
+                    <li>เมื่อเพิ่ม n: OLS bias <strong>ไม่ลดลง</strong> (inconsistent)</li>
+                    <li>เมื่อเพิ่ม n: IV variance <strong>ลดลง</strong> (consistent)</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>Bias-Variance Trade-off</h3>
+                <p>IV มี <strong>variance สูงกว่า</strong> OLS เสมอ (ราคาของ consistency)</p>
+                <p>แต่ในกรณี endogeneity:</p>
+                <ul>
+                    <li>OLS: low variance แต่ <strong>biased</strong> (ไม่ดี)</li>
+                    <li>IV: higher variance แต่ <strong>unbiased/consistent</strong> (ดีกว่า)</li>
+                </ul>
+                <p>ยิ่ง &rho; สูง &rarr; OLS bias ยิ่งมาก &rarr; IV ยิ่งจำเป็น</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Quiz: Endogeneity</h2>
+    <div id="quiz4">
+        <div class="concept-box">
+            <p><strong>คำถาม:</strong> เมื่อ Corr(x, u) = 0.5 และเราเพิ่ม sample size จาก 100 เป็น 10,000 จะเกิดอะไรกับ OLS estimator?</p>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, false)">A) Bias จะหายไปเพราะ n ใหญ่พอ (Law of Large Numbers)</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, false)">B) Bias จะเพิ่มขึ้นตาม n</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, true)">C) Bias จะคงเดิม เพราะ OLS เป็น inconsistent เมื่อมี endogeneity</div>
+        <div class="quiz-option" onclick="checkQuiz('quiz4', this, false)">D) OLS จะกลายเป็น consistent เมื่อ n > 1,000</div>
+        <div class="quiz-feedback" id="quiz4-feedback"></div>
+    </div>
+</section>
+</section>
+
+<!-- ==================== SECTION 6: SUMMARY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>6. Summary</h2>
+    <p>สรุปบทเรียนจาก Monte Carlo Simulation</p>
+</section>
+
+<section>
+    <h2>สรุป: Monte Carlo Simulation</h2>
+    <div class="three-col">
+        <div class="concept-box">
+            <h3>Random Number Generation</h3>
+            <ul>
+                <li><code>set seed</code> เพื่อ reproducibility</li>
+                <li>Uniform, Normal, t, &chi;&sup2;, Poisson</li>
+                <li>ตรวจสอบด้วย histogram, kdensity</li>
+                <li>Negative Binomial จาก Gamma mixing</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <h3>Central Limit Theorem</h3>
+            <ul>
+                <li>ค่าเฉลี่ยของตัวอย่าง &rarr; Normal</li>
+                <li>ใช้ <code>program</code> + <code>simulate</code></li>
+                <li>ใช้ได้กับ distribution ใด ๆ</li>
+                <li>n &ge; 30 มักจะเพียงพอ</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>Regression Simulation</h3>
+            <ul>
+                <li>OLS: unbiased แม้ error ไม่ Normal</li>
+                <li>SE formula ถูกต้อง</li>
+                <li>Rejection rate &asymp; 5%</li>
+                <li>Endogeneity &rarr; OLS inconsistent</li>
+                <li>IV แก้ปัญหาได้</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Stata Commands สำคัญในบทนี้</h2>
+    <table class="compare-table">
+        <tr><th>คำสั่ง</th><th>หน้าที่</th><th>ตัวอย่าง</th></tr>
+        <tr><td><code>set seed</code></td><td>กำหนด seed สำหรับ reproducibility</td><td><code>set seed 10101</code></td></tr>
+        <tr><td><code>runiform()</code></td><td>สร้าง Uniform(0,1)</td><td><code>gen x = runiform()</code></td></tr>
+        <tr><td><code>rnormal()</code></td><td>สร้าง Normal(0,1)</td><td><code>gen z = rnormal(0,2)</code></td></tr>
+        <tr><td><code>rchi2(k)</code></td><td>สร้าง Chi-squared(k)</td><td><code>gen u = rchi2(1)-1</code></td></tr>
+        <tr><td><code>rpoisson(m)</code></td><td>สร้าง Poisson(m)</td><td><code>gen y = rpoisson(5)</code></td></tr>
+        <tr><td><code>program ... end</code></td><td>สร้าง program สำหรับ simulate</td><td><code>program myprg, rclass</code></td></tr>
+        <tr><td><code>simulate</code></td><td>ทำ Monte Carlo simulation</td><td><code>simulate x=r(x), reps(1000): myprg</code></td></tr>
+        <tr><td><code>histogram</code></td><td>วาด histogram</td><td><code>histogram x, normal</code></td></tr>
+        <tr><td><code>kdensity</code></td><td>วาด kernel density</td><td><code>kdensity x, normal</code></td></tr>
+        <tr><td><code>ivregress 2sls</code></td><td>IV estimation</td><td><code>ivregress 2sls y (x=z)</code></td></tr>
+    </table>
+</section>
+
+<section>
+    <h2>Key Takeaways</h2>
+    <div class="two-col">
+        <div>
+            <div class="key-insight">
+                <h3>สิ่งที่ได้เรียนรู้</h3>
+                <ol>
+                    <li><strong>Monte Carlo</strong> ช่วยตรวจสอบคุณสมบัติของ estimator ที่ทฤษฎีพยากรณ์ไว้</li>
+                    <li><strong>CLT</strong> ทำให้ OLS ใช้ได้แม้ error ไม่เป็น Normal</li>
+                    <li><strong>set seed</strong> เป็นสิ่งจำเป็นสำหรับ reproducibility</li>
+                    <li><strong>Endogeneity</strong> ทำให้ OLS inconsistent &mdash; ต้องใช้ IV</li>
+                </ol>
+            </div>
+        </div>
+        <div>
+            <div class="example-box">
+                <h3>เตรียมตัวสำหรับบทต่อไป</h3>
+                <p><strong>Chapter 3:</strong> Heteroskedasticity, SUR, Survey Data</p>
+                <p>จะใช้เทคนิค simulation ที่เรียนในบทนี้เพื่อตรวจสอบว่า robust standard errors ทำงานได้ดีเมื่อมี heteroskedasticity</p>
+            </div>
+            <div class="concept-box" style="margin-top: 5px;">
+                <h3>แหล่งอ้างอิง</h3>
+                <p>Cameron &amp; Trivedi (2005), <em>Microeconometrics: Methods and Applications</em>, Ch. 4</p>
+            </div>
+        </div>
+    </div>
+</section>
+</section>
+
+</div><!-- .slides -->
+</div><!-- .reveal -->
+
+<!-- KaTeX -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+<!-- Reveal.js -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    width: 1100,
+    height: 700,
+    margin: 0.04,
+    minScale: 0.5,
+    maxScale: 1.2,
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    pdfMaxPagesPerSlide: 1,
+    disableLayout: false,
+});
+
+// ============================================================
+// COLOR PALETTE
+// ============================================================
+const C = {
+    blue:    '#4a90d9', blueFade: 'rgba(74,144,217,',
+    red:     '#d4534a', redFade:  'rgba(212,83,74,',
+    green:   '#3d9970', greenFade:'rgba(61,153,112,',
+    amber:   '#e8a838', amberFade:'rgba(232,168,56,',
+    purple:  '#8b5cf6',
+    dark:    '#1a2744',
+    grid:    '#e2e8f0',
+    text:    '#2d3748',
+    light:   '#718096'
+};
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function randn() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+function rchi2(df) {
+    let s = 0;
+    for (let i = 0; i < df; i++) { let z = randn(); s += z * z; }
+    return s;
+}
+
+function rpoisson(lam) {
+    let L = Math.exp(-lam), k = 0, p = 1;
+    do { k++; p *= Math.random(); } while (p > L);
+    return k - 1;
+}
+
+function rt(df) {
+    return randn() / Math.sqrt(rchi2(df) / df);
+}
+
+function mean(arr) { return arr.reduce((a,b) => a+b, 0) / arr.length; }
+function sd(arr) {
+    let m = mean(arr);
+    return Math.sqrt(arr.reduce((a,b) => a + (b-m)*(b-m), 0) / (arr.length - 1));
+}
+function skewness(arr) {
+    let m = mean(arr), s = sd(arr), n = arr.length;
+    return arr.reduce((a,b) => a + Math.pow((b-m)/s, 3), 0) / n;
+}
+
+function drawHistogram(ctx, data, w, h, options) {
+    options = options || {};
+    let bins = options.bins || 40;
+    let color = options.color || C.blue;
+    let label = options.label || '';
+    let showNormal = options.showNormal !== false;
+    let overlay = options.overlay || null;
+    let overlayColor = options.overlayColor || C.red;
+    let overlayLabel = options.overlayLabel || '';
+
+    let pad = { top: 20, right: 15, bottom: 30, left: 40 };
+    let pw = w - pad.left - pad.right;
+    let ph = h - pad.top - pad.bottom;
+
+    ctx.clearRect(0, 0, w, h);
+
+    if (data.length === 0) {
+        ctx.fillStyle = C.light;
+        ctx.font = '13px Sarabun';
+        ctx.textAlign = 'center';
+        ctx.fillText('กดปุ่มเพื่อเริ่มจำลอง', w/2, h/2);
+        return;
+    }
+
+    let allData = overlay ? data.concat(overlay) : data;
+    let minV = Math.min(...allData);
+    let maxV = Math.max(...allData);
+    let range = maxV - minV || 1;
+    minV -= range * 0.05;
+    maxV += range * 0.05;
+    range = maxV - minV;
+
+    let binW = range / bins;
+    let counts = new Array(bins).fill(0);
+    data.forEach(d => {
+        let idx = Math.floor((d - minV) / binW);
+        if (idx >= bins) idx = bins - 1;
+        if (idx < 0) idx = 0;
+        counts[idx]++;
+    });
+
+    let overlayCounts = null;
+    if (overlay) {
+        overlayCounts = new Array(bins).fill(0);
+        overlay.forEach(d => {
+            let idx = Math.floor((d - minV) / binW);
+            if (idx >= bins) idx = bins - 1;
+            if (idx < 0) idx = 0;
+            overlayCounts[idx]++;
+        });
+    }
+
+    // Normalize to density
+    let totalN = data.length;
+    let maxDensity = 0;
+    let densities = counts.map(c => { let d = c / (totalN * binW); if (d > maxDensity) maxDensity = d; return d; });
+
+    if (overlayCounts) {
+        let totalN2 = overlay.length;
+        var overlayDensities = overlayCounts.map(c => { let d = c / (totalN2 * binW); if (d > maxDensity) maxDensity = d; return d; });
+    }
+
+    // Normal curve peak
+    if (showNormal) {
+        let m = mean(data), s = sd(data);
+        let normalPeak = 1 / (s * Math.sqrt(2 * Math.PI));
+        if (normalPeak > maxDensity) maxDensity = normalPeak;
+    }
+
+    maxDensity *= 1.1;
+
+    // Grid
+    ctx.strokeStyle = C.grid;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i <= 4; i++) {
+        let y = pad.top + ph - (i / 4) * ph;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + pw, y); ctx.stroke();
+    }
+
+    // Bars
+    ctx.fillStyle = color + '88';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < bins; i++) {
+        let x = pad.left + (i / bins) * pw;
+        let bw = pw / bins;
+        let bh = (densities[i] / maxDensity) * ph;
+        ctx.fillRect(x, pad.top + ph - bh, bw, bh);
+        ctx.strokeRect(x, pad.top + ph - bh, bw, bh);
+    }
+
+    // Overlay bars
+    if (overlayCounts) {
+        ctx.fillStyle = overlayColor + '55';
+        ctx.strokeStyle = overlayColor;
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < bins; i++) {
+            let x = pad.left + (i / bins) * pw;
+            let bw = pw / bins;
+            let bh = (overlayDensities[i] / maxDensity) * ph;
+            ctx.fillRect(x, pad.top + ph - bh, bw, bh);
+            ctx.strokeRect(x, pad.top + ph - bh, bw, bh);
+        }
+    }
+
+    // Normal curve
+    if (showNormal && data.length > 1) {
+        let m = mean(data), s = sd(data);
+        ctx.strokeStyle = C.red;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let px = 0; px <= pw; px++) {
+            let xv = minV + (px / pw) * range;
+            let density = (1 / (s * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((xv - m) / s) ** 2);
+            let y = pad.top + ph - (density / maxDensity) * ph;
+            if (px === 0) ctx.moveTo(pad.left + px, y);
+            else ctx.lineTo(pad.left + px, y);
+        }
+        ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = C.text;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, pad.top + ph);
+    ctx.lineTo(pad.left + pw, pad.top + ph);
+    ctx.stroke();
+
+    // X-axis labels
+    ctx.fillStyle = C.text;
+    ctx.font = '10px Fira Code';
+    ctx.textAlign = 'center';
+    for (let i = 0; i <= 5; i++) {
+        let x = pad.left + (i / 5) * pw;
+        let v = minV + (i / 5) * range;
+        ctx.fillText(v.toFixed(2), x, pad.top + ph + 14);
+    }
+
+    // Y-axis labels
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 4; i++) {
+        let y = pad.top + ph - (i / 4) * ph;
+        let v = (i / 4) * maxDensity;
+        ctx.fillText(v.toFixed(2), pad.left - 4, y + 3);
+    }
+
+    // Labels
+    if (label) {
+        ctx.fillStyle = color;
+        ctx.font = 'bold 11px Sarabun';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, pad.left + 5, pad.top + 12);
+    }
+    if (overlayLabel) {
+        ctx.fillStyle = overlayColor;
+        ctx.font = 'bold 11px Sarabun';
+        ctx.textAlign = 'left';
+        ctx.fillText(overlayLabel, pad.left + 5, pad.top + 26);
+    }
+}
+
+// ============================================================
+// 1. DISTRIBUTION DEMO
+// ============================================================
+function drawDistDemo(dist, btn) {
+    // Update active button
+    if (btn) {
+        btn.parentElement.querySelectorAll('.interactive-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    let n = parseInt(document.getElementById('distN').value);
+    let data = [];
+    let label = '';
+
+    switch(dist) {
+        case 'uniform':
+            for (let i = 0; i < n; i++) data.push(Math.random());
+            label = 'Uniform(0,1)';
+            break;
+        case 'normal':
+            for (let i = 0; i < n; i++) data.push(randn());
+            label = 'Normal(0,1)';
+            break;
+        case 'chi2':
+            for (let i = 0; i < n; i++) data.push(rchi2(3));
+            label = 'Chi-squared(3)';
+            break;
+        case 't':
+            for (let i = 0; i < n; i++) data.push(rt(5));
+            label = 't(5)';
+            break;
+        case 'poisson':
+            for (let i = 0; i < n; i++) data.push(rpoisson(5));
+            label = 'Poisson(5)';
+            break;
+    }
+
+    let canvas = document.getElementById('distCanvas');
+    let ctx = canvas.getContext('2d');
+    drawHistogram(ctx, data, canvas.width, canvas.height, { color: C.blue, label: label, bins: 40 });
+
+    document.getElementById('distMean').textContent = mean(data).toFixed(4);
+    document.getElementById('distSD').textContent = sd(data).toFixed(4);
+    document.getElementById('distSkew').textContent = skewness(data).toFixed(4);
+}
+
+// ============================================================
+// 2. CLT DEMO
+// ============================================================
+let cltMeans = [];
+
+function cltDraw(reps) {
+    let n = parseInt(document.getElementById('cltN').value);
+    for (let r = 0; r < reps; r++) {
+        let sum = 0;
+        for (let i = 0; i < n; i++) sum += Math.random();
+        cltMeans.push(sum / n);
+    }
+
+    let canvas = document.getElementById('cltCanvas');
+    let ctx = canvas.getContext('2d');
+    drawHistogram(ctx, cltMeans, canvas.width, canvas.height, {
+        color: C.blue, label: 'Distribution of sample means', bins: 50
+    });
+
+    document.getElementById('cltCount').textContent = cltMeans.length;
+    document.getElementById('cltMean').textContent = mean(cltMeans).toFixed(4);
+    document.getElementById('cltSD').textContent = sd(cltMeans).toFixed(4);
+}
+
+function cltReset() {
+    cltMeans = [];
+    let canvas = document.getElementById('cltCanvas');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = C.light;
+    ctx.font = '13px Sarabun';
+    ctx.textAlign = 'center';
+    ctx.fillText('กดปุ่มเพื่อเริ่มจำลอง', canvas.width/2, canvas.height/2);
+    document.getElementById('cltCount').textContent = '0';
+    document.getElementById('cltMean').textContent = '-';
+    document.getElementById('cltSD').textContent = '-';
+}
+
+// ============================================================
+// 3. OLS SIMULATION DEMO
+// ============================================================
+let olsBetas = [];
+let olsSEs = [];
+let olsRejects = [];
+
+function olsOneSim(n) {
+    // DGP: y = 1 + 2x + u, x ~ chi2(1), u = chi2(1) - 1
+    let xs = [], ys = [];
+    for (let i = 0; i < n; i++) {
+        let x = rchi2(1);
+        let u = rchi2(1) - 1;
+        let y = 1 + 2 * x + u;
+        xs.push(x);
+        ys.push(y);
+    }
+
+    // OLS: y = a + b*x
+    let mx = mean(xs), my = mean(ys);
+    let sxy = 0, sxx = 0;
+    for (let i = 0; i < n; i++) {
+        sxy += (xs[i] - mx) * (ys[i] - my);
+        sxx += (xs[i] - mx) * (xs[i] - mx);
+    }
+    let b = sxy / sxx;
+    let a = my - b * mx;
+
+    // Residuals and SE
+    let ssr = 0;
+    for (let i = 0; i < n; i++) {
+        let res = ys[i] - a - b * xs[i];
+        ssr += res * res;
+    }
+    let s2 = ssr / (n - 2);
+    let se = Math.sqrt(s2 / sxx);
+    let t = (b - 2) / se;
+    // Using normal approximation for critical value at 5% two-sided
+    let reject = Math.abs(t) > 1.96 ? 1 : 0;
+
+    return { b: b, se: se, t: t, reject: reject };
+}
+
+function olsDraw(reps) {
+    let n = parseInt(document.getElementById('olsN').value);
+    for (let r = 0; r < reps; r++) {
+        let res = olsOneSim(n);
+        olsBetas.push(res.b);
+        olsSEs.push(res.se);
+        olsRejects.push(res.reject);
+    }
+
+    let canvas = document.getElementById('olsCanvas');
+    let ctx = canvas.getContext('2d');
+    drawHistogram(ctx, olsBetas, canvas.width, canvas.height, {
+        color: C.blue, label: 'Distribution of beta-hat', bins: 50
+    });
+
+    document.getElementById('olsReps').textContent = olsBetas.length;
+    document.getElementById('olsMeanB').textContent = mean(olsBetas).toFixed(4);
+    document.getElementById('olsSDB').textContent = sd(olsBetas).toFixed(4);
+    document.getElementById('olsMeanSE').textContent = mean(olsSEs).toFixed(4);
+    document.getElementById('olsReject').textContent = mean(olsRejects).toFixed(4);
+}
+
+function olsReset() {
+    olsBetas = []; olsSEs = []; olsRejects = [];
+    let canvas = document.getElementById('olsCanvas');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = C.light;
+    ctx.font = '13px Sarabun';
+    ctx.textAlign = 'center';
+    ctx.fillText('กดปุ่มเพื่อเริ่มจำลอง', canvas.width/2, canvas.height/2);
+    document.getElementById('olsReps').textContent = '0';
+    document.getElementById('olsMeanB').textContent = '-';
+    document.getElementById('olsSDB').textContent = '-';
+    document.getElementById('olsMeanSE').textContent = '-';
+    document.getElementById('olsReject').textContent = '-';
+}
+
+// ============================================================
+// 4. ENDOGENEITY DEMO
+// ============================================================
+let endogOLSBetas = [];
+let endogIVBetas = [];
+
+function updateEndogLabel(val) {
+    document.getElementById('endogRhoVal').textContent = (val / 100).toFixed(2);
+}
+
+function endogOneSim(n, rho) {
+    // DGP: y = 1 + 2x + u
+    // x = z + v, u = rho*v + sqrt(1-rho^2)*e
+    // z ~ N(0,1), v ~ N(0,1), e ~ N(0,1)
+    let xs = [], ys = [], zs = [];
+    let gamma = rho; // correlation strength via v
+    for (let i = 0; i < n; i++) {
+        let z = randn();
+        let v = randn();
+        let e = randn();
+        let x = z + v;
+        let u = gamma * v + Math.sqrt(1 - gamma * gamma) * e;
+        let y = 1 + 2 * x + u;
+        xs.push(x); ys.push(y); zs.push(z);
+    }
+
+    // OLS
+    let mx = mean(xs), my = mean(ys);
+    let sxy = 0, sxx = 0;
+    for (let i = 0; i < n; i++) {
+        sxy += (xs[i] - mx) * (ys[i] - my);
+        sxx += (xs[i] - mx) * (xs[i] - mx);
+    }
+    let b_ols = sxy / sxx;
+
+    // IV: beta_iv = Cov(z,y) / Cov(z,x)
+    let mz = mean(zs);
+    let szy = 0, szx = 0;
+    for (let i = 0; i < n; i++) {
+        szy += (zs[i] - mz) * (ys[i] - my);
+        szx += (zs[i] - mz) * (xs[i] - mx);
+    }
+    let b_iv = szy / szx;
+
+    return { b_ols: b_ols, b_iv: b_iv };
+}
+
+function endogRun(reps) {
+    let n = parseInt(document.getElementById('endogN').value);
+    let rho = parseInt(document.getElementById('endogRho').value) / 100;
+    for (let r = 0; r < reps; r++) {
+        let res = endogOneSim(n, rho);
+        endogOLSBetas.push(res.b_ols);
+        endogIVBetas.push(res.b_iv);
+    }
+
+    let canvas = document.getElementById('endogCanvas');
+    let ctx = canvas.getContext('2d');
+
+    // Draw both histograms overlaid
+    let allData = endogOLSBetas.concat(endogIVBetas);
+    let minV = Math.min(...allData) - 0.1;
+    let maxV = Math.max(...allData) + 0.1;
+    let bins = 50;
+    let range = maxV - minV;
+    let binW = range / bins;
+
+    let pad = { top: 20, right: 15, bottom: 30, left: 40 };
+    let pw = canvas.width - pad.left - pad.right;
+    let ph = canvas.height - pad.top - pad.bottom;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Compute densities
+    function makeDensity(data) {
+        let counts = new Array(bins).fill(0);
+        data.forEach(d => {
+            let idx = Math.floor((d - minV) / binW);
+            if (idx >= bins) idx = bins - 1;
+            if (idx < 0) idx = 0;
+            counts[idx]++;
+        });
+        return counts.map(c => c / (data.length * binW));
+    }
+
+    let olsDens = makeDensity(endogOLSBetas);
+    let ivDens = makeDensity(endogIVBetas);
+    let maxD = Math.max(...olsDens, ...ivDens) * 1.1;
+
+    // Grid
+    ctx.strokeStyle = C.grid;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i <= 4; i++) {
+        let y = pad.top + ph - (i / 4) * ph;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + pw, y); ctx.stroke();
+    }
+
+    // OLS bars
+    ctx.fillStyle = C.blueFade + '0.5)';
+    ctx.strokeStyle = C.blue;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < bins; i++) {
+        let x = pad.left + (i / bins) * pw;
+        let bw = pw / bins;
+        let bh = (olsDens[i] / maxD) * ph;
+        ctx.fillRect(x, pad.top + ph - bh, bw, bh);
+        ctx.strokeRect(x, pad.top + ph - bh, bw, bh);
+    }
+
+    // IV bars
+    ctx.fillStyle = C.greenFade + '0.4)';
+    ctx.strokeStyle = C.green;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < bins; i++) {
+        let x = pad.left + (i / bins) * pw;
+        let bw = pw / bins;
+        let bh = (ivDens[i] / maxD) * ph;
+        ctx.fillRect(x, pad.top + ph - bh, bw, bh);
+        ctx.strokeRect(x, pad.top + ph - bh, bw, bh);
+    }
+
+    // True value line
+    let trueX = pad.left + ((2 - minV) / range) * pw;
+    ctx.strokeStyle = C.red;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    ctx.moveTo(trueX, pad.top);
+    ctx.lineTo(trueX, pad.top + ph);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Axes
+    ctx.strokeStyle = C.text;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, pad.top + ph);
+    ctx.lineTo(pad.left + pw, pad.top + ph);
+    ctx.stroke();
+
+    // X-axis labels
+    ctx.fillStyle = C.text;
+    ctx.font = '10px Fira Code';
+    ctx.textAlign = 'center';
+    for (let i = 0; i <= 5; i++) {
+        let x = pad.left + (i / 5) * pw;
+        let v = minV + (i / 5) * range;
+        ctx.fillText(v.toFixed(2), x, pad.top + ph + 14);
+    }
+
+    // Legend
+    ctx.font = 'bold 11px Sarabun';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = C.blue;
+    ctx.fillText('OLS', pad.left + 5, pad.top + 12);
+    ctx.fillStyle = C.green;
+    ctx.fillText('IV', pad.left + 45, pad.top + 12);
+    ctx.fillStyle = C.red;
+    ctx.fillText('True beta = 2', pad.left + 75, pad.top + 12);
+
+    // Update stats
+    document.getElementById('endogReps').textContent = endogOLSBetas.length;
+    document.getElementById('endogOLS').textContent = mean(endogOLSBetas).toFixed(4);
+    document.getElementById('endogIV').textContent = mean(endogIVBetas).toFixed(4);
+}
+
+function endogReset() {
+    endogOLSBetas = []; endogIVBetas = [];
+    let canvas = document.getElementById('endogCanvas');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = C.light;
+    ctx.font = '13px Sarabun';
+    ctx.textAlign = 'center';
+    ctx.fillText('กดปุ่มเพื่อเริ่มจำลอง', canvas.width/2, canvas.height/2);
+    document.getElementById('endogReps').textContent = '0';
+    document.getElementById('endogOLS').textContent = '-';
+    document.getElementById('endogIV').textContent = '-';
+}
+
+// ============================================================
+// QUIZ HANDLER
+// ============================================================
+function checkQuiz(quizId, el, correct) {
+    let container = document.getElementById(quizId);
+    let feedback = document.getElementById(quizId + '-feedback');
+    let options = container.querySelectorAll('.quiz-option');
+
+    // Disable all
+    options.forEach(o => o.style.pointerEvents = 'none');
+
+    if (correct) {
+        el.classList.add('correct');
+        feedback.style.display = 'block';
+        feedback.style.background = '#eafaf1';
+        feedback.style.color = C.green;
+        if (quizId === 'quiz1') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> ตาม CLT ค่าเฉลี่ยของตัวอย่างจาก distribution ใดก็ได้ (ที่มี finite variance) จะเข้าใกล้ Normal distribution เมื่อ n ใหญ่พอ โดยมี mean เท่ากับ mean ของ population = 0.5';
+        } else if (quizId === 'quiz2') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> OLS เป็น unbiased estimator ไม่ว่า error จะมี distribution อะไร (ต้องการเพียง E(u|x)=0) ค่า 2.003 ใกล้เคียง 2 มาก ซึ่งเป็น simulation error ตามธรรมชาติ';
+        } else if (quizId === 'quiz3') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> เมื่อ H<sub>0</sub> เป็นจริง test ที่มี correct size ที่ระดับ &alpha;=0.05 จะปฏิเสธประมาณ 5% ของเวลา (Type I error rate = &alpha;)';
+        } else if (quizId === 'quiz4') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> Endogeneity ทำให้ OLS เป็น inconsistent &mdash; bias ไม่หายไปแม้ n จะใหญ่เท่าใดก็ตาม plim ของ OLS ไม่เท่ากับ true beta ต้องใช้ IV estimation แทน';
+        }
+    } else {
+        el.classList.add('wrong');
+        feedback.style.display = 'block';
+        feedback.style.background = '#fef5f4';
+        feedback.style.color = C.red;
+        feedback.innerHTML = '<strong>ไม่ถูกต้อง</strong> &mdash; ลองทบทวนเนื้อหาแล้วลองใหม่';
+        // Re-enable after a moment
+        setTimeout(() => {
+            options.forEach(o => { o.style.pointerEvents = 'auto'; o.classList.remove('wrong'); });
+            feedback.style.display = 'none';
+        }, 2000);
+    }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+let initialized = false;
+function initAll() {
+    if (initialized) return;
+    initialized = true;
+    // Render KaTeX math
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+    });
+    drawDistDemo('uniform', document.querySelector('#distCanvas').closest('.interactive-container').querySelector('.interactive-btn'));
+    cltReset();
+    olsReset();
+    endogReset();
+}
+
+Reveal.on('ready', initAll);
+Reveal.on('slidechanged', () => {
+    requestAnimationFrame(() => {
+        let slide = Reveal.getCurrentSlide();
+        if (slide.querySelector('#distCanvas')) {
+            let activeBtn = slide.querySelector('.interactive-btn.active');
+            let dist = 'uniform';
+            if (activeBtn) {
+                let t = activeBtn.textContent.toLowerCase();
+                if (t.includes('normal')) dist = 'normal';
+                else if (t.includes('chi')) dist = 'chi2';
+                else if (t.includes('t(')) dist = 't';
+                else if (t.includes('poisson')) dist = 'poisson';
+            }
+            drawDistDemo(dist, null);
+        }
+        if (slide.querySelector('#cltCanvas') && cltMeans.length > 0) {
+            let canvas = document.getElementById('cltCanvas');
+            let ctx = canvas.getContext('2d');
+            drawHistogram(ctx, cltMeans, canvas.width, canvas.height, {
+                color: C.blue, label: 'Distribution of sample means', bins: 50
+            });
+        }
+        if (slide.querySelector('#olsCanvas') && olsBetas.length > 0) {
+            let canvas = document.getElementById('olsCanvas');
+            let ctx = canvas.getContext('2d');
+            drawHistogram(ctx, olsBetas, canvas.width, canvas.height, {
+                color: C.blue, label: 'Distribution of beta-hat', bins: 50
+            });
+        }
+        if (slide.querySelector('#endogCanvas') && endogOLSBetas.length > 0) {
+            endogRun(0);
+        }
+    });
+});
+</script>
+
+</body>
+</html>
