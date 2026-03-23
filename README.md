@@ -45,8 +45,7 @@ All 8 chapters include interactive **reveal.js** presentations with:
 - เข้าไปที่โฟลเดอร์ [`slides/`](slides/) ใน GitHub
 - คลิกไฟล์บทที่ต้องการ เช่น `chap1_slides.html`
 - กดปุ่ม **Download raw file** (ไอคอนลูกศรลง ↓ มุมขวาบน)
-- ดาวน์โหลดไฟล์ `EconTU jpg.jpg` ด้วย (โลโก้ที่แสดงในสไลด์)
-- **วางทั้ง 2 ไฟล์ไว้ในโฟลเดอร์เดียวกัน**
+- ดาวน์โหลดแค่ไฟล์เดียว ใช้งานได้เลย (โลโก้ฝังอยู่ในไฟล์แล้ว)
 
 > หรือจะโคลนทั้ง repo: `git clone https://github.com/tiraphap/EC627-Microeconometrics.git`
 
