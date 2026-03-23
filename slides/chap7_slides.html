@@ -211,22 +211,32 @@
 
     <section>
         <h2>ทำไมต้อง Regression Discontinuity?</h2>
-        <div class="key-insight">
-            <h3>ปัญหาหลักของการอนุมาน Causal Inference</h3>
-            <p><strong>Randomized Controlled Trials (RCTs)</strong> เป็น gold standard แต่มีข้อจำกัดด้านจริยธรรม ค่าใช้จ่าย และความเป็นไปได้ในการดำเนินการ</p>
-        </div>
-        <div class="fragment concept-box">
-            <h3>RD Design ใช้ประโยชน์จาก "การทดลองธรรมชาติ"</h3>
-            <ul>
-                <li>การได้รับ treatment ถูกกำหนดโดย <strong>score (running variable)</strong> ข้าม <strong>cutoff ที่กำหนดไว้ล่วงหน้า</strong></li>
-                <li>หน่วยที่อยู่ใกล้ cutoff ทั้งสองฝั่งมีลักษณะ <strong>เปรียบเทียบกันได้</strong> (comparable)</li>
-                <li>ความต่างของผลลัพธ์ที่ cutoff = <strong>ผลกระทบเชิงสาเหตุ (causal effect)</strong></li>
-            </ul>
-        </div>
-        <div class="fragment example-box">
-            <h3>ตัวอย่างในชีวิตจริง</h3>
-            <p>ทุนการศึกษา (คะแนนสอบ > เกณฑ์), สิทธิ์ได้รับสวัสดิการ (รายได้ < เกณฑ์), นโยบาย Head Start (อัตราความยากจน > cutoff)</p>
-            <p style="font-size:0.9em; color:var(--text-light); margin-top:2px;"><strong>Ref:</strong> Cattaneo, Idrobo & Titiunik (2020, 2023) <em>A Practical Introduction to Regression Discontinuity Designs</em></p>
+        <div class="two-col">
+            <div>
+                <div class="key-insight">
+                    <h3>ปัญหา: Causal Inference</h3>
+                    <p><strong>RCTs</strong> เป็น gold standard แต่มีข้อจำกัดด้านจริยธรรม ค่าใช้จ่าย และความเป็นไปได้</p>
+                </div>
+                <div class="concept-box fragment">
+                    <h3>RD ใช้ประโยชน์จาก "การทดลองธรรมชาติ"</h3>
+                    <ul>
+                        <li>Treatment ถูกกำหนดโดย <strong>score</strong> ข้าม <strong>cutoff</strong></li>
+                        <li>หน่วยใกล้ cutoff ทั้งสองฝั่ง <strong>เปรียบเทียบกันได้</strong></li>
+                        <li>ผลต่างที่ cutoff = <strong>causal effect</strong></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="example-box fragment">
+                    <h3>ตัวอย่างในชีวิตจริง</h3>
+                    <ul>
+                        <li>ทุนการศึกษา (คะแนนสอบ > เกณฑ์)</li>
+                        <li>สวัสดิการ (รายได้ < เกณฑ์)</li>
+                        <li>Head Start (poverty rate > cutoff)</li>
+                    </ul>
+                    <p style="font-size:0.85em; color:var(--text-light); margin-top:4px;"><strong>Ref:</strong> Cattaneo, Idrobo &amp; Titiunik (2020, 2023)</p>
+                </div>
+            </div>
         </div>
     </section>
 
