@@ -1,6 +1,3 @@
-* MIT License
-* Copyright (c) 2026 Tiraphap Fakthong
-* See LICENSE file for full license text.
 *************************************************************************
 ** RD Designs (Parts I and II)
 ** NBER Summer Institute Methods Lectures, July 2021
