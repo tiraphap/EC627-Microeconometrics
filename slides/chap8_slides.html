@@ -227,14 +227,14 @@
                 <h3>แนวคิดหลัก</h3>
                 <p>สำหรับแต่ละหน่วยสังเกต <em>i</em> มี <strong>ผลลัพธ์ที่เป็นไปได้ 2 แบบ</strong>:</p>
                 <ul>
-                    <li class="fragment"><span class="katex">Y_i(0)</span> = ผลลัพธ์เมื่อ<strong>ไม่ได้รับ</strong> treatment</li>
-                    <li class="fragment"><span class="katex">Y_i(1)</span> = ผลลัพธ์เมื่อ<strong>ได้รับ</strong> treatment</li>
+                    <li class="fragment"><span data-tex="Y_i(0)"></span> = ผลลัพธ์เมื่อ<strong>ไม่ได้รับ</strong> treatment</li>
+                    <li class="fragment"><span data-tex="Y_i(1)"></span> = ผลลัพธ์เมื่อ<strong>ได้รับ</strong> treatment</li>
                 </ul>
             </div>
             <div class="key-insight fragment">
                 <h3>Treatment Effect สำหรับหน่วย i</h3>
                 <div class="math-block">
-                    <span class="katex">\tau_i = Y_i(1) - Y_i(0)</span>
+                    <span data-tex="\tau_i = Y_i(1) - Y_i(0)"></span>
                 </div>
             </div>
         </div>
@@ -243,13 +243,13 @@
                 <h3>Fundamental Problem of Causal Inference</h3>
                 <p>เราสังเกตได้เพียง <strong>ผลลัพธ์เดียว</strong> สำหรับแต่ละหน่วย:</p>
                 <div class="math-block">
-                    <span class="katex">Y_i = D_i \cdot Y_i(1) + (1 - D_i) \cdot Y_i(0)</span>
+                    <span data-tex="Y_i = D_i \cdot Y_i(1) + (1 - D_i) \cdot Y_i(0)"></span>
                 </div>
-                <p>โดย <span class="katex">D_i \in \{0, 1\}</span> = สถานะการรับ treatment</p>
+                <p>โดย <span data-tex="D_i \in \{0, 1\}"></span> = สถานะการรับ treatment</p>
             </div>
             <div class="example-box fragment">
                 <h3>ตัวอย่าง</h3>
-                <p>ถ้า <span class="katex">D_i = 1</span> เราเห็น <span class="katex">Y_i(1)</span> แต่ไม่เห็น <span class="katex">Y_i(0)</span> (counterfactual) ดังนั้น <span class="katex">\tau_i</span> ไม่สามารถคำนวณได้โดยตรง</p>
+                <p>ถ้า <span data-tex="D_i = 1"></span> เราเห็น <span data-tex="Y_i(1)"></span> แต่ไม่เห็น <span data-tex="Y_i(0)"></span> (counterfactual) ดังนั้น <span data-tex="\tau_i"></span> ไม่สามารถคำนวณได้โดยตรง</p>
             </div>
         </div>
     </div>
@@ -263,7 +263,7 @@
             <div class="concept-box">
                 <h3>Average Treatment Effect (ATE)</h3>
                 <div class="math-block">
-                    <span class="katex">\text{ATE} = E[Y(1) - Y(0)]</span>
+                    <span data-tex="\text{ATE} = E[Y(1) - Y(0)]"></span>
                 </div>
                 <p class="fragment">= ผลกระทบเฉลี่ยสำหรับ<strong>ทุกคน</strong>ในประชากร</p>
                 <p class="fragment">ถ้าเราสุ่มได้สมบูรณ์ (RCT) เราสามารถประมาณค่านี้ได้โดยตรง</p>
@@ -273,7 +273,7 @@
             <div class="key-insight">
                 <h3>Average Treatment Effect on the Treated (ATT)</h3>
                 <div class="math-block">
-                    <span class="katex">\text{ATT} = E[Y(1) - Y(0) \mid D = 1]</span>
+                    <span data-tex="\text{ATT} = E[Y(1) - Y(0) \mid D = 1]"></span>
                 </div>
                 <p class="fragment">= ผลกระทบเฉลี่ยสำหรับ<strong>ผู้ที่ได้รับ treatment จริง</strong>เท่านั้น</p>
                 <p class="fragment">ในบริบท DID มักสนใจ ATT มากกว่า ATE</p>
@@ -299,7 +299,7 @@
                 <h3>1. No Interference</h3>
                 <p>ผลลัพธ์ของหน่วย <em>i</em> ไม่ขึ้นกับสถานะ treatment ของหน่วยอื่น</p>
                 <div class="math-block">
-                    <span class="katex">Y_i(D_1, \ldots, D_N) = Y_i(D_i)</span>
+                    <span data-tex="Y_i(D_1, \ldots, D_N) = Y_i(D_i)"></span>
                 </div>
                 <p class="fragment"><strong>ตัวอย่างการละเมิด:</strong> วัคซีนสร้างภูมิคุ้มกันหมู่ ทำให้คนไม่ฉีดก็ได้ประโยชน์ (spillover)</p>
             </div>
@@ -320,7 +320,7 @@
     <div class="concept-box">
         <h3>นิยาม</h3>
         <div class="math-block">
-            <span class="katex">\{Y(0), Y(1)\} \perp D \mid X</span>
+            <span data-tex="\{Y(0), Y(1)\} \perp D \mid X"></span>
         </div>
         <p>เมื่อควบคุมตัวแปร <strong>X</strong> (confounders) แล้ว การได้รับ treatment เป็นอิสระจาก potential outcomes</p>
     </div>
@@ -336,9 +336,9 @@
             <div class="example-box fragment">
                 <h3>ภายใต้ SUTVA + CIA</h3>
                 <div class="math-block">
-                    <span class="katex">Y = \alpha + \beta D + \gamma X + \varepsilon</span>
+                    <span data-tex="Y = \alpha + \beta D + \gamma X + \varepsilon"></span>
                 </div>
-                <p>ค่าสัมประสิทธิ์ <span class="katex">\beta</span> = <strong>ATE</strong></p>
+                <p>ค่าสัมประสิทธิ์ <span data-tex="\beta"></span> = <strong>ATE</strong></p>
                 <p>แต่ในทางปฏิบัติ CIA มักไม่สมจริง เพราะมี unobservable confounders ที่ควบคุมไม่ได้</p>
             </div>
         </div>
@@ -401,7 +401,7 @@
     <div class="concept-box">
         <h3>สมการถดถอย DID (2x2)</h3>
         <div class="math-block">
-            <span class="katex">Y_{it} = \alpha + \beta \cdot \text{Group}_i + \gamma \cdot \text{Post}_t + \delta \cdot (\text{Group}_i \times \text{Post}_t) + \varepsilon_{it}</span>
+            <span data-tex="Y_{it} = \alpha + \beta \cdot \text{Group}_i + \gamma \cdot \text{Post}_t + \delta \cdot (\text{Group}_i \times \text{Post}_t) + \varepsilon_{it}"></span>
         </div>
     </div>
     <div class="two-col" style="margin-top:5px;">
@@ -409,22 +409,22 @@
             <div class="example-box fragment">
                 <h3>ความหมายของสัมประสิทธิ์</h3>
                 <ul>
-                    <li><span class="katex">\alpha</span> = ค่าเฉลี่ย Y ของ control group ที่ t=0</li>
-                    <li><span class="katex">\beta</span> = ความแตกต่างระหว่าง treatment กับ control ที่ t=0</li>
-                    <li><span class="katex">\gamma</span> = time trend (การเปลี่ยนแปลงของ control)</li>
-                    <li><span class="katex">\delta</span> = <strong>DID estimate = ATT</strong></li>
+                    <li><span data-tex="\alpha"></span> = ค่าเฉลี่ย Y ของ control group ที่ t=0</li>
+                    <li><span data-tex="\beta"></span> = ความแตกต่างระหว่าง treatment กับ control ที่ t=0</li>
+                    <li><span data-tex="\gamma"></span> = time trend (การเปลี่ยนแปลงของ control)</li>
+                    <li><span data-tex="\delta"></span> = <strong>DID estimate = ATT</strong></li>
                 </ul>
             </div>
         </div>
         <div>
             <table class="did-cell-table fragment">
                 <tr><th></th><th>t = 0</th><th>t = 1</th></tr>
-                <tr><td><strong>Treatment</strong></td><td><span class="katex">\alpha + \beta</span></td><td><span class="katex">\alpha + \beta + \gamma + \delta</span></td></tr>
-                <tr><td><strong>Control</strong></td><td><span class="katex">\alpha</span></td><td><span class="katex">\alpha + \gamma</span></td></tr>
+                <tr><td><strong>Treatment</strong></td><td><span data-tex="\alpha + \beta"></span></td><td><span data-tex="\alpha + \beta + \gamma + \delta"></span></td></tr>
+                <tr><td><strong>Control</strong></td><td><span data-tex="\alpha"></span></td><td><span data-tex="\alpha + \gamma"></span></td></tr>
             </table>
             <div class="key-insight fragment" style="margin-top:5px;">
-                <h3>DID = <span class="katex">\delta</span></h3>
-                <p><span class="katex">(\alpha+\beta+\gamma+\delta - (\alpha+\beta)) - ((\alpha+\gamma) - \alpha) = \delta</span></p>
+                <h3>DID = <span data-tex="\delta"></span></h3>
+                <p><span data-tex="(\alpha+\beta+\gamma+\delta - (\alpha+\beta)) - ((\alpha+\gamma) - \alpha) = \delta"></span></p>
             </div>
         </div>
     </div>
@@ -445,8 +445,8 @@
                 <p>ติดตามหน่วยเดิมทั้ง 2 ช่วงเวลา</p>
                 <ul>
                     <li class="fragment">สามารถใช้ <strong>first-difference</strong> ได้</li>
-                    <li class="fragment"><span class="katex">\Delta Y_i = Y_{i1} - Y_{i0}</span></li>
-                    <li class="fragment">แล้วเทียบ <span class="katex">E[\Delta Y | D=1] - E[\Delta Y | D=0]</span></li>
+                    <li class="fragment"><span data-tex="\Delta Y_i = Y_{i1} - Y_{i0}"></span></li>
+                    <li class="fragment">แล้วเทียบ <span data-tex="E[\Delta Y | D=1] - E[\Delta Y | D=0]"></span></li>
                     <li class="fragment">ข้อดี: กำจัด individual fixed effects</li>
                 </ul>
             </div>
@@ -559,7 +559,7 @@
     <div class="key-insight">
         <h3>สมมติฐานหลัก</h3>
         <div class="math-block">
-            <span class="katex">E[Y(0)_{t=1} - Y(0)_{t=0} \mid D = 1] = E[Y(0)_{t=1} - Y(0)_{t=0} \mid D = 0]</span>
+            <span data-tex="E[Y(0)_{t=1} - Y(0)_{t=0} \mid D = 1] = E[Y(0)_{t=1} - Y(0)_{t=0} \mid D = 0]"></span>
         </div>
         <p>ถ้าไม่มี treatment ทั้ง 2 กลุ่มจะมี <strong>แนวโน้มการเปลี่ยนแปลงที่เหมือนกัน</strong></p>
     </div>
@@ -674,18 +674,18 @@
                 <p>ตัวแปรที่ไม่เปลี่ยนตามเวลา (เช่น เพศ, เชื้อชาติ) ถูกกำจัดโดย FE</p>
                 <p>แต่สามารถให้ trend แตกต่างตาม X ได้:</p>
                 <div class="math-block">
-                    <span class="katex">Y_{it} = \alpha_i + \lambda_t + \delta(D \times Post) + X_i \cdot t + \varepsilon_{it}</span>
+                    <span data-tex="Y_{it} = \alpha_i + \lambda_t + \delta(D \times Post) + X_i \cdot t + \varepsilon_{it}"></span>
                 </div>
-                <p style="font-size:0.48em;"><span class="katex">X_i \cdot t</span> = ให้ trend แตกต่างตามลักษณะของหน่วย</p>
+                <p style="font-size:0.48em;"><span data-tex="X_i \cdot t"></span> = ให้ trend แตกต่างตามลักษณะของหน่วย</p>
             </div>
         </div>
     </div>
     <div class="example-box fragment" style="margin-top:5px;">
         <h3>Heterogeneous Treatment Effects</h3>
         <div class="math-block">
-            <span class="katex">Y_{it} = \alpha_i + \lambda_t + \delta_1(D \times Post) + \delta_2(D \times Post \times X) + \ldots + \varepsilon_{it}</span>
+            <span data-tex="Y_{it} = \alpha_i + \lambda_t + \delta_1(D \times Post) + \delta_2(D \times Post \times X) + \ldots + \varepsilon_{it}"></span>
         </div>
-        <p>Interaction <span class="katex">D \times Post \times X</span> ช่วยให้เห็นว่า treatment effect แตกต่างกันตาม X อย่างไร</p>
+        <p>Interaction <span data-tex="D \times Post \times X"></span> ช่วยให้เห็นว่า treatment effect แตกต่างกันตาม X อย่างไร</p>
     </div>
 </section>
 
@@ -706,7 +706,7 @@
     <div class="concept-box">
         <h3>สมการ Two-way Fixed Effects (TWFE)</h3>
         <div class="math-block">
-            <span class="katex">Y_{igt} = \alpha_g + \lambda_t + \delta \cdot D_{gt} + \varepsilon_{igt}</span>
+            <span data-tex="Y_{igt} = \alpha_g + \lambda_t + \delta \cdot D_{gt} + \varepsilon_{igt}"></span>
         </div>
     </div>
     <div class="two-col" style="margin-top:5px;">
@@ -714,10 +714,10 @@
             <div class="example-box fragment">
                 <h3>ส่วนประกอบ</h3>
                 <ul>
-                    <li><span class="katex">\alpha_g</span> = <strong>Group FE</strong> ควบคุมลักษณะที่คงที่ของแต่ละกลุ่ม</li>
-                    <li><span class="katex">\lambda_t</span> = <strong>Time FE</strong> ควบคุม common shocks ที่เกิดกับทุกกลุ่ม</li>
-                    <li><span class="katex">D_{gt}</span> = 1 ถ้ากลุ่ม g ได้รับ treatment ในช่วง t (หรือก่อนหน้า)</li>
-                    <li><span class="katex">\delta</span> = <strong>ATT</strong></li>
+                    <li><span data-tex="\alpha_g"></span> = <strong>Group FE</strong> ควบคุมลักษณะที่คงที่ของแต่ละกลุ่ม</li>
+                    <li><span data-tex="\lambda_t"></span> = <strong>Time FE</strong> ควบคุม common shocks ที่เกิดกับทุกกลุ่ม</li>
+                    <li><span data-tex="D_{gt}"></span> = 1 ถ้ากลุ่ม g ได้รับ treatment ในช่วง t (หรือก่อนหน้า)</li>
+                    <li><span data-tex="\delta"></span> = <strong>ATT</strong></li>
                 </ul>
             </div>
         </div>
@@ -726,7 +726,7 @@
                 <h3>ข้อควรระวัง (Staggered Treatment)</h3>
                 <p>เมื่อกลุ่มต่างๆ ได้รับ treatment ในเวลาที่ต่างกัน (staggered adoption):</p>
                 <ul>
-                    <li>TWFE อาจให้ค่า <span class="katex">\delta</span> ที่มี bias</li>
+                    <li>TWFE อาจให้ค่า <span data-tex="\delta"></span> ที่มี bias</li>
                     <li>เนื่องจาก "already-treated" units ถูกใช้เป็น control</li>
                     <li>วิธีแก้: Callaway & Sant'Anna (2021), Sun & Abraham (2021)</li>
                 </ul>
@@ -744,9 +744,9 @@
     <h2>Event Study Design</h2>
     <div class="concept-box">
         <h3>แนวคิด</h3>
-        <p>แทนที่จะประมาณ <span class="katex">\delta</span> เดียว ให้ประมาณ treatment effect <strong>แยกตามระยะเวลา</strong>ก่อน/หลัง treatment</p>
+        <p>แทนที่จะประมาณ <span data-tex="\delta"></span> เดียว ให้ประมาณ treatment effect <strong>แยกตามระยะเวลา</strong>ก่อน/หลัง treatment</p>
         <div class="math-block">
-            <span class="katex">Y_{it} = \alpha_i + \lambda_t + \sum_{k \neq -1} \delta_k \cdot \mathbf{1}[t - t^*_i = k] + \varepsilon_{it}</span>
+            <span data-tex="Y_{it} = \alpha_i + \lambda_t + \sum_{k \neq -1} \delta_k \cdot \mathbf{1}[t - t^*_i = k] + \varepsilon_{it}"></span>
         </div>
     </div>
     <div class="two-col" style="margin-top:5px;">
@@ -754,7 +754,7 @@
             <div class="example-box fragment">
                 <h3>Pre-trends Test</h3>
                 <ul>
-                    <li><span class="katex">\delta_k</span> สำหรับ k < 0 ควร <strong>ไม่แตกต่างจาก 0</strong></li>
+                    <li><span data-tex="\delta_k"></span> สำหรับ k < 0 ควร <strong>ไม่แตกต่างจาก 0</strong></li>
                     <li>ถ้า pre-treatment coefficients = 0 แสดงว่า parallel trends น่าเชื่อ</li>
                     <li>ถ้า pre-treatment coefficients มี trend ชัดเจน แสดงว่า parallel trends อาจถูกละเมิด</li>
                 </ul>
@@ -764,7 +764,7 @@
             <div class="key-insight fragment">
                 <h3>Post-treatment Effects</h3>
                 <ul>
-                    <li><span class="katex">\delta_k</span> สำหรับ k > 0 แสดง dynamic treatment effects</li>
+                    <li><span data-tex="\delta_k"></span> สำหรับ k > 0 แสดง dynamic treatment effects</li>
                     <li>เห็นว่า treatment effect เพิ่มขึ้น/คงที่/ลดลงตามเวลา</li>
                     <li>k = -1 เป็น reference period (normalized to 0)</li>
                 </ul>
@@ -793,8 +793,8 @@
     <h2>Quiz: สมการ DID</h2>
     <div class="concept-box">
         <h3>คำถาม</h3>
-        <p>ในสมการ <span class="katex">Y_{it} = \alpha + \beta \cdot Group_i + \gamma \cdot Post_t + \delta \cdot (Group_i \times Post_t) + \varepsilon_{it}</span><br>
-        ค่าสัมประสิทธิ์ <span class="katex">\delta</span> หมายถึงอะไร?</p>
+        <p>ในสมการ <span data-tex="Y_{it} = \alpha + \beta \cdot Group_i + \gamma \cdot Post_t + \delta \cdot (Group_i \times Post_t) + \varepsilon_{it}"></span><br>
+        ค่าสัมประสิทธิ์ <span data-tex="\delta"></span> หมายถึงอะไร?</p>
     </div>
     <div style="margin-top:8px;">
         <div class="quiz-option" onclick="checkQuiz(this, false, 'q2')">A) ความแตกต่างของค่าเฉลี่ย Y ระหว่าง treatment กับ control ก่อนได้รับ treatment</div>
@@ -1207,16 +1207,14 @@ Reveal.initialize({
 // KaTeX render
 // ============================================================
 function renderKaTeX() {
-    document.querySelectorAll('.katex').forEach(el => {
-        if (el.querySelector('.katex-mathml')) return; // already rendered
-        try { katex.render(el.textContent, el, { throwOnError: false, displayMode: false }); } catch(e) {}
-    });
-    document.querySelectorAll('.math-block').forEach(el => {
-        if (el.querySelector('.katex-mathml')) return; // already rendered
-        let span = el.querySelector('.katex');
-        if (!span) {
-            try { katex.render(el.textContent, el, { throwOnError: false, displayMode: true }); } catch(e) {}
-        }
+    document.querySelectorAll('[data-tex]').forEach(el => {
+        if (el.dataset.rendered) return;
+        const tex = el.dataset.tex;
+        const isDisplay = el.closest('.math-block') !== null;
+        try {
+            katex.render(tex, el, { throwOnError: false, displayMode: isDisplay });
+            el.dataset.rendered = 'true';
+        } catch(e) {}
     });
 }
 
