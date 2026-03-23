@@ -310,19 +310,18 @@
 <!-- CIA -->
 <section>
     <h2>Conditional Independence Assumption (CIA)</h2>
-    <div class="concept-box">
-        <h3>นิยาม</h3>
-        <div class="math-block">
-            <span data-tex="\{Y(0), Y(1)\} \perp D \mid X"></span>
-        </div>
-        <p>เมื่อควบคุมตัวแปร <strong>X</strong> (confounders) แล้ว การได้รับ treatment เป็นอิสระจาก potential outcomes</p>
-    </div>
-    <div class="two-col" style="margin-top:5px;">
+    <div class="two-col">
         <div>
+            <div class="concept-box">
+                <h3>นิยาม</h3>
+                <div class="math-block">
+                    <span data-tex="\{Y(0), Y(1)\} \perp D \mid X"></span>
+                </div>
+                <p>ควบคุม <strong>X</strong> (confounders) แล้ว treatment เป็นอิสระจาก potential outcomes</p>
+            </div>
             <div class="key-insight fragment">
-                <h3>X คืออะไร?</h3>
-                <p><strong>X = Confounders</strong> คือตัวแปรที่เป็นสาเหตุร่วมของทั้ง D (treatment) และ Y (outcome)</p>
-                <p>ถ้าไม่ควบคุม X จะได้ ATE ที่มี bias</p>
+                <h3>X = Confounders</h3>
+                <p>ตัวแปรที่เป็นสาเหตุร่วมของทั้ง D และ Y &mdash; ถ้าไม่ควบคุม X จะได้ ATE ที่มี bias</p>
             </div>
         </div>
         <div>
@@ -331,14 +330,13 @@
                 <div class="math-block">
                     <span data-tex="Y = \alpha + \beta D + \gamma X + \varepsilon"></span>
                 </div>
-                <p>ค่าสัมประสิทธิ์ <span data-tex="\beta"></span> = <strong>ATE</strong></p>
-                <p>แต่ในทางปฏิบัติ CIA มักไม่สมจริง เพราะมี unobservable confounders ที่ควบคุมไม่ได้</p>
+                <p><span data-tex="\beta"></span> = <strong>ATE</strong> แต่ในทางปฏิบัติ CIA มักไม่สมจริง เพราะมี unobserved confounders</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>จาก CIA สู่ DID</h3>
+                <p>เมื่อ CIA ไม่สมจริง ต้องหา identification strategy อื่น เช่น <strong>DID</strong> ที่ใช้ข้อมูลก่อน-หลังกำจัด time-invariant confounders</p>
             </div>
         </div>
-    </div>
-    <div class="key-insight fragment" style="margin-top:5px;">
-        <h3>จาก CIA สู่ DID</h3>
-        <p>เมื่อ CIA ไม่สมจริง (มี unobserved confounders) เราต้องหา <strong>กลยุทธ์การระบุ (identification strategy)</strong> อื่น เช่น DID ที่ใช้ <strong>ข้อมูลก่อน-หลัง</strong> มาช่วยกำจัด time-invariant confounders</p>
     </div>
 </section>
 
