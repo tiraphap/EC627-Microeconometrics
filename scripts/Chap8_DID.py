@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 8
+EC627 Microeconometrics - Chapter 8
 Difference-in-Differences
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong

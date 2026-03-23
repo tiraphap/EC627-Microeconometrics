@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 5
+EC627 Microeconometrics - Chapter 5
 Quantile Regression and Count Data Models
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong

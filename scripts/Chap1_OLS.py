@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 1
+EC627 Microeconometrics - Chapter 1
 OLS Regression, Specification Analysis, and Prediction
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong
@@ -271,7 +271,8 @@ print(model_ols.summary())
 print("\n--- Wald Test: phylim = actlim ---")
 print("H0: beta_phylim = beta_actlim")
 wald_test = model_ols.wald_test('phylim = actlim')
-print(f"  F-statistic: {wald_test.fvalue[0][0]:.4f}")
+wval = wald_test.statistic
+print(f"  F-statistic: {(wval[0][0] if hasattr(wval, '__getitem__') else wval):.4f}")
 print(f"  p-value:     {wald_test.pvalue:.4f}")
 
 # INTERPRETATION:
@@ -290,7 +291,8 @@ print(f"  p-value:     {wald_test.pvalue:.4f}")
 print("\n--- Joint F-test: phylim = actlim = totchr = 0 ---")
 print("H0: beta_phylim = beta_actlim = beta_totchr = 0")
 f_test = model_ols.f_test('phylim = 0, actlim = 0, totchr = 0')
-print(f"  F-statistic: {f_test.fvalue[0][0]:.4f}")
+fval = f_test.statistic
+print(f"  F-statistic: {(fval[0][0] if hasattr(fval, '__getitem__') else fval):.4f}")
 print(f"  p-value:     {f_test.pvalue:.4f}")
 
 # INTERPRETATION:

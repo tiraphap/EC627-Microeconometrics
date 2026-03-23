@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 2
+EC627 Microeconometrics - Chapter 2
 Monte Carlo Simulation Methods
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong

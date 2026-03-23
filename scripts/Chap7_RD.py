@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 7
+EC627 Microeconometrics - Chapter 7
 Regression Discontinuity Designs
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong
@@ -296,11 +296,11 @@ df_plot = df[[X, Y]].dropna()
 n_bins = 40
 df_plot['bin'] = pd.cut(df_plot[X], bins=n_bins)
 bin_means = df_plot.groupby('bin')[Y].mean().reset_index()
-bin_means['x_mid'] = bin_means['bin'].apply(lambda b: b.mid)
+bin_means['x_mid'] = bin_means['bin'].apply(lambda b: float(b.mid)).astype(float)
 
 # Plot bins
-below = bin_means[bin_means['x_mid'] < C]
-above = bin_means[bin_means['x_mid'] >= C]
+below = bin_means[bin_means['x_mid'].values < C]
+above = bin_means[bin_means['x_mid'].values >= C]
 ax.scatter(below['x_mid'], below[Y], color='#4472C4', s=40, zorder=5, label='Control')
 ax.scatter(above['x_mid'], above[Y], color='#ED7D31', s=40, zorder=5, label='Treated')
 
@@ -403,7 +403,8 @@ X_rd = sm.add_constant(df_rd[['T', 'R', 'T_x_R']])
 y_rd = df_rd[Y]
 
 model_rd = sm.OLS(y_rd, X_rd).fit(cov_type='HC1')
-print(model_rd.summary2().tables[1].round(4))
+for v in ['const', 'T', 'R', 'T_x_R']:
+    print(f"  {v:8s}  coef={model_rd.params[v]:10.4f}  se={model_rd.bse[v]:8.4f}  p={model_rd.pvalues[v]:.4f}")
 print(f"\n  RD Estimate (coefficient on T): {model_rd.params['T']:.4f}")
 print(f"  Robust SE: {model_rd.bse['T']:.4f}")
 print(f"  p-value: {model_rd.pvalues['T']:.4f}")

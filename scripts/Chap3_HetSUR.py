@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 3
+EC627 Microeconometrics - Chapter 3
 Heteroskedasticity, SUR, and Survey Data
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong

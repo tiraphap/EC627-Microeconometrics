@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 6
+EC627 Microeconometrics - Chapter 6
 Panel Data: Linear and Nonlinear Models
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong

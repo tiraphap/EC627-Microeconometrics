@@ -1,6 +1,6 @@
 """
 =============================================================================
-EE627 Microeconometrics - Chapter 4
+EC627 Microeconometrics - Chapter 4
 Instrumental Variables Estimation
 =============================================================================
 Instructor: Asst. Prof. Dr. Tiraphap Fakthong
@@ -452,11 +452,11 @@ print(model_2sls_just.summary)
 # -------------
 # - We use statsmodels OLS here (not linearmodels) to get a familiar
 #   regression output for the first stage.
-# - model_first.fvalue: this is the OVERALL F-statistic for the regression,
-#   not the partial F for just the instrument. For a just-identified model
-#   with one excluded instrument, the relevant statistic is the t-squared
-#   (or equivalently the F) on ssiratio alone. The overall F is shown for
-#   convenience; ideally, we would compute the partial F (done in Section 11).
+# - We compute the partial F-statistic for ssiratio by squaring its
+#   t-statistic. For a just-identified model with one excluded instrument,
+#   the partial F (= t-squared on ssiratio) is the relevant instrument
+#   strength diagnostic. Compare to Stock-Yogo critical value of 16.38
+#   for 10% maximal bias, or the common rule of thumb F > 10.
 #
 print("\n" + "=" * 60)
 print("4. FIRST STAGE REGRESSION")
@@ -465,9 +465,16 @@ print("=" * 60)
 X_first = sm.add_constant(df_iv[['ssiratio'] + x2list])
 model_first = sm.OLS(df_iv[endog_var], X_first).fit(cov_type='HC1')
 print(model_first.summary2().tables[1].round(4))
-print(f"\n  First-stage F-statistic for ssiratio: {model_first.fvalue:.2f}")
+
+# Partial F-statistic for the excluded instrument (ssiratio)
+# This is t^2 for a single excluded instrument, or equivalently the F-test
+# for the restriction that ssiratio's coefficient = 0, controlling for X2.
+t_ssiratio = model_first.tvalues['ssiratio']
+partial_f_ssiratio = t_ssiratio ** 2
+print(f"\n  Partial F-statistic for ssiratio: {partial_f_ssiratio:.2f}")
+print(f"  (= t-statistic squared: {t_ssiratio:.4f}^2)")
 print(f"  Rule of thumb: F > 10 means instruments are strong")
-print(f"  Result: {'STRONG' if model_first.fvalue > 10 else 'WEAK'} instrument")
+print(f"  Result: {'STRONG' if partial_f_ssiratio > 10 else 'WEAK'} instrument")
 
 # INTERPRETATION:
 # ---------------
