@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Regression Discontinuity Designs | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            color: var(--text);
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: none;
+            line-height: 1.6;
+            padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px; font-size: 13px;
+            color: rgba(0,0,0,0.35); z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer { position: fixed; bottom: 8px; left: 16px; z-index: 100; pointer-events: none; opacity: 0.45; }
+        .logo-footer img { height: 38px; width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer"><img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University"></div>
+<div class="instructor-footer">ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ==================== TITLE ==================== -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>Regression Discontinuity Designs</h1>
+    <div class="subtitle">Chapter 7 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Intro &bull; Frameworks &bull; Sharp/Fuzzy &bull; Estimation &bull; Application &bull; Falsification &bull; Summary</p>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1: Introduction & Motivation -->
+<!-- ============================================================ -->
+<section>
+    <section class="section-divider">
+        <h2>1. บทนำและแรงจูงใจ</h2>
+        <p>RD Design: เครื่องมือทรงพลังเมื่อไม่สามารถทำ RCT</p>
+    </section>
+
+    <section>
+        <h2>ทำไมต้อง Regression Discontinuity?</h2>
+        <div class="key-insight">
+            <h3>ปัญหาหลักของการอนุมาน Causal Inference</h3>
+            <p><strong>Randomized Controlled Trials (RCTs)</strong> เป็น gold standard แต่มีข้อจำกัดด้านจริยธรรม ค่าใช้จ่าย และความเป็นไปได้ในการดำเนินการ</p>
+        </div>
+        <div class="fragment concept-box">
+            <h3>RD Design ใช้ประโยชน์จาก "การทดลองธรรมชาติ"</h3>
+            <ul>
+                <li>การได้รับ treatment ถูกกำหนดโดย <strong>score (running variable)</strong> ข้าม <strong>cutoff ที่กำหนดไว้ล่วงหน้า</strong></li>
+                <li>หน่วยที่อยู่ใกล้ cutoff ทั้งสองฝั่งมีลักษณะ <strong>เปรียบเทียบกันได้</strong> (comparable)</li>
+                <li>ความต่างของผลลัพธ์ที่ cutoff = <strong>ผลกระทบเชิงสาเหตุ (causal effect)</strong></li>
+            </ul>
+        </div>
+        <div class="fragment example-box">
+            <h3>ตัวอย่างในชีวิตจริง</h3>
+            <p>ทุนการศึกษา (คะแนนสอบ > เกณฑ์), สิทธิ์ได้รับสวัสดิการ (รายได้ < เกณฑ์), นโยบาย Head Start (อัตราความยากจน > cutoff)</p>
+            <p style="font-size:0.9em; color:var(--text-light); margin-top:2px;"><strong>Ref:</strong> Cattaneo, Idrobo & Titiunik (2020, 2023) <em>A Practical Introduction to Regression Discontinuity Designs</em></p>
+        </div>
+    </section>
+
+    <section>
+        <h2>องค์ประกอบหลักของ RD Design</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>Running Variable (X)</h3>
+                    <ul>
+                        <li><strong>Score</strong> ที่กำหนดการได้รับ treatment</li>
+                        <li>ต้องเป็นตัวแปรต่อเนื่อง (continuous) หรือกึ่งต่อเนื่อง</li>
+                        <li>เช่น คะแนนสอบ, อัตราความยากจน, อายุ</li>
+                    </ul>
+                </div>
+                <div class="fragment concept-box">
+                    <h3>Cutoff (c)</h3>
+                    <ul>
+                        <li>จุดตัดที่กำหนดไว้ล่วงหน้า (predetermined)</li>
+                        <li>หน่วยไม่สามารถ manipulate ได้อย่างแม่นยำ</li>
+                        <li>เช่น คะแนนสอบ = 50, poverty rate = 59.1984</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="fragment key-insight">
+                    <h3>Treatment Assignment</h3>
+                    <p>สำหรับ Sharp RD:</p>
+                    <div class="math-block" id="math-treat"></div>
+                    <p>Treatment ถูกกำหนดอย่างสมบูรณ์โดยว่า X อยู่เหนือหรือใต้ cutoff</p>
+                </div>
+                <div class="fragment example-box">
+                    <h3>Causal Effect ที่ cutoff</h3>
+                    <div class="math-block" id="math-tau"></div>
+                    <p>ผลต่างของ potential outcomes ณ จุด cutoff</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>แนวคิดเชิงกราฟ: RD Design</h2>
+        <div class="interactive-container">
+            <h4>RD Plot Simulator - ปรับค่าเพื่อดูผลกระทบ</h4>
+            <canvas id="rdPlotCanvas" width="980" height="340"></canvas>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:4px;">
+                <div class="slider-group" style="flex:1;">
+                    <label>Treatment Effect:</label>
+                    <input type="range" id="rdTau" min="-5" max="5" step="0.5" value="-2">
+                    <span class="val" id="rdTauVal">-2.0</span>
+                </div>
+                <div class="slider-group" style="flex:1;">
+                    <label>Noise:</label>
+                    <input type="range" id="rdNoise" min="0.5" max="4" step="0.25" value="1.5">
+                    <span class="val" id="rdNoiseVal">1.5</span>
+                </div>
+                <div class="slider-group" style="flex:1;">
+                    <label>Cutoff:</label>
+                    <input type="range" id="rdCutoff" min="30" max="70" step="1" value="50">
+                    <span class="val" id="rdCutoffVal">50</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: Two Frameworks -->
+<!-- ============================================================ -->
+<section>
+    <section class="section-divider">
+        <h2>2. สองกรอบแนวคิดของ RD</h2>
+        <p>Continuity-based vs Local Randomization</p>
+    </section>
+
+    <section>
+        <h2>กรอบแนวคิดที่ 1: Continuity-Based</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>สมมติฐานหลัก</h3>
+                    <p><strong>Potential outcomes ต่อเนื่อง</strong> ที่จุด cutoff</p>
+                    <div class="math-block" id="math-continuity"></div>
+                </div>
+                <div class="key-insight fragment">
+                    <h3>Sharp RD Treatment Effect</h3>
+                    <div class="math-block" id="math-srd"></div>
+                </div>
+            </div>
+            <div class="example-box">
+                <h3>วิธีการประมาณค่า</h3>
+                <ul>
+                    <li><strong>Local polynomial regression</strong> รอบ cutoff</li>
+                    <li>เลือก <strong>bandwidth</strong> อย่างเหมาะสม</li>
+                    <li>ใช้ <strong>kernel weighting</strong> ให้น้ำหนักจุดใกล้ cutoff</li>
+                    <li>Robust bias-corrected inference</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>กรอบแนวคิดที่ 2: Local Randomization</h2>
+        <div class="concept-box">
+            <h3>สมมติฐานหลัก</h3>
+            <p>ภายในหน้าต่างแคบ ๆ รอบ cutoff <strong>การได้รับ treatment เสมือนถูกสุ่ม</strong> (as-if random assignment)</p>
+            <p>Potential outcomes เป็นอิสระจาก running variable ในหน้าต่างนั้น</p>
+        </div>
+        <div class="fragment two-col">
+            <div>
+                <div class="key-insight">
+                    <h3>ข้อดี</h3>
+                    <ul>
+                        <li>วิเคราะห์คล้าย <strong>RCT ภายใน window</strong></li>
+                        <li>ใช้ <strong>Fisherian inference</strong> (permutation-based)</li>
+                        <li>เหมาะกับ <strong>discrete running variable</strong></li>
+                        <li>ทดสอบ balance ของ covariates ได้ตรงไปตรงมา</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="example-box">
+                    <h3>Stata Implementation</h3>
+                    <div class="stata-code">
+<span class="cmt">* Local Randomization Inference</span>
+<span class="cmd">rdrandinf</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">wl</span>(<span class="num">57</span>) <span class="opt">wr</span>(<span class="num">61</span>) <span class="opt">reps</span>(<span class="num">1000</span>)
+
+<span class="cmt">* Window Selection</span>
+<span class="cmd">rdwinselect</span> $X census1960_pop
+  census1960_pcturban census1960_pctblack,
+  <span class="opt">c</span>(<span class="num">59.1984</span>)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>เปรียบเทียบสองกรอบแนวคิด</h2>
+        <table class="compare-table">
+            <thead>
+                <tr>
+                    <th>ลักษณะ</th>
+                    <th>Continuity-Based</th>
+                    <th>Local Randomization</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="fragment">
+                    <td><strong>สมมติฐาน</strong></td>
+                    <td>Potential outcomes ต่อเนื่องที่ cutoff</td>
+                    <td>Treatment สุ่มภายใน window</td>
+                </tr>
+                <tr class="fragment">
+                    <td><strong>Running variable</strong></td>
+                    <td>ต่อเนื่อง (continuous)</td>
+                    <td>ต่อเนื่องหรือ discrete</td>
+                </tr>
+                <tr class="fragment">
+                    <td><strong>วิธีประมาณค่า</strong></td>
+                    <td>Local polynomial + kernel</td>
+                    <td>Difference-in-means / permutation</td>
+                </tr>
+                <tr class="fragment">
+                    <td><strong>Inference</strong></td>
+                    <td>Robust bias-corrected CI</td>
+                    <td>Fisherian (randomization inference)</td>
+                </tr>
+                <tr class="fragment">
+                    <td><strong>Stata command</strong></td>
+                    <td class="highlight">rdrobust, rdbwselect</td>
+                    <td class="highlight">rdrandinf, rdwinselect</td>
+                </tr>
+                <tr class="fragment">
+                    <td><strong>ข้อได้เปรียบ</strong></td>
+                    <td>ยืดหยุ่น, ใช้ได้กว้าง</td>
+                    <td>โปร่งใส, ใกล้เคียง RCT</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: Sharp vs Fuzzy RD -->
+<!-- ============================================================ -->
+<section>
+    <section class="section-divider">
+        <h2>3. Sharp RD vs Fuzzy RD</h2>
+        <p>Perfect compliance vs Imperfect compliance</p>
+    </section>
+
+    <section>
+        <h2>Sharp RD Design</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>นิยาม</h3>
+                    <p>Treatment ถูกกำหนดอย่างสมบูรณ์โดย running variable:</p>
+                    <div class="math-block" id="math-sharp"></div>
+                    <ul>
+                        <li class="fragment"><strong>เหนือ cutoff</strong>: ทุกหน่วยได้รับ treatment (T=1)</li>
+                        <li class="fragment"><strong>ใต้ cutoff</strong>: ไม่มีหน่วยใดได้รับ treatment (T=0)</li>
+                        <li class="fragment">ความน่าจะเป็นกระโดดจาก 0 เป็น 1 ที่ cutoff</li>
+                    </ul>
+                </div>
+                <div class="fragment key-insight">
+                    <h3>Treatment Effect</h3>
+                    <div class="math-block" id="math-sharp-effect"></div>
+                </div>
+            </div>
+            <div>
+                <div class="fragment example-box">
+                    <h3>ตัวอย่าง: Head Start</h3>
+                    <ul>
+                        <li>เมือง (county) ที่มีอัตราความยากจน > 59.1984 ได้รับเงินทุน Head Start</li>
+                        <li>Running variable: poverty rate ปี 1960</li>
+                        <li>Treatment: ได้รับเงินทุนโครงการ</li>
+                    </ul>
+                </div>
+                <div class="fragment stata-code">
+<span class="cmt">* Sharp RD estimation</span>
+<span class="cmd">gen</span> R = $X - $C
+<span class="cmd">gen</span> T = ($X >= $C)
+<span class="cmd">reg</span> $Y T##c.R <span class="opt">if</span> abs(R)<=<span class="num">9</span>, <span class="opt">robust</span>
+<span class="cmd">rdrobust</span> $Y R, <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Fuzzy RD Design</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>นิยาม</h3>
+                    <p>การข้าม cutoff <strong>มีอิทธิพลอย่างมาก</strong> ต่อ treatment แต่ไม่ได้กำหนดอย่างสมบูรณ์:</p>
+                    <div class="math-block" id="math-fuzzy"></div>
+                    <ul>
+                        <li class="fragment">ความน่าจะเป็นกระโดด แต่ <strong>ไม่ใช่จาก 0 ไป 1</strong></li>
+                        <li class="fragment">มี noncompliance: บางหน่วยเหนือ cutoff ไม่ได้รับ treatment</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="fragment key-insight">
+                    <h3>Fuzzy RD = IV ที่ cutoff</h3>
+                    <div class="math-block" id="math-fuzzy-effect"></div>
+                    <p>คล้าย Wald estimator / Local Average Treatment Effect (LATE) สำหรับ compliers ที่ cutoff</p>
+                </div>
+                <div class="fragment stata-code">
+<span class="cmt">* Fuzzy RD estimation</span>
+<span class="cmd">rdrobust</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">fuzzy</span>(treatment_var)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Sharp vs Fuzzy RD: Interactive</h2>
+        <div class="interactive-container">
+            <h4>เปรียบเทียบ Treatment Assignment</h4>
+            <div style="display:flex; gap:6px; margin-bottom:4px;">
+                <button class="interactive-btn active" onclick="setSharpFuzzy('sharp')">Sharp RD</button>
+                <button class="interactive-btn" onclick="setSharpFuzzy('fuzzy')">Fuzzy RD</button>
+                <button class="interactive-btn" onclick="setSharpFuzzy('both')">เปรียบเทียบ</button>
+            </div>
+            <canvas id="sharpFuzzyCanvas" width="980" height="320"></canvas>
+            <div class="slider-group" style="max-width:400px;">
+                <label>Compliance:</label>
+                <input type="range" id="sfCompliance" min="50" max="100" step="5" value="75">
+                <span class="val" id="sfCompVal">75%</span>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Quiz: Sharp vs Fuzzy RD</h2>
+        <div class="concept-box">
+            <h3>คำถาม: นโยบายให้ทุนการศึกษาแก่นักเรียนที่สอบได้คะแนน > 80 แต่พบว่า 15% ของนักเรียนที่ได้คะแนน > 80 ปฏิเสธทุน RD Design นี้เป็นแบบใด?</h3>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q1','wrong')">A) Sharp RD เพราะ cutoff ชัดเจนที่ 80 คะแนน</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q1','correct')">B) Fuzzy RD เพราะมี noncompliance (บางคนปฏิเสธทุน)</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q1','wrong')">C) ไม่ใช่ RD Design เพราะไม่มี perfect compliance</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q1','wrong')">D) Sharp RD เพราะ treatment ยังคงถูกกำหนดโดยคะแนน</div>
+        <div class="quiz-feedback" id="q1-feedback"></div>
+    </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: Estimation & Inference -->
+<!-- ============================================================ -->
+<section>
+    <section class="section-divider">
+        <h2>4. การประมาณค่าและ Inference</h2>
+        <p>rdrobust, Bandwidth Selection, Kernel Choices</p>
+    </section>
+
+    <section>
+        <h2>Local Polynomial Regression</h2>
+        <div class="concept-box">
+            <h3>หลักการ</h3>
+            <p>ประมาณ regression function <strong>แยกกันทั้งสองฝั่ง</strong>ของ cutoff โดยใช้ polynomial ภายใน bandwidth h:</p>
+            <div class="math-block" id="math-locpoly"></div>
+        </div>
+        <div class="fragment two-col">
+            <div>
+                <div class="key-insight">
+                    <h3>Kernel Weighting</h3>
+                    <ul>
+                        <li><strong>Uniform:</strong> น้ำหนักเท่ากันทุกจุดใน bandwidth</li>
+                        <li><strong>Triangular:</strong> น้ำหนักมากที่ cutoff, ลดลงตามระยะ</li>
+                        <li>Triangular เป็น <strong>MSE-optimal</strong> สำหรับ boundary estimation</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="example-box">
+                    <h3>Polynomial Order</h3>
+                    <ul>
+                        <li><strong>p=1</strong> (local linear): แนะนำเป็นค่าเริ่มต้น</li>
+                        <li><strong>p=2</strong> (local quadratic): สำหรับ robustness check</li>
+                        <li>p สูงเกินไป → overfitting, variance สูง</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Bandwidth Selection</h2>
+        <div class="key-insight">
+            <h3>Bias-Variance Trade-off</h3>
+            <ul>
+                <li><strong>Bandwidth แคบ:</strong> Bias ต่ำ แต่ Variance สูง (ข้อมูลน้อย)</li>
+                <li><strong>Bandwidth กว้าง:</strong> Variance ต่ำ แต่ Bias สูง (รวมจุดไกล cutoff)</li>
+            </ul>
+        </div>
+        <div class="fragment two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>MSE-Optimal Bandwidth</h3>
+                    <p>เลือก h ที่ minimize <strong>Mean Squared Error</strong> = Bias² + Variance</p>
+                    <div class="stata-code">
+<span class="cmt">* Bandwidth selection</span>
+<span class="cmd">rdbwselect</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">kernel</span>(uni) <span class="opt">all</span>
+<span class="cmt">* MSE-optimal: mserd</span>
+<span class="cmt">* CER-optimal: cerrd (shorter)</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="example-box">
+                    <h3>Robust Bias-Corrected Inference</h3>
+                    <p>rdrobust ใช้ bandwidth สองขั้นตอน:</p>
+                    <ul>
+                        <li><strong>h</strong>: bandwidth หลักสำหรับ point estimation</li>
+                        <li><strong>b</strong>: bandwidth สำหรับ bias correction (มักใหญ่กว่า h)</li>
+                        <li>ให้ <strong>robust confidence intervals</strong> ที่คำนึงถึง bias</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Bandwidth Effect: Interactive</h2>
+        <div class="interactive-container">
+            <h4>ดูผลกระทบของ Bandwidth ต่อการประมาณค่า RD</h4>
+            <canvas id="bwCanvas" width="980" height="310"></canvas>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:4px;">
+                <div class="slider-group" style="flex:1;">
+                    <label>Bandwidth:</label>
+                    <input type="range" id="bwSlider" min="2" max="25" step="1" value="9">
+                    <span class="val" id="bwVal">9</span>
+                </div>
+                <div style="font-size:0.46em; display:flex; align-items:center; gap:12px;">
+                    <span>Estimate: <strong id="bwEstimate" style="color:var(--accent);">-2.14</strong></span>
+                    <span>SE: <strong id="bwSE" style="color:var(--accent2);">0.82</strong></span>
+                    <span>N: <strong id="bwN" style="color:var(--accent3);">156</strong></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>rdrobust ใน Stata</h2>
+        <div class="stata-code">
+<span class="cmt">* Basic RD estimation with rdrobust</span>
+<span class="cmd">rdrobust</span> $Y $X, <span class="opt">c</span>($C)
+<span class="cmt">  → ใช้ MSE-optimal bandwidth, triangular kernel, local linear</span>
+
+<span class="cmt">* ระบุ bandwidth และ kernel</span>
+<span class="cmd">rdrobust</span> $Y R, <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+
+<span class="cmt">* RD Plot: binned scatter + polynomial fit</span>
+<span class="cmd">rdplot</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">binselect</span>(esmv)
+<span class="cmd">rdplot</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">p</span>(<span class="num">1</span>)
+
+<span class="cmt">* With covariates (efficiency gain)</span>
+<span class="cmd">rdrobust</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">covs</span>($Z)
+        </div>
+        <div class="fragment key-insight">
+            <h3>ผลลัพธ์สำคัญของ rdrobust</h3>
+            <ul>
+                <li><strong>Conventional:</strong> point estimate + SE (อาจมี bias สูง)</li>
+                <li><strong>Bias-corrected:</strong> point estimate ปรับ bias แล้ว</li>
+                <li><strong>Robust:</strong> CI ที่ robust ต่อ bias → <strong>แนะนำใช้สำหรับ inference</strong></li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>Quiz: Bandwidth Selection</h2>
+        <div class="concept-box">
+            <h3>คำถาม: ถ้าเราเลือก bandwidth ที่กว้างมาก (h ใหญ่) จะเกิดอะไรขึ้นกับ RD estimate?</h3>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q2','wrong')">A) Variance สูงขึ้นเพราะใช้ข้อมูลมากเกินไป</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q2','correct')">B) Bias สูงขึ้นเพราะรวมจุดที่ไกลจาก cutoff ซึ่งอาจมี functional form ที่แตกต่าง</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q2','wrong')">C) ไม่มีผลกระทบเพราะ rdrobust ปรับให้อัตโนมัติ</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q2','wrong')">D) ทำให้ treatment effect เป็นศูนย์เสมอ</div>
+        <div class="quiz-feedback" id="q2-feedback"></div>
+    </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: Empirical Application -->
+<!-- ============================================================ -->
+<section>
+    <section class="section-divider">
+        <h2>5. ตัวอย่างเชิงประจักษ์: Head Start</h2>
+        <p>Ludwig & Miller (2007, QJE)</p>
+    </section>
+
+    <section>
+        <h2>Head Start Program</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>บริบท</h3>
+                    <ul>
+                        <li><strong>Head Start:</strong> โครงการช่วยเหลือเด็กจากครอบครัวยากจนในสหรัฐอเมริกา</li>
+                        <li>ให้บริการด้านการศึกษาปฐมวัย สุขภาพ โภชนาการ</li>
+                        <li>เริ่มปี 1965 เป็นส่วนหนึ่งของ War on Poverty</li>
+                    </ul>
+                </div>
+                <div class="fragment key-insight">
+                    <h3>กลไก RD</h3>
+                    <p>Office of Economic Opportunity ให้เงินช่วยเหลือแก่ <strong>300 เมืองที่ยากจนที่สุด</strong> ตาม poverty rate ปี 1960</p>
+                    <p>Cutoff: <strong>povrate60 = 59.1984</strong></p>
+                </div>
+            </div>
+            <div>
+                <div class="fragment example-box">
+                    <h3>ข้อมูล: headstart.dta</h3>
+                    <table class="compare-table">
+                        <tr><th>ตัวแปร</th><th>ความหมาย</th></tr>
+                        <tr><td>mort_age59_related_postHS</td><td>อัตราการตายเด็กหลัง HS</td></tr>
+                        <tr><td>povrate60</td><td>อัตราความยากจน 1960 (X)</td></tr>
+                        <tr><td>census1960_pop</td><td>ประชากร 1960</td></tr>
+                        <tr><td>census1960_pcturban</td><td>% เขตเมือง 1960</td></tr>
+                        <tr><td>census1960_pctblack</td><td>% คนผิวดำ 1960</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>ขั้นตอนการวิเคราะห์</h2>
+        <div class="stata-code">
+<span class="cmt">* === ขั้นตอนที่ 1: เตรียมข้อมูล ===</span>
+<span class="cmd">use</span> headstart, <span class="cmd">clear</span>
+<span class="cmd">gl</span> Y mort_age59_related_postHS
+<span class="cmd">gl</span> X povrate60
+<span class="cmd">gl</span> C <span class="num">59.1984</span>
+<span class="cmd">gen</span> R = $X - $C        <span class="cmt">// centering running variable</span>
+<span class="cmd">gen</span> T = ($X >= $C)      <span class="cmt">// treatment indicator</span>
+        </div>
+        <div class="fragment stata-code">
+<span class="cmt">* === ขั้นตอนที่ 2: RD Plots ===</span>
+<span class="cmd">rdplot</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">binselect</span>(esmv)   <span class="cmt">// IMSE-optimal bins</span>
+<span class="cmd">rdplot</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">p</span>(<span class="num">1</span>)               <span class="cmt">// linear fit</span>
+        </div>
+        <div class="fragment stata-code">
+<span class="cmt">* === ขั้นตอนที่ 3: Replicate Ludwig & Miller ===</span>
+<span class="cmd">reg</span> $Y T##c.R <span class="opt">if</span> abs(R)<=<span class="num">9</span>, <span class="opt">robust</span>       <span class="cmt">// OLS with bandwidth=9</span>
+<span class="cmd">rdrobust</span> $Y R, <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)  <span class="cmt">// rdrobust equivalent</span>
+        </div>
+        <div class="fragment key-insight">
+            <h3>ผลลัพธ์</h3>
+            <p>Head Start <strong>ลดอัตราการเสียชีวิตของเด็ก</strong>อย่างมีนัยสำคัญ → treatment effect เป็นลบ</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>ผลการประมาณค่า: Head Start</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>rdrobust Results</h3>
+                    <div class="stata-code">
+<span class="cmt">* MSE-optimal bandwidth</span>
+<span class="cmd">rdrobust</span> $Y $X, <span class="opt">c</span>($C)
+
+<span class="cmt">* Output:</span>
+<span class="cmt">* BW (h) = ~9 (MSE-optimal)</span>
+<span class="cmt">* Conventional:  -2.107 (0.706)</span>
+<span class="cmt">* Robust:        -2.287 (0.845)</span>
+<span class="cmt">* p < 0.05</span>
+                    </div>
+                </div>
+                <div class="fragment example-box">
+                    <h3>With Covariates</h3>
+                    <div class="stata-code">
+<span class="cmd">rdrobust</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">covs</span>($Z)
+<span class="cmt">* Covariates improve precision</span>
+<span class="cmt">* SE decreases, estimate stable</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="fragment key-insight">
+                    <h3>การตีความ</h3>
+                    <ul>
+                        <li>Head Start <strong>ลดอัตราการตายของเด็กอายุ 5-9 ปี</strong> ที่เกี่ยวข้องกับสาเหตุที่โครงการสามารถมีผลกระทบได้</li>
+                        <li>ผลกระทบเฉพาะ <strong>ณ จุด cutoff</strong> (local treatment effect)</li>
+                        <li>ไม่สามารถ generalize ไปยังเมืองที่อยู่ไกล cutoff มาก</li>
+                    </ul>
+                </div>
+                <div class="fragment concept-box">
+                    <h3>Bandwidth Sensitivity</h3>
+                    <div class="stata-code">
+<span class="cmd">rdbwselect</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">kernel</span>(uni) <span class="opt">all</span>
+<span class="cmt">* mserd, msetwo, cerrd, certwo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: Falsification & Diagnostics -->
+<!-- ============================================================ -->
+<section>
+    <section class="section-divider">
+        <h2>6. Falsification & Diagnostics</h2>
+        <p>การตรวจสอบความถูกต้องของ RD Design</p>
+    </section>
+
+    <section>
+        <h2>ทำไมต้อง Falsification Tests?</h2>
+        <div class="key-insight">
+            <h3>RD Assumption ไม่สามารถทดสอบโดยตรง</h3>
+            <p>เราไม่สามารถตรวจสอบได้โดยตรงว่า potential outcomes ต่อเนื่องที่ cutoff แต่สามารถทำการทดสอบที่ <strong>ถ้าล้มเหลว</strong> แสดงว่า RD design มีปัญหา</p>
+        </div>
+        <div class="fragment">
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>การทดสอบ</th>
+                        <th>ตรวจสอบอะไร</th>
+                        <th>Stata Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Density Test</strong></td>
+                        <td>ไม่มีการ manipulation ที่ cutoff</td>
+                        <td>rddensity</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Covariate Balance</strong></td>
+                        <td>ตัวแปร pre-treatment ไม่กระโดดที่ cutoff</td>
+                        <td>rdrobust (ใช้กับ covariates)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Placebo Outcomes</strong></td>
+                        <td>ผลลัพธ์ที่ไม่ควรถูกกระทบไม่มี discontinuity</td>
+                        <td>rdrobust (ผลลัพธ์ปลอม)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Placebo Cutoffs</strong></td>
+                        <td>ไม่มี discontinuity ที่ cutoff อื่น</td>
+                        <td>rdrobust (cutoff ปลอม)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Donut Hole</strong></td>
+                        <td>ผลไม่ถูกขับเคลื่อนด้วยจุดใกล้ cutoff มาก</td>
+                        <td>rdrobust (ตัดจุดใกล้ cutoff)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h2>Density Test: ตรวจสอบ Manipulation</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>McCrary / Cattaneo et al. Density Test</h3>
+                    <ul>
+                        <li>ถ้าหน่วยสามารถ manipulate running variable → <strong>จะเห็นการกระจุกตัว (bunching)</strong> ที่ฝั่งใดฝั่งหนึ่งของ cutoff</li>
+                        <li>H₀: density ต่อเนื่องที่ cutoff</li>
+                        <li>ปฏิเสธ H₀ → ระวัง! อาจมี sorting</li>
+                    </ul>
+                    <div class="stata-code">
+<span class="cmd">rddensity</span> $X, <span class="opt">c</span>($C)
+<span class="cmt">* p-value > 0.05 → ดี (ไม่มี manipulation)</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="fragment interactive-container">
+                    <h4>Density Test Visualizer</h4>
+                    <canvas id="densityCanvas" width="450" height="240"></canvas>
+                    <div style="display:flex; gap:4px; margin-top:3px;">
+                        <button class="interactive-btn active" onclick="setDensity('normal')">ไม่มี Manipulation</button>
+                        <button class="interactive-btn" onclick="setDensity('bunching')">มี Bunching</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Covariate Balance & Placebo Tests</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>Balance on Pre-treatment Covariates</h3>
+                    <p>ตัวแปรที่ถูกกำหนดก่อน treatment <strong>ไม่ควรมี discontinuity</strong> ที่ cutoff</p>
+                    <div class="stata-code">
+<span class="cmt">* ทดสอบ balance</span>
+<span class="cmd">rdrobust</span> census1960_pop $X,
+  <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni)
+<span class="cmt">* ต้องการ: p-value > 0.05</span>
+<span class="cmt">* (ไม่มีการกระโดด = ดี)</span>
+                    </div>
+                </div>
+                <div class="fragment key-insight">
+                    <h3>Placebo Outcomes</h3>
+                    <p>ทดสอบกับผลลัพธ์ที่ <strong>ไม่ควรถูกกระทบ</strong>:</p>
+                    <div class="stata-code">
+<span class="cmt">* การตายของผู้ใหญ่ (ไม่ควรถูกกระทบ)</span>
+<span class="cmd">rdrobust</span> mort_age25plus_related_postHS
+  $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="fragment example-box">
+                    <h3>Placebo Cutoffs</h3>
+                    <p>ทดสอบที่ cutoff ปลอม → <strong>ไม่ควรพบ discontinuity</strong></p>
+                    <div class="stata-code">
+<span class="cmt">* Placebo cutoff ที่ R=2 และ R=3</span>
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> R><span class="num">0</span>,
+  <span class="opt">c</span>(<span class="num">2</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> R><span class="num">0</span>,
+  <span class="opt">c</span>(<span class="num">3</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+                    </div>
+                </div>
+                <div class="fragment concept-box">
+                    <h3>Donut Hole Approach</h3>
+                    <p>ตัดข้อมูลใกล้ cutoff มาก ๆ ออก:</p>
+                    <div class="stata-code">
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> abs(R)>=<span class="num">0.10</span>,
+  <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Falsification: Interactive Demo</h2>
+        <div class="interactive-container">
+            <h4>เปรียบเทียบ: ผลลัพธ์จริง vs Placebo Outcome</h4>
+            <div style="display:flex; gap:6px; margin-bottom:4px;">
+                <button class="interactive-btn active" onclick="setFalsification('real')">ผลลัพธ์จริง (Child Mortality)</button>
+                <button class="interactive-btn" onclick="setFalsification('placebo')">Placebo (Adult Mortality)</button>
+                <button class="interactive-btn" onclick="setFalsification('cutoff')">Placebo Cutoff</button>
+            </div>
+            <canvas id="falsCanvas" width="980" height="310"></canvas>
+        </div>
+    </section>
+
+    <section>
+        <h2>Quiz: Density Test</h2>
+        <div class="concept-box">
+            <h3>คำถาม: ถ้า rddensity ปฏิเสธ H₀ (p-value < 0.05) หมายความว่าอะไร?</h3>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q3','wrong')">A) RD estimate เป็นศูนย์ ไม่มี treatment effect</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q3','wrong')">B) Bandwidth ที่เลือกกว้างเกินไป</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q3','correct')">C) มีหลักฐานว่าหน่วยอาจ manipulate running variable ที่ cutoff ซึ่งกระทบ validity ของ RD</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q3','wrong')">D) Treatment effect มีขนาดใหญ่มากจนทำให้ density เปลี่ยน</div>
+        <div class="quiz-feedback" id="q3-feedback"></div>
+    </section>
+
+    <section>
+        <h2>Quiz: RD Validity</h2>
+        <div class="concept-box">
+            <h3>คำถาม: ข้อใดต่อไปนี้จะทำให้เราสงสัย validity ของ RD Design มากที่สุด?</h3>
+        </div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q4','wrong')">A) Treatment effect เป็นลบ (ไม่ตรงตามคาด)</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q4','wrong')">B) Robust confidence interval กว้างมาก</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q4','correct')">C) Pre-treatment covariates แสดง discontinuity ที่ cutoff อย่างมีนัยสำคัญ</div>
+        <div class="quiz-option" onclick="checkQuiz(this,'q4','wrong')">D) Treatment effect เปลี่ยนเมื่อใช้ polynomial order สูงขึ้น</div>
+        <div class="quiz-feedback" id="q4-feedback"></div>
+    </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: Summary & Decision Tree -->
+<!-- ============================================================ -->
+<section>
+    <section class="section-divider">
+        <h2>7. สรุปและแนวทางปฏิบัติ</h2>
+        <p>Practical Recommendations for RD Analysis</p>
+    </section>
+
+    <section>
+        <h2>แนวทางปฏิบัติที่ดี</h2>
+        <div class="three-col">
+            <div>
+                <div class="concept-box">
+                    <h3>1. เริ่มต้นด้วยกราฟ</h3>
+                    <ul>
+                        <li>RD Plot เป็นสิ่งแรกที่ต้องทำ</li>
+                        <li>ดู discontinuity ด้วยตาก่อน</li>
+                        <li>ใช้ rdplot กับ binselect(esmv)</li>
+                        <li>ลองทั้ง linear และ polynomial fit</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="key-insight">
+                    <h3>2. Localize การวิเคราะห์</h3>
+                    <ul>
+                        <li>ใช้ local polynomial ไม่ใช่ global</li>
+                        <li>เลือก bandwidth อย่างเป็นระบบ</li>
+                        <li>ทดสอบ sensitivity กับ h ต่าง ๆ</li>
+                        <li>ใช้ robust inference</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="example-box">
+                    <h3>3. Falsification เข้มงวด</h3>
+                    <ul>
+                        <li>Density test ทุกครั้ง</li>
+                        <li>Balance test บน covariates</li>
+                        <li>Placebo outcomes & cutoffs</li>
+                        <li>Donut hole robustness</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="fragment" style="margin-top:6px;">
+            <div class="concept-box">
+                <h3>4. เลือกกรอบแนวคิดให้เหมาะสม</h3>
+                <p><strong>Continuity-based</strong> สำหรับ running variable ต่อเนื่อง | <strong>Local randomization</strong> สำหรับ discrete scores หรือต้องการ RCT-like inference</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Decision Tree: RD Analysis</h2>
+        <div class="decision-tree">
+            <div class="dt-node dt-diamond">Running Variable ต่อเนื่องหรือ Discrete?</div>
+            <div class="dt-arrow">&#8595;</div>
+            <div class="dt-row">
+                <div class="dt-branch">
+                    <div class="dt-label">ต่อเนื่อง</div>
+                    <div class="dt-arrow">&#8595;</div>
+                    <div class="dt-node dt-action">Continuity-Based<br>rdrobust, rdbwselect</div>
+                    <div class="dt-arrow">&#8595;</div>
+                    <div class="dt-node dt-diamond" style="font-size:0.9em;">Compliance สมบูรณ์?</div>
+                    <div class="dt-arrow">&#8595;</div>
+                    <div class="dt-row">
+                        <div class="dt-branch">
+                            <div class="dt-label">ใช่</div>
+                            <div class="dt-node dt-yes" style="font-size:0.85em;">Sharp RD</div>
+                        </div>
+                        <div class="dt-branch">
+                            <div class="dt-label">ไม่</div>
+                            <div class="dt-node dt-no" style="font-size:0.85em;">Fuzzy RD (IV)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dt-branch">
+                    <div class="dt-label">Discrete</div>
+                    <div class="dt-arrow">&#8595;</div>
+                    <div class="dt-node dt-action2">Local Randomization<br>rdrandinf, rdwinselect</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>สรุป RD Checklist</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>ก่อนการประมาณค่า</h3>
+                    <ol>
+                        <li class="fragment">ระบุ running variable, cutoff, treatment</li>
+                        <li class="fragment">สร้าง RD Plot (rdplot)</li>
+                        <li class="fragment">Density test (rddensity)</li>
+                        <li class="fragment">Balance test บน pre-treatment covariates</li>
+                    </ol>
+                </div>
+                <div class="fragment key-insight">
+                    <h3>การประมาณค่า</h3>
+                    <ol>
+                        <li>rdrobust (MSE-optimal BW)</li>
+                        <li>รายงาน robust CI</li>
+                        <li>ทดสอบ sensitivity กับ bandwidth</li>
+                        <li>เพิ่ม covariates (efficiency gain)</li>
+                    </ol>
+                </div>
+            </div>
+            <div>
+                <div class="fragment example-box">
+                    <h3>หลังการประมาณค่า</h3>
+                    <ol>
+                        <li>Placebo outcomes</li>
+                        <li>Placebo cutoffs</li>
+                        <li>Donut hole robustness</li>
+                        <li>ลอง polynomial orders ต่าง ๆ</li>
+                        <li>ลอง kernel ต่าง ๆ</li>
+                    </ol>
+                </div>
+                <div class="fragment concept-box">
+                    <h3>รายงานผล</h3>
+                    <ul>
+                        <li>RD plot ทุกครั้ง</li>
+                        <li>ทั้ง conventional & robust estimates</li>
+                        <li>ผล falsification tests ทั้งหมด</li>
+                        <li>Sensitivity analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Stata Commands สรุป</h2>
+        <div class="stata-code">
+<span class="cmt">* ============================================</span>
+<span class="cmt">* Complete RD Analysis Workflow</span>
+<span class="cmt">* ============================================</span>
+
+<span class="cmt">* 1. Data Preparation</span>
+<span class="cmd">use</span> headstart, <span class="cmd">clear</span>
+<span class="cmd">gen</span> R = povrate60 - <span class="num">59.1984</span>
+
+<span class="cmt">* 2. RD Plot</span>
+<span class="cmd">rdplot</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">binselect</span>(esmv)
+
+<span class="cmt">* 3. Density Test</span>
+<span class="cmd">rddensity</span> $X, <span class="opt">c</span>($C)
+
+<span class="cmt">* 4. Main Estimation</span>
+<span class="cmd">rdrobust</span> $Y $X, <span class="opt">c</span>($C)
+<span class="cmd">rdrobust</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">covs</span>($Z)
+
+<span class="cmt">* 5. Local Randomization</span>
+<span class="cmd">rdrandinf</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">wl</span>(<span class="num">57</span>) <span class="opt">wr</span>(<span class="num">61</span>) <span class="opt">reps</span>(<span class="num">1000</span>)
+
+<span class="cmt">* 6. Falsification</span>
+<span class="cmd">rdrobust</span> census1960_pop $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni)
+<span class="cmd">rdrobust</span> mort_age25plus_related_postHS $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> R><span class="num">0</span>, <span class="opt">c</span>(<span class="num">2</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> abs(R)>=<span class="num">0.10</span>, <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+        </div>
+    </section>
+
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<!-- ============================================================ -->
+<!-- SCRIPTS -->
+<!-- ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script>
+// ---- KaTeX Rendering ----
+function renderMath() {
+    const formulas = {
+        'math-treat': 'T_i = \\mathbf{1}(X_i \\geq c)',
+        'math-tau': '\\tau_{\\text{SRD}} = E[Y_i(1) - Y_i(0) \\mid X_i = c]',
+        'math-continuity': 'E[Y_i(0) \\mid X_i = x] \\text{ and } E[Y_i(1) \\mid X_i = x] \\text{ are continuous at } x = c',
+        'math-srd': '\\tau_{\\text{SRD}} = \\lim_{x \\downarrow c} E[Y_i \\mid X_i = x] - \\lim_{x \\uparrow c} E[Y_i \\mid X_i = x]',
+        'math-sharp': 'T_i = \\mathbf{1}(X_i \\geq c) \\;\\Rightarrow\\; P(T=1|X=x) = \\begin{cases} 1 & x \\geq c \\\\ 0 & x < c \\end{cases}',
+        'math-sharp-effect': '\\tau_{\\text{SRD}} = \\lim_{x \\downarrow c} E[Y|X=x] - \\lim_{x \\uparrow c} E[Y|X=x]',
+        'math-fuzzy': '\\lim_{x \\downarrow c} P(T=1|X=x) \\neq \\lim_{x \\uparrow c} P(T=1|X=x)',
+        'math-fuzzy-effect': '\\tau_{\\text{FRD}} = \\frac{\\lim_{x \\downarrow c} E[Y|X=x] - \\lim_{x \\uparrow c} E[Y|X=x]}{\\lim_{x \\downarrow c} E[T|X=x] - \\lim_{x \\uparrow c} E[T|X=x]}',
+        'math-locpoly': '\\hat{\\mu}_{+}(c) = \\hat{\\beta}_0 \\text{ from } \\min_{\\beta} \\sum_{i: X_i \\geq c} (Y_i - \\beta_0 - \\beta_1(X_i - c))^2 \\cdot K\\left(\\frac{X_i - c}{h}\\right)'
+    };
+    for (const [id, tex] of Object.entries(formulas)) {
+        const el = document.getElementById(id);
+        if (el) {
+            try { katex.render(tex, el, { displayMode: true, throwOnError: false }); }
+            catch(e) { el.textContent = tex; }
+        }
+    }
+}
+
+// ---- Quiz Logic ----
+function checkQuiz(el, qid, result) {
+    const parent = el.parentElement;
+    const opts = parent.querySelectorAll('.quiz-option');
+    const fb = document.getElementById(qid + '-feedback');
+    opts.forEach(o => { o.style.pointerEvents = 'none'; });
+    if (result === 'correct') {
+        el.classList.add('correct');
+        fb.style.display = 'block';
+        fb.style.background = '#f0faf4';
+        fb.style.color = '#276749';
+        if (qid === 'q1') fb.textContent = 'ถูกต้อง! เมื่อมี noncompliance (บางหน่วยไม่ปฏิบัติตามกฎ cutoff) จะเป็น Fuzzy RD ต้องใช้เทคนิค IV';
+        else if (qid === 'q2') fb.textContent = 'ถูกต้อง! Bandwidth กว้าง → รวมจุดไกล cutoff → functional form misspecification → bias สูง';
+        else if (qid === 'q3') fb.textContent = 'ถูกต้อง! Density test ล้มเหลว = หน่วยอาจจัดการ running variable → treatment assignment ไม่เสมือนสุ่มอีกต่อไป';
+        else if (qid === 'q4') fb.textContent = 'ถูกต้อง! Pre-treatment covariates ที่กระโดดที่ cutoff บ่งชี้ว่ากลุ่มเปรียบเทียบไม่เหมือนกัน → RD assumption ถูกละเมิด';
+    } else {
+        el.classList.add('wrong');
+        // briefly highlight the correct answer
+        opts.forEach(o => { if (o.getAttribute('onclick').indexOf("'correct'") >= 0) o.classList.add('correct'); });
+        fb.style.display = 'block';
+        fb.style.background = '#fef5f4';
+        fb.style.color = '#9b2c2c';
+        fb.textContent = 'ไม่ถูกต้อง — คำตอบที่ถูกต้องถูกไฮไลต์ไว้';
+        setTimeout(() => {
+            opts.forEach(o => { o.style.pointerEvents = 'auto'; o.classList.remove('wrong'); o.classList.remove('correct'); });
+            fb.style.display = 'none';
+        }, 2500);
+    }
+}
+
+// ---- Seeded RNG ----
+function mulberry32(a) {
+    return function() {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        var t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+}
+
+// ---- Interactive 1: RD Plot Simulator ----
+var rdData = null;
+function generateRDData(seed) {
+    var rng = mulberry32(seed);
+    var data = [];
+    for (var i = 0; i < 200; i++) {
+        var x = rng() * 100;
+        data.push({ x: x, base: 0.05 * x - 0.0003 * x * x });
+    }
+    return data;
+}
+
+function drawRDPlot() {
+    var canvas = document.getElementById('rdPlotCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var tau = parseFloat(document.getElementById('rdTau').value);
+    var noise = parseFloat(document.getElementById('rdNoise').value);
+    var cutoff = parseFloat(document.getElementById('rdCutoff').value);
+
+    document.getElementById('rdTauVal').textContent = tau.toFixed(1);
+    document.getElementById('rdNoiseVal').textContent = noise.toFixed(2);
+    document.getElementById('rdCutoffVal').textContent = cutoff;
+
+    if (!rdData) rdData = generateRDData(42);
+    var rng = mulberry32(77);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // axes
+    var pad = { l: 50, r: 20, t: 15, b: 35 };
+    var pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+
+    // grid
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+    for (var g = 0; g <= 5; g++) {
+        var gy = pad.t + ph * g / 5;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(pad.l + pw, gy); ctx.stroke();
+    }
+
+    // cutoff line
+    var cx = pad.l + (cutoff / 100) * pw;
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, pad.t + ph); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#d4534a'; ctx.font = '12px Sarabun';
+    ctx.fillText('Cutoff = ' + cutoff, cx + 4, pad.t + 12);
+
+    // compute Y range
+    var pts = rdData.map(function(d) {
+        var e = (rng() - 0.5) * 2 * noise;
+        var treat = d.x >= cutoff ? tau : 0;
+        return { x: d.x, y: d.base + treat + e, treated: d.x >= cutoff };
+    });
+    var ymin = -8, ymax = 8;
+
+    function toCanvasX(x) { return pad.l + (x / 100) * pw; }
+    function toCanvasY(y) { return pad.t + ph - ((y - ymin) / (ymax - ymin)) * ph; }
+
+    // scatter points
+    pts.forEach(function(p) {
+        var sx = toCanvasX(p.x), sy = toCanvasY(p.y);
+        if (sy < pad.t || sy > pad.t + ph) return;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.treated ? 'rgba(212,83,74,0.45)' : 'rgba(74,144,217,0.45)';
+        ctx.fill();
+    });
+
+    // binned means
+    var nbins = 20;
+    var binW = 100 / nbins;
+    for (var b = 0; b < nbins; b++) {
+        var lo = b * binW, hi = (b + 1) * binW;
+        var mid = (lo + hi) / 2;
+        var binPts = pts.filter(function(p) { return p.x >= lo && p.x < hi; });
+        if (binPts.length < 2) continue;
+        var mean = binPts.reduce(function(s, p) { return s + p.y; }, 0) / binPts.length;
+        var sx = toCanvasX(mid), sy = toCanvasY(mean);
+        ctx.beginPath();
+        ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = mid >= cutoff ? '#d4534a' : '#4a90d9';
+        ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    // fit lines (simple linear per side)
+    function fitLine(data) {
+        var n = data.length; if (n < 2) return null;
+        var sx = 0, sy = 0, sxx = 0, sxy = 0;
+        data.forEach(function(p) { sx += p.x; sy += p.y; sxx += p.x * p.x; sxy += p.x * p.y; });
+        var b1 = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+        var b0 = (sy - b1 * sx) / n;
+        return { b0: b0, b1: b1 };
+    }
+    var left = pts.filter(function(p) { return p.x < cutoff; });
+    var right = pts.filter(function(p) { return p.x >= cutoff; });
+    var fitL = fitLine(left), fitR = fitLine(right);
+
+    if (fitL) {
+        ctx.beginPath(); ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2.5;
+        ctx.moveTo(toCanvasX(0), toCanvasY(fitL.b0));
+        ctx.lineTo(toCanvasX(cutoff - 0.5), toCanvasY(fitL.b0 + fitL.b1 * (cutoff - 0.5)));
+        ctx.stroke();
+    }
+    if (fitR) {
+        ctx.beginPath(); ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2.5;
+        ctx.moveTo(toCanvasX(cutoff + 0.5), toCanvasY(fitR.b0 + fitR.b1 * (cutoff + 0.5)));
+        ctx.lineTo(toCanvasX(100), toCanvasY(fitR.b0 + fitR.b1 * 100));
+        ctx.stroke();
+    }
+
+    // axes labels
+    ctx.fillStyle = '#718096'; ctx.font = '11px Sarabun';
+    ctx.fillText('Running Variable (X)', pad.l + pw / 2 - 50, H - 5);
+    ctx.save(); ctx.translate(12, pad.t + ph / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Outcome (Y)', -30, 0); ctx.restore();
+
+    // axis ticks
+    ctx.fillStyle = '#718096'; ctx.font = '10px Fira Code';
+    for (var t = 0; t <= 100; t += 20) {
+        ctx.fillText(t, toCanvasX(t) - 6, pad.t + ph + 14);
+    }
+    for (var v = ymin; v <= ymax; v += 4) {
+        ctx.fillText(v.toFixed(0), pad.l - 25, toCanvasY(v) + 4);
+    }
+}
+
+// ---- Interactive 2: Sharp vs Fuzzy ----
+var sfMode = 'sharp';
+function setSharpFuzzy(mode) {
+    sfMode = mode;
+    // update button states
+    var parent = document.getElementById('sharpFuzzyCanvas').parentElement;
+    parent.querySelectorAll('.interactive-btn').forEach(function(b) {
+        b.classList.remove('active');
+        if (b.textContent.toLowerCase().indexOf(mode) >= 0 ||
+            (mode === 'both' && b.textContent.indexOf('เปรียบเทียบ') >= 0)) b.classList.add('active');
+    });
+    drawSharpFuzzy();
+}
+
+function drawSharpFuzzy() {
+    var canvas = document.getElementById('sharpFuzzyCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var compliance = parseInt(document.getElementById('sfCompliance').value);
+    document.getElementById('sfCompVal').textContent = compliance + '%';
+
+    ctx.clearRect(0, 0, W, H);
+
+    function drawPanel(ox, ow, label, isSharp) {
+        var pad = { l: 40, r: 10, t: 25, b: 30 };
+        var pw = ow - pad.l - pad.r, ph = H - pad.t - pad.b;
+
+        // title
+        ctx.fillStyle = '#1a2744'; ctx.font = 'bold 13px Sarabun';
+        ctx.fillText(label, ox + pad.l + pw / 2 - ctx.measureText(label).width / 2, 16);
+
+        // grid
+        ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+        for (var g = 0; g <= 4; g++) {
+            var gy = pad.t + ph * g / 4;
+            ctx.beginPath(); ctx.moveTo(ox + pad.l, gy); ctx.lineTo(ox + pad.l + pw, gy); ctx.stroke();
+        }
+
+        // cutoff
+        var cx = ox + pad.l + pw * 0.5;
+        ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+        ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, pad.t + ph); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // P(T=1|X) curve
+        ctx.lineWidth = 3;
+        if (isSharp) {
+            // left: P=0
+            ctx.strokeStyle = '#4a90d9';
+            ctx.beginPath(); ctx.moveTo(ox + pad.l, pad.t + ph); ctx.lineTo(cx - 1, pad.t + ph); ctx.stroke();
+            // right: P=1
+            ctx.strokeStyle = '#d4534a';
+            ctx.beginPath(); ctx.moveTo(cx + 1, pad.t); ctx.lineTo(ox + pad.l + pw, pad.t); ctx.stroke();
+            // jump markers
+            ctx.fillStyle = '#4a90d9'; ctx.beginPath(); ctx.arc(cx - 1, pad.t + ph, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = '#d4534a'; ctx.beginPath(); ctx.arc(cx + 1, pad.t, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+        } else {
+            var pLow = (100 - compliance) / 100;
+            var pHigh = compliance / 100;
+            var yLow = pad.t + ph - pLow * ph;
+            var yHigh = pad.t + ph - pHigh * ph;
+            // left
+            ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(ox + pad.l, yLow); ctx.lineTo(cx - 1, yLow); ctx.stroke();
+            // right
+            ctx.strokeStyle = '#d4534a';
+            ctx.beginPath(); ctx.moveTo(cx + 1, yHigh); ctx.lineTo(ox + pad.l + pw, yHigh); ctx.stroke();
+            // markers
+            ctx.fillStyle = '#4a90d9'; ctx.beginPath(); ctx.arc(cx - 1, yLow, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = '#d4534a'; ctx.beginPath(); ctx.arc(cx + 1, yHigh, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+            // dashed lines for levels
+            ctx.strokeStyle = '#8b949e'; ctx.lineWidth = 0.5; ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(ox + pad.l, yLow); ctx.lineTo(ox + pad.l - 2, yLow); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(ox + pad.l, yHigh); ctx.lineTo(ox + pad.l - 2, yHigh); ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // Y axis labels
+        ctx.fillStyle = '#718096'; ctx.font = '10px Fira Code';
+        ctx.fillText('1.0', ox + pad.l - 25, pad.t + 4);
+        ctx.fillText('0.5', ox + pad.l - 25, pad.t + ph / 2 + 3);
+        ctx.fillText('0.0', ox + pad.l - 25, pad.t + ph + 4);
+        // X axis
+        ctx.fillText('X', ox + pad.l + pw / 2 - 3, H - 8);
+        ctx.fillStyle = '#718096'; ctx.font = '10px Sarabun';
+        ctx.fillText('P(T=1|X)', ox + pad.l - 5, pad.t - 2);
+    }
+
+    if (sfMode === 'sharp') {
+        drawPanel(0, W, 'Sharp RD: P(T=1|X)', true);
+    } else if (sfMode === 'fuzzy') {
+        drawPanel(0, W, 'Fuzzy RD: P(T=1|X) — Compliance ' + compliance + '%', false);
+    } else {
+        drawPanel(0, W / 2, 'Sharp RD', true);
+        drawPanel(W / 2, W / 2, 'Fuzzy RD (' + compliance + '%)', false);
+    }
+}
+
+// ---- Interactive 3: Bandwidth Effect ----
+var bwBaseData = null;
+function generateBWData() {
+    var rng = mulberry32(123);
+    var data = [];
+    for (var i = 0; i < 300; i++) {
+        var x = (rng() - 0.5) * 40; // centered at 0
+        var y = 0.3 * x - 0.005 * x * x + (x >= 0 ? -2.1 : 0) + (rng() - 0.5) * 3.5;
+        data.push({ x: x, y: y });
+    }
+    return data;
+}
+
+function drawBW() {
+    var canvas = document.getElementById('bwCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var bw = parseInt(document.getElementById('bwSlider').value);
+    document.getElementById('bwVal').textContent = bw;
+
+    if (!bwBaseData) bwBaseData = generateBWData();
+
+    ctx.clearRect(0, 0, W, H);
+    var pad = { l: 50, r: 20, t: 15, b: 30 };
+    var pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+
+    function toX(v) { return pad.l + ((v + 20) / 40) * pw; }
+    function toY(v) { return pad.t + ph - ((v + 10) / 20) * ph; }
+
+    // bandwidth shading
+    var bwLeft = toX(-bw), bwRight = toX(bw);
+    ctx.fillStyle = 'rgba(74,144,217,0.08)';
+    ctx.fillRect(Math.max(bwLeft, pad.l), pad.t, Math.min(bwRight, pad.l + pw) - Math.max(bwLeft, pad.l), ph);
+
+    // grid
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+    for (var g = 0; g <= 4; g++) {
+        var gy = pad.t + ph * g / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(pad.l + pw, gy); ctx.stroke();
+    }
+
+    // cutoff
+    var cx = toX(0);
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+    ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, pad.t + ph); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // bandwidth edges
+    ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    if (bwLeft > pad.l) { ctx.beginPath(); ctx.moveTo(bwLeft, pad.t); ctx.lineTo(bwLeft, pad.t + ph); ctx.stroke(); }
+    if (bwRight < pad.l + pw) { ctx.beginPath(); ctx.moveTo(bwRight, pad.t); ctx.lineTo(bwRight, pad.t + ph); ctx.stroke(); }
+    ctx.setLineDash([]);
+
+    // points
+    var inBW = 0;
+    bwBaseData.forEach(function(p) {
+        var inside = Math.abs(p.x) <= bw;
+        if (inside) inBW++;
+        var sx = toX(p.x), sy = toY(p.y);
+        if (sy < pad.t || sy > pad.t + ph || sx < pad.l || sx > pad.l + pw) return;
+        ctx.beginPath(); ctx.arc(sx, sy, inside ? 3 : 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = inside ? (p.x >= 0 ? 'rgba(212,83,74,0.5)' : 'rgba(74,144,217,0.5)') : 'rgba(0,0,0,0.1)';
+        ctx.fill();
+    });
+
+    // fit lines within BW
+    function fitLine(data) {
+        var n = data.length; if (n < 2) return null;
+        var sx = 0, sy = 0, sxx = 0, sxy = 0;
+        data.forEach(function(p) { sx += p.x; sy += p.y; sxx += p.x * p.x; sxy += p.x * p.y; });
+        var b1 = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+        var b0 = (sy - b1 * sx) / n;
+        return { b0: b0, b1: b1 };
+    }
+
+    var left = bwBaseData.filter(function(p) { return p.x < 0 && p.x >= -bw; });
+    var right = bwBaseData.filter(function(p) { return p.x >= 0 && p.x <= bw; });
+    var fL = fitLine(left), fR = fitLine(right);
+
+    if (fL) {
+        ctx.beginPath(); ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2.5;
+        ctx.moveTo(toX(-bw), toY(fL.b0 + fL.b1 * (-bw)));
+        ctx.lineTo(toX(-0.1), toY(fL.b0 + fL.b1 * (-0.1)));
+        ctx.stroke();
+    }
+    if (fR) {
+        ctx.beginPath(); ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2.5;
+        ctx.moveTo(toX(0.1), toY(fR.b0 + fR.b1 * 0.1));
+        ctx.lineTo(toX(bw), toY(fR.b0 + fR.b1 * bw));
+        ctx.stroke();
+    }
+
+    // estimate
+    if (fL && fR) {
+        var estL = fL.b0, estR = fR.b0;
+        var est = estR - estL;
+        var se = 1.5 / Math.sqrt(inBW / 2 + 1) * 3;
+        document.getElementById('bwEstimate').textContent = est.toFixed(2);
+        document.getElementById('bwSE').textContent = se.toFixed(2);
+        document.getElementById('bwN').textContent = inBW;
+
+        // show jump
+        ctx.fillStyle = '#d4534a'; ctx.beginPath(); ctx.arc(cx + 2, toY(estR), 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.fillStyle = '#4a90d9'; ctx.beginPath(); ctx.arc(cx - 2, toY(estL), 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+        // arrow for effect
+        ctx.strokeStyle = '#e8a838'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx + 15, toY(estL)); ctx.lineTo(cx + 15, toY(estR)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx + 12, toY(estR) + 5); ctx.lineTo(cx + 15, toY(estR)); ctx.lineTo(cx + 18, toY(estR) + 5); ctx.stroke();
+        ctx.fillStyle = '#e8a838'; ctx.font = 'bold 11px Fira Code';
+        ctx.fillText('τ=' + est.toFixed(1), cx + 22, (toY(estL) + toY(estR)) / 2 + 4);
+    }
+
+    // axis labels
+    ctx.fillStyle = '#718096'; ctx.font = '10px Fira Code';
+    for (var t = -20; t <= 20; t += 10) {
+        ctx.fillText(t, toX(t) - 8, pad.t + ph + 14);
+    }
+    ctx.font = '11px Sarabun'; ctx.fillText('R = X - c (centered running variable)', pad.l + pw / 2 - 90, H - 5);
+    ctx.fillText('h = ' + bw, bwRight + 4, pad.t + ph / 2);
+}
+
+// ---- Interactive 4: Density Test ----
+var densityMode = 'normal';
+function setDensity(mode) {
+    densityMode = mode;
+    var parent = document.getElementById('densityCanvas').parentElement;
+    parent.querySelectorAll('.interactive-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (mode === 'normal') parent.querySelectorAll('.interactive-btn')[0].classList.add('active');
+    else parent.querySelectorAll('.interactive-btn')[1].classList.add('active');
+    drawDensity();
+}
+
+function drawDensity() {
+    var canvas = document.getElementById('densityCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    var pad = { l: 35, r: 10, t: 15, b: 28 };
+    var pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+    var nbins = 30;
+    var rng = mulberry32(densityMode === 'normal' ? 99 : 199);
+
+    // generate data
+    var data = [];
+    for (var i = 0; i < 500; i++) {
+        var u1 = rng() || 1e-10, u2 = rng();
+        var z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        var x = 50 + z * 15;
+        if (densityMode === 'bunching' && x > 45 && x < 55) {
+            x = x + (50 - x) * 0.6 + (rng() > 0.5 ? 3 : 0); // push above cutoff
+        }
+        if (x >= 0 && x <= 100) data.push(x);
+    }
+
+    // histogram
+    var bins = new Array(nbins).fill(0);
+    var binW = 100 / nbins;
+    data.forEach(function(x) { var b = Math.floor(x / binW); if (b >= nbins) b = nbins - 1; bins[b]++; });
+    var maxBin = Math.max.apply(null, bins);
+
+    function toX(v) { return pad.l + (v / 100) * pw; }
+    function toY(v) { return pad.t + ph - (v / maxBin) * ph; }
+
+    // bars
+    for (var b = 0; b < nbins; b++) {
+        var lo = b * binW, hi = (b + 1) * binW;
+        var mid = (lo + hi) / 2;
+        var barH = (bins[b] / maxBin) * ph;
+        ctx.fillStyle = mid >= 50 ? 'rgba(212,83,74,0.35)' : 'rgba(74,144,217,0.35)';
+        ctx.strokeStyle = mid >= 50 ? 'rgba(212,83,74,0.6)' : 'rgba(74,144,217,0.6)';
+        ctx.lineWidth = 1;
+        var bx = toX(lo), bw2 = toX(hi) - toX(lo);
+        ctx.fillRect(bx, pad.t + ph - barH, bw2, barH);
+        ctx.strokeRect(bx, pad.t + ph - barH, bw2, barH);
+    }
+
+    // cutoff
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+    ctx.beginPath(); ctx.moveTo(toX(50), pad.t); ctx.lineTo(toX(50), pad.t + ph); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#d4534a'; ctx.font = 'bold 11px Sarabun';
+    ctx.fillText('Cutoff', toX(50) + 4, pad.t + 12);
+
+    // label
+    ctx.fillStyle = '#718096'; ctx.font = '10px Sarabun';
+    ctx.fillText('Running Variable', pad.l + pw / 2 - 35, H - 6);
+
+    if (densityMode === 'bunching') {
+        ctx.fillStyle = '#d4534a'; ctx.font = 'bold 11px Sarabun';
+        ctx.fillText('Bunching detected!', toX(60), pad.t + 26);
+        ctx.fillText('rddensity p < 0.05', toX(60), pad.t + 40);
+    } else {
+        ctx.fillStyle = '#3d9970'; ctx.font = 'bold 11px Sarabun';
+        ctx.fillText('No manipulation', toX(60), pad.t + 26);
+        ctx.fillText('rddensity p > 0.05', toX(60), pad.t + 40);
+    }
+}
+
+// ---- Interactive 5: Falsification Demo ----
+var falsMode = 'real';
+function setFalsification(mode) {
+    falsMode = mode;
+    var parent = document.getElementById('falsCanvas').parentElement;
+    parent.querySelectorAll('.interactive-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (mode === 'real') parent.querySelectorAll('.interactive-btn')[0].classList.add('active');
+    else if (mode === 'placebo') parent.querySelectorAll('.interactive-btn')[1].classList.add('active');
+    else parent.querySelectorAll('.interactive-btn')[2].classList.add('active');
+    drawFalsification();
+}
+
+function drawFalsification() {
+    var canvas = document.getElementById('falsCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    var pad = { l: 50, r: 20, t: 20, b: 30 };
+    var pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+    var rng = mulberry32(555);
+
+    var cutoff = falsMode === 'cutoff' ? 65 : 50;
+    var tau = falsMode === 'real' ? -2.5 : 0;
+    var title = falsMode === 'real' ? 'Child Mortality (Real Outcome) — τ ≠ 0' :
+                falsMode === 'placebo' ? 'Adult Mortality (Placebo) — τ ≈ 0' :
+                'Real Outcome at Fake Cutoff — τ ≈ 0';
+
+    // title
+    ctx.fillStyle = '#1a2744'; ctx.font = 'bold 13px Sarabun';
+    ctx.fillText(title, pad.l + pw / 2 - ctx.measureText(title).width / 2, 14);
+
+    // grid
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+    for (var g = 0; g <= 4; g++) {
+        var gy = pad.t + ph * g / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(pad.l + pw, gy); ctx.stroke();
+    }
+
+    // cutoff line
+    var cx = pad.l + (cutoff / 100) * pw;
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+    ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, pad.t + ph); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // data
+    var pts = [];
+    for (var i = 0; i < 200; i++) {
+        var x = rng() * 100;
+        var base = 0.02 * x + (rng() - 0.5) * 4;
+        var treat = (falsMode === 'real' && x >= 50) ? tau : 0;
+        pts.push({ x: x, y: base + treat, treated: x >= cutoff });
+    }
+
+    var ymin = -6, ymax = 8;
+    function toX(v) { return pad.l + (v / 100) * pw; }
+    function toY(v) { return pad.t + ph - ((v - ymin) / (ymax - ymin)) * ph; }
+
+    // scatter
+    pts.forEach(function(p) {
+        var sx = toX(p.x), sy = toY(p.y);
+        if (sy < pad.t || sy > pad.t + ph) return;
+        ctx.beginPath(); ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.treated ? 'rgba(212,83,74,0.4)' : 'rgba(74,144,217,0.4)';
+        ctx.fill();
+    });
+
+    // fit lines
+    function fitLine(data) {
+        var n = data.length; if (n < 2) return null;
+        var sx = 0, sy = 0, sxx = 0, sxy = 0;
+        data.forEach(function(p) { sx += p.x; sy += p.y; sxx += p.x * p.x; sxy += p.x * p.y; });
+        var b1 = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+        var b0 = (sy - b1 * sx) / n;
+        return { b0: b0, b1: b1 };
+    }
+    var left = pts.filter(function(p) { return p.x < cutoff; });
+    var right = pts.filter(function(p) { return p.x >= cutoff; });
+    var fL = fitLine(left), fR = fitLine(right);
+
+    if (fL) {
+        ctx.beginPath(); ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2.5;
+        ctx.moveTo(toX(0), toY(fL.b0));
+        ctx.lineTo(toX(cutoff - 0.5), toY(fL.b0 + fL.b1 * (cutoff - 0.5)));
+        ctx.stroke();
+    }
+    if (fR) {
+        ctx.beginPath(); ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2.5;
+        ctx.moveTo(toX(cutoff + 0.5), toY(fR.b0 + fR.b1 * (cutoff + 0.5)));
+        ctx.lineTo(toX(100), toY(fR.b0 + fR.b1 * 100));
+        ctx.stroke();
+    }
+
+    // result label
+    if (falsMode === 'real') {
+        ctx.fillStyle = '#d4534a'; ctx.font = 'bold 12px Sarabun';
+        ctx.fillText('Significant discontinuity → Treatment effect exists', pad.l + 10, pad.t + ph - 8);
+    } else {
+        ctx.fillStyle = '#3d9970'; ctx.font = 'bold 12px Sarabun';
+        ctx.fillText('No significant discontinuity → Passes falsification test', pad.l + 10, pad.t + ph - 8);
+    }
+
+    // axes
+    ctx.fillStyle = '#718096'; ctx.font = '10px Fira Code';
+    for (var t = 0; t <= 100; t += 20) ctx.fillText(t, toX(t) - 6, pad.t + ph + 14);
+    ctx.font = '11px Sarabun';
+    ctx.fillText('Running Variable', pad.l + pw / 2 - 40, H - 5);
+}
+
+// ---- Reveal.js Init ----
+Reveal.initialize({
+    hash: true,
+    slideNumber: true,
+    width: 1100,
+    height: 700,
+    margin: 0.04,
+    transition: 'fade',
+    transitionSpeed: 'fast',
+    plugins: []
+});
+
+Reveal.on('ready', function() {
+    renderMath();
+    drawRDPlot();
+    drawSharpFuzzy();
+    drawBW();
+    drawDensity();
+    drawFalsification();
+});
+
+Reveal.on('slidechanged', function() {
+    setTimeout(function() {
+        drawRDPlot();
+        drawSharpFuzzy();
+        drawBW();
+        drawDensity();
+        drawFalsification();
+    }, 100);
+});
+
+// Slider listeners
+document.getElementById('rdTau').addEventListener('input', drawRDPlot);
+document.getElementById('rdNoise').addEventListener('input', drawRDPlot);
+document.getElementById('rdCutoff').addEventListener('input', drawRDPlot);
+document.getElementById('sfCompliance').addEventListener('input', drawSharpFuzzy);
+document.getElementById('bwSlider').addEventListener('input', drawBW);
+</script>
+</body>
+</html>

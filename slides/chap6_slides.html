@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Panel Data Models | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            color: var(--text);
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: none;
+            line-height: 1.6;
+            padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree (HTML/CSS) ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px;
+            font-size: 13px; color: rgba(0,0,0,0.35);
+            z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer {
+            position: fixed; bottom: 8px; left: 16px;
+            z-index: 100; pointer-events: none; opacity: 0.45;
+        }
+        .logo-footer img { height: 38px; width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer">
+    <img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University">
+</div>
+<div class="instructor-footer">
+    ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ==================== TITLE ==================== -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>Panel Data Models</h1>
+    <div class="subtitle">Chapter 6 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Intro &bull; Pooled/PA &bull; FE &bull; BE/RE &bull; Testing &bull; Nonlinear &bull; Summary</p>
+    </div>
+</section>
+
+<!-- ==================== SECTION 1: INTRODUCTION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>1. Introduction &amp; Panel Data Basics</h2>
+    <p>ข้อมูลติดตามบุคคลเดิมหลายช่วงเวลา &mdash; ทำไมถึงดีกว่า cross-section?</p>
+</section>
+
+<section>
+    <h2>Panel Data คืออะไร?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Panel Data (Longitudinal Data)</strong> = การเก็บข้อมูลจากหน่วยเดิม (i = 1,...,N) ซ้ำหลายช่วงเวลา (t = 1,...,T)</p>
+                <p>เรียกว่า <strong>Short Panel</strong> เมื่อ N ใหญ่ T เล็ก (เช่น สำรวจ 595 คน 7 ปี)</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ข้อดีหลัก:</strong> ควบคุม <em>unobserved heterogeneity</em> ที่คงที่ตามเวลา (time-invariant) ได้ &mdash; เช่น ความสามารถ พรสวรรค์ แรงจูงใจส่วนบุคคล</p>
+                <p>สิ่งที่ cross-section ทำไม่ได้เพราะ &alpha;<sub>i</sub> เหล่านี้สังเกตไม่ได้</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ตัวอย่าง:</strong> ศึกษาผลของประสบการณ์ต่อค่าจ้าง &mdash; ถ้าใช้ cross-section อาจ confound กับ ability (คนเก่งมักได้ค่าจ้างสูงและทำงานนาน) Panel ช่วยแยก ability ออกได้</p>
+            </div>
+        </div>
+        <div>
+            <div class="interactive-container fragment">
+                <h4>โครงสร้างข้อมูล Panel</h4>
+                <canvas id="panelStructCanvas" width="400" height="240"></canvas>
+                <div style="text-align:center; margin-top:4px;">
+                    <button class="interactive-btn active" onclick="drawPanelStruct('raw')">Raw Data</button>
+                    <button class="interactive-btn" onclick="drawPanelStruct('within')">Within</button>
+                    <button class="interactive-btn" onclick="drawPanelStruct('between')">Between</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Individual-Effects Model</h2>
+    <div class="two-col">
+        <div>
+            <div class="math-block">
+                y<sub>it</sub> = x'<sub>it</sub>&beta; + &alpha;<sub>i</sub> + &epsilon;<sub>it</sub>
+            </div>
+            <div class="concept-box">
+                <p><strong>Fixed Effects (FE):</strong> อนุญาตให้ Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) &ne; 0</p>
+                <p>&alpha;<sub>i</sub> เป็น parameter ที่ต้องประมาณ (หรือกำจัดออก)</p>
+                <p>ข้อเสีย: ประมาณค่าสัมประสิทธิ์ของตัวแปรที่คงที่ตามเวลา (เช่น เพศ การศึกษา) ไม่ได้</p>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>Random Effects (RE):</strong> สมมติ Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) = 0</p>
+                <p>&alpha;<sub>i</sub> เป็น random variable จาก distribution บางอย่าง</p>
+                <p>ข้อดี: ประมาณค่าสัมประสิทธิ์ของตัวแปร time-invariant ได้</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>คำถามสำคัญ:</strong> &alpha;<sub>i</sub> สัมพันธ์กับ x<sub>it</sub> หรือไม่?</p>
+                <ul>
+                    <li>ถ้าสัมพันธ์ &rarr; ใช้ <strong>FE</strong> (consistent)</li>
+                    <li>ถ้าไม่สัมพันธ์ &rarr; ใช้ <strong>RE</strong> (efficient กว่า)</li>
+                    <li>ทดสอบด้วย <strong>Hausman test</strong></li>
+                </ul>
+            </div>
+            <table class="compare-table fragment">
+                <tr><th>คุณสมบัติ</th><th>FE</th><th>RE</th></tr>
+                <tr><td>Corr(&alpha;<sub>i</sub>, x<sub>it</sub>)</td><td>อนุญาต</td><td class="highlight">= 0</td></tr>
+                <tr><td>Time-invariant vars</td><td class="highlight">ไม่ได้</td><td>ได้</td></tr>
+                <tr><td>Consistency</td><td>เสมอ*</td><td>ถ้า H<sub>0</sub> จริง</td></tr>
+                <tr><td>Efficiency</td><td>ต่ำกว่า</td><td>สูงกว่า (ถ้า H<sub>0</sub>)</td></tr>
+            </table>
+            <p class="fragment" style="font-size:0.42em; color:var(--text-light);">*ภายใต้ strict exogeneity: E(&epsilon;<sub>it</sub>|x<sub>i1</sub>,...,x<sub>iT</sub>,&alpha;<sub>i</sub>) = 0</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ข้อมูล PSID: Panel Summary</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Panel Study of Income Dynamics (PSID)</strong></p>
+                <p>595 คน &times; 7 ปี (1976&ndash;82) = 4,165 obs</p>
+                <p>Balanced panel (ทุกคนมีครบทุกปี)</p>
+                <p>ตัวแปรตาม: <strong>lwage</strong> (log hourly wage)</p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* ประกาศโครงสร้าง panel</span>
+<span class="cmd">xtset</span> id t
+
+<span class="cmt">* ดู within vs between variation</span>
+<span class="cmd">xtsum</span> id t lwage ed exp exp2 wks
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Within vs Between variation:</strong></p>
+                <ul>
+                    <li><strong>ed</strong> (education): within = 0, between &gt; 0 &rarr; ไม่เปลี่ยนตามเวลา (time-invariant)</li>
+                    <li><strong>exp</strong> (experience): within &gt; 0, between &gt; 0 &rarr; เปลี่ยนทั้งระหว่างคนและตามเวลา</li>
+                    <li><strong>lwage</strong>: within &ap; 0.23, between &ap; 0.39 &rarr; ความแตกต่างระหว่างคนมากกว่าภายในคน</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="interactive-container fragment">
+                <h4>Panel Data Structure Explorer</h4>
+                <canvas id="dataExplorer" width="400" height="280"></canvas>
+                <div style="text-align:center; margin-top:4px;">
+                    <button class="interactive-btn active" onclick="showTransform('original')">Original</button>
+                    <button class="interactive-btn" onclick="showTransform('within')">Within</button>
+                    <button class="interactive-btn" onclick="showTransform('between')">Between</button>
+                    <button class="interactive-btn" onclick="showTransform('fd')">First-Diff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 1 -->
+
+<!-- ==================== SECTION 2: POOLED & PA ==================== -->
+<section>
+<section class="section-divider">
+    <h2>2. Pooled OLS &amp; PA Estimators</h2>
+    <p>เริ่มจากวิธีง่ายที่สุด &mdash; แล้วทำไมมันยังไม่ดีพอ?</p>
+</section>
+
+<section>
+    <h2>Pooled OLS</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Pooled OLS</strong> = ใช้ OLS ธรรมดากับข้อมูล panel ทั้งหมด โดยไม่สนใจโครงสร้าง panel</p>
+                <p>ปัญหา: ละเลย &alpha;<sub>i</sub> ทำให้ error = &alpha;<sub>i</sub> + &epsilon;<sub>it</sub> มี serial correlation สูงมาก</p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* Pooled OLS - cluster-robust SE</span>
+<span class="cmd">regress</span> lwage exp exp2 wks ed, <span class="opt">vce(cluster id)</span>
+
+<span class="cmt">* เปรียบเทียบกับ default SE (ผิด!)</span>
+<span class="cmd">regress</span> lwage exp exp2 wks ed
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ปัญหา SE:</strong> Default SE เล็กเกินจริงมาก เพราะไม่คำนึงถึง within-person correlation &rarr; ต้องใช้ <strong>cluster-robust SE</strong> เสมอ!</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>Autocorrelation ใน residuals:</strong></p>
+                <p>Lag 1: &rho; &ap; 0.80 &mdash; สูงมาก! แสดงว่า &alpha;<sub>i</sub> ที่ไม่ได้ควบคุมสร้าง persistent correlation</p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* ตรวจ autocorrelation</span>
+<span class="cmd">quietly regress</span> lwage exp exp2 wks ed, <span class="opt">vce(cluster id)</span>
+<span class="cmd">predict</span> uhat, <span class="opt">residuals</span>
+<span class="cmd">forvalues</span> j = <span class="num">1</span>/<span class="num">6</span> {
+    <span class="cmd">quietly corr</span> uhat L`j'.uhat
+    <span class="cmd">display</span> <span class="opt">"Lag `j' = "</span> r(rho)
+}
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ผลลัพธ์:</strong> Lag 1 = 0.80, Lag 2 = 0.72, ..., Lag 6 = 0.55</p>
+                <p>Autocorrelation ลดช้ามาก &rarr; เป็นเพราะ unobserved individual effect &alpha;<sub>i</sub> ที่คงที่ตลอดเวลา</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Population-Averaged (PA) Estimator</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>PA estimator</strong> = Pooled FGLS ที่ model within-person correlation structure</p>
+                <p>ระบุ working correlation matrix (เช่น AR(2), exchangeable) แล้วใช้ GEE</p>
+                <p>ตอบคำถาม: "ค่าเฉลี่ยของ y เปลี่ยนอย่างไรเมื่อ x เปลี่ยน <em>across the population</em>?"</p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* PA estimator with AR(2) correlation</span>
+<span class="cmd">xtreg</span> lwage exp exp2 wks ed, <span class="opt">pa corr(ar 2) vce(robust)</span> nolog
+
+<span class="cmt">* ดู estimated correlation matrix</span>
+<span class="cmd">matrix list</span> e(R)
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>PA vs FE/RE:</strong></p>
+                <ul>
+                    <li>PA ไม่แยก &alpha;<sub>i</sub> ออกจาก model &mdash; รวมเข้า error structure แทน</li>
+                    <li>ให้ <strong>marginal effects</strong> โดยตรง (averaged over &alpha;<sub>i</sub>)</li>
+                    <li>Robust SE ทำให้ valid แม้ correlation structure ผิด</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>เมื่อไหร่ใช้ PA?</strong></p>
+                <ul>
+                    <li>สนใจ population-level effect ไม่ใช่ individual-level</li>
+                    <li>Nonlinear model ที่ FE มีปัญหา incidental parameters</li>
+                    <li>ต้องการ robust inference โดยไม่ต้อง assume &alpha;<sub>i</sub> distribution</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 2 -->
+
+<!-- ==================== SECTION 3: FE ESTIMATOR ==================== -->
+<section>
+<section class="section-divider">
+    <h2>3. Within (Fixed Effects) Estimator</h2>
+    <p>กำจัด unobserved heterogeneity ด้วย mean-differencing</p>
+</section>
+
+<section>
+    <h2>Within Transformation</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>แนวคิด:</strong> หัก mean ของแต่ละคนออก เพื่อกำจัด &alpha;<sub>i</sub></p>
+            </div>
+            <div class="math-block">
+                y<sub>it</sub> - ȳ<sub>i</sub> = (x<sub>it</sub> - x̄<sub>i</sub>)'&beta; + (&epsilon;<sub>it</sub> - ε̄<sub>i</sub>)
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ผลลัพธ์:</strong> &alpha;<sub>i</sub> หายไป! เพราะ &alpha;<sub>i</sub> - &alpha;<sub>i</sub> = 0</p>
+                <p>OLS บน transformed data ให้ consistent estimates แม้ Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) &ne; 0</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ข้อจำกัดสำคัญ:</strong> ตัวแปร time-invariant (เช่น <strong>ed</strong>) ถูกกำจัดไปด้วย!</p>
+                <p>เพราะ x<sub>it</sub> - x̄<sub>i</sub> = 0 สำหรับทุก t &rarr; ไม่สามารถประมาณ coefficient ได้</p>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code fragment">
+<span class="cmt">* Within (FE) estimator</span>
+<span class="cmd">xtreg</span> lwage exp exp2 wks ed, <span class="opt">fe vce(cluster id)</span>
+
+<span class="cmt">* สังเกต: ed ถูก drop เพราะ time-invariant</span>
+<span class="cmt">* R-sq within = 0.1727</span>
+<span class="cmt">* R-sq between = 0.2369</span>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* LSDV (Least Squares Dummy Variable)</span>
+<span class="cmt">* ให้ผลเหมือน FE แต่รวม dummy ทุกคน</span>
+<span class="cmd">areg</span> lwage exp exp2 wks ed, <span class="opt">absorb(id) vce(cluster id)</span>
+
+<span class="cmt">* หรือใช้ factor variables</span>
+<span class="cmd">regress</span> lwage exp exp2 wks ed <span class="opt">i.id</span>, <span class="opt">vce(cluster id)</span>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>LSDV vs xtreg, fe:</strong> ให้ &beta; เหมือนกันทุกประการ LSDV แค่ประมาณ &alpha;<sub>i</sub> ทุกตัวด้วย (594 dummy variables!)</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Within vs Between Variation</h2>
+    <div class="two-col">
+        <div>
+            <div class="interactive-container">
+                <h4>Within vs Between Variation Visualizer</h4>
+                <canvas id="withinBetweenCanvas" width="440" height="280"></canvas>
+                <div style="text-align:center; margin-top:4px;">
+                    <button class="interactive-btn active" onclick="drawWBView('overall')">Overall</button>
+                    <button class="interactive-btn" onclick="drawWBView('within')">Within (FE ใช้ส่วนนี้)</button>
+                    <button class="interactive-btn" onclick="drawWBView('between')">Between (BE ใช้ส่วนนี้)</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <p><strong>Total variation</strong> แยกได้เป็น:</p>
+                <p>x<sub>it</sub> - x̄ = <span style="color:var(--accent2);">(x<sub>it</sub> - x̄<sub>i</sub>)</span> + <span style="color:var(--accent);">(x̄<sub>i</sub> - x̄)</span></p>
+                <p><span style="color:var(--accent2);">Within</span> + <span style="color:var(--accent);">Between</span></p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>FE ใช้เฉพาะ within variation</strong> &mdash; ดูว่า "เมื่อคนเดิมมีประสบการณ์เพิ่มขึ้น ค่าจ้างเปลี่ยนอย่างไร?"</p>
+                <p><strong>BE ใช้เฉพาะ between variation</strong> &mdash; "คนที่มีประสบการณ์เฉลี่ยมากกว่า มีค่าจ้างเฉลี่ยสูงกว่าหรือไม่?"</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>สังเกตใน interactive:</strong> เมื่อสลับไป Within จะเห็นว่าแต่ละกลุ่ม (แต่ละคน) ถูก center ที่ 0 &mdash; ความแตกต่างระหว่างคนหายไป</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>First-Difference Estimator</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>First-Difference (FD):</strong> อีกวิธีกำจัด &alpha;<sub>i</sub> โดยหักค่าช่วงเวลาก่อนหน้า</p>
+            </div>
+            <div class="math-block">
+                &Delta;y<sub>it</sub> = &Delta;x'<sub>it</sub>&beta; + &Delta;&epsilon;<sub>it</sub>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>FD vs FE:</strong></p>
+                <ul>
+                    <li>ถ้า T = 2: FD = FE (ให้ผลเหมือนกันทุกประการ)</li>
+                    <li>ถ้า T &gt; 2: FE efficient กว่าถ้า &epsilon;<sub>it</sub> เป็น iid; FD efficient กว่าถ้า &epsilon;<sub>it</sub> เป็น random walk</li>
+                    <li>FD ต้องการ <strong>sequential exogeneity</strong> ที่อ่อนกว่า strict exogeneity ของ FE</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code fragment">
+<span class="cmt">* First-differences estimator</span>
+<span class="cmd">sort</span> id t
+<span class="cmd">regress</span> D.(lwage exp exp2 wks ed), <span class="opt">vce(cluster id) noconstant</span>
+
+<span class="cmt">* D. = first-difference operator</span>
+<span class="cmt">* noconstant เพราะ D.ed = 0 เสมอ</span>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ผลจาก PSID:</strong> FD ให้ coefficient ของ exp ใกล้เคียงกับ FE แต่ SE ต่างกันเล็กน้อย &mdash; เพราะ &epsilon;<sub>it</sub> อาจไม่ใช่ iid</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 3 -->
+
+<!-- ==================== SECTION 4: BE & RE ==================== -->
+<section>
+<section class="section-divider">
+    <h2>4. Between &amp; Random Effects Estimators</h2>
+    <p>ใช้ทั้ง within และ between variation ให้เป็นประโยชน์</p>
+</section>
+
+<section>
+    <h2>Between (BE) Estimator</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Between Estimator:</strong> OLS บน <em>group means</em></p>
+            </div>
+            <div class="math-block">
+                ȳ<sub>i</sub> = x̄'<sub>i</sub>&beta; + &alpha;<sub>i</sub> + ε̄<sub>i</sub>
+            </div>
+            <ul>
+                <li class="fragment">ใช้ข้อมูลเพียง N observations (หนึ่งต่อคน)</li>
+                <li class="fragment">ประมาณ coefficient ของตัวแปร time-invariant ได้ (เช่น ed)</li>
+                <li class="fragment"><strong>ไม่ consistent</strong> ถ้า Corr(&alpha;<sub>i</sub>, x̄<sub>i</sub>) &ne; 0 (ซึ่งมักเป็นจริง)</li>
+                <li class="fragment">ไม่ค่อยนิยมใช้ในทางปฏิบัติ แต่ช่วยเข้าใจ RE ได้</li>
+            </ul>
+        </div>
+        <div>
+            <div class="stata-code fragment">
+<span class="cmt">* Between estimator</span>
+<span class="cmd">xtreg</span> lwage exp exp2 wks ed, <span class="opt">be</span>
+
+<span class="cmt">* Robust SE ด้วย bootstrap</span>
+<span class="cmd">xtreg</span> lwage exp exp2 wks ed, <span class="opt">be vce(boot, reps(400) seed(10101))</span>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>RE = weighted average ของ FE และ BE:</strong></p>
+                <p>&beta;&#770;<sub>RE</sub> = &lambda; &middot; &beta;&#770;<sub>FE</sub> + (1-&lambda;) &middot; &beta;&#770;<sub>BE</sub></p>
+                <p>โดย &lambda; ขึ้นอยู่กับ &sigma;<sup>2</sup><sub>&epsilon;</sub> / &sigma;<sup>2</sup><sub>&alpha;</sub> ratio</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Random Effects (RE) Estimator</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>RE Model:</strong> สมมติ &alpha;<sub>i</sub> ~ iid(0, &sigma;<sup>2</sup><sub>&alpha;</sub>) และไม่สัมพันธ์กับ x<sub>it</sub></p>
+            </div>
+            <div class="math-block">
+                y<sub>it</sub> - &theta;ȳ<sub>i</sub> = (x<sub>it</sub> - &theta;x̄<sub>i</sub>)'&beta; + (1-&theta;)&alpha;<sub>i</sub> + (&epsilon;<sub>it</sub> - &theta;ε̄<sub>i</sub>)
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>&theta; (theta)</strong> = 1 - &radic;(&sigma;<sup>2</sup><sub>&epsilon;</sub> / (T&sigma;<sup>2</sup><sub>&alpha;</sub> + &sigma;<sup>2</sup><sub>&epsilon;</sub>))</p>
+                <ul>
+                    <li>&theta; &rarr; 1: RE &rarr; FE (เมื่อ &sigma;<sup>2</sup><sub>&alpha;</sub> ใหญ่มาก)</li>
+                    <li>&theta; &rarr; 0: RE &rarr; OLS (เมื่อ &sigma;<sup>2</sup><sub>&alpha;</sub> &ap; 0)</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code fragment">
+<span class="cmt">* RE estimator with theta reported</span>
+<span class="cmd">xtreg</span> lwage exp exp2 wks ed, <span class="opt">re vce(cluster id) theta</span>
+
+<span class="cmt">* คำนวณ theta ด้วยตัวเอง</span>
+<span class="cmd">display</span> <span class="num">1</span> - sqrt(e(sigma_e)^<span class="num">2</span> / (<span class="num">7</span>*e(sigma_u)^<span class="num">2</span>+e(sigma_e)^<span class="num">2</span>))
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ผลจาก PSID:</strong></p>
+                <ul>
+                    <li>&sigma;<sub>u</sub> = 0.327 (SD of &alpha;<sub>i</sub>)</li>
+                    <li>&sigma;<sub>e</sub> = 0.231 (SD of &epsilon;<sub>it</sub>)</li>
+                    <li>&rho; = 0.668 &mdash; 67% ของ variance มาจาก &alpha;<sub>i</sub></li>
+                    <li>&theta; &ap; 0.80 &mdash; RE ใกล้ FE มาก (เพราะ &alpha;<sub>i</sub> สำคัญ)</li>
+                    <li>ed coefficient = 0.094 (มีนัยสำคัญ &mdash; RE ประมาณได้แต่ FE ไม่ได้)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>เปรียบเทียบ Estimators ทั้งหมด</h2>
+    <table class="compare-table">
+        <tr>
+            <th>Variable</th><th>OLS (cluster)</th><th>BE</th><th>FE</th><th>FE (robust)</th><th>RE</th><th>RE (robust)</th>
+        </tr>
+        <tr>
+            <td><strong>exp</strong></td><td>0.0334</td><td>0.0268</td><td>0.0396</td><td>0.0396</td><td>0.0361</td><td>0.0361</td>
+        </tr>
+        <tr>
+            <td><strong>exp2</strong></td><td>-0.0003</td><td>-0.0002</td><td>-0.0005</td><td>-0.0005</td><td>-0.0004</td><td>-0.0004</td>
+        </tr>
+        <tr>
+            <td><strong>wks</strong></td><td>0.0017</td><td>0.0013</td><td>0.0010</td><td>0.0010</td><td>0.0012</td><td>0.0012</td>
+        </tr>
+        <tr>
+            <td><strong>ed</strong></td><td>0.0580</td><td>0.0619</td><td class="highlight">(dropped)</td><td class="highlight">(dropped)</td><td>0.0943</td><td>0.0943</td>
+        </tr>
+    </table>
+    <div class="two-col" style="margin-top:5px;">
+        <div class="key-insight fragment">
+            <p><strong>สังเกต:</strong> FE ไม่สามารถประมาณ ed ได้เพราะ education ไม่เปลี่ยนตามเวลา</p>
+            <p>OLS กับ BE ให้ค่า ed ต่ำกว่า RE &mdash; อาจเพราะ &alpha;<sub>i</sub> (ability) correlate กับ ed ทำให้ downward bias ใน OLS/BE</p>
+        </div>
+        <div class="example-box fragment">
+            <p><strong>FE vs RE สำหรับ exp:</strong> FE = 0.0396, RE = 0.0361</p>
+            <p>ค่าใกล้กัน &rarr; อาจบ่งว่า RE assumption พอรับได้สำหรับตัวแปรนี้ (ต้องทดสอบ Hausman)</p>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 4 -->
+
+<!-- ==================== SECTION 5: HAUSMAN TEST ==================== -->
+<section>
+<section class="section-divider">
+    <h2>5. Hausman Test &amp; Comparison</h2>
+    <p>FE หรือ RE? &mdash; ให้ข้อมูลตอบ</p>
+</section>
+
+<section>
+    <h2>Hausman Test: หลักการ</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>H<sub>0</sub>:</strong> Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) = 0 &rarr; RE consistent &amp; efficient</p>
+                <p><strong>H<sub>1</sub>:</strong> Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) &ne; 0 &rarr; เฉพาะ FE consistent</p>
+            </div>
+            <div class="math-block">
+                H = (&beta;&#770;<sub>FE</sub> - &beta;&#770;<sub>RE</sub>)' [V&#770;<sub>FE</sub> - V&#770;<sub>RE</sub>]<sup>-1</sup> (&beta;&#770;<sub>FE</sub> - &beta;&#770;<sub>RE</sub>) ~ &chi;<sup>2</sup><sub>K</sub>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Logic:</strong> ถ้า H<sub>0</sub> จริง ทั้ง FE และ RE consistent &rarr; &beta;&#770;<sub>FE</sub> &ap; &beta;&#770;<sub>RE</sub> &rarr; H เล็ก</p>
+                <p>ถ้า H<sub>1</sub> จริง RE biased แต่ FE ยังดี &rarr; &beta;&#770;<sub>FE</sub> &ne; &beta;&#770;<sub>RE</sub> &rarr; H ใหญ่</p>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code fragment">
+<span class="cmt">* Standard Hausman test</span>
+<span class="cmd">quietly xtreg</span> lwage $xlist, <span class="opt">fe</span>
+<span class="cmd">estimates store</span> FE
+<span class="cmd">quietly xtreg</span> lwage $xlist, <span class="opt">re</span>
+<span class="cmd">estimates store</span> RE
+<span class="cmd">hausman</span> FE RE, <span class="opt">sigmamore</span>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ผล PSID:</strong> &chi;<sup>2</sup>(3) = 32.42, p &lt; 0.001</p>
+                <p><strong>Reject H<sub>0</sub></strong> &rarr; &alpha;<sub>i</sub> สัมพันธ์กับ x<sub>it</sub> &rarr; ควรใช้ FE</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Robust Hausman (Wooldridge 2002):</strong> ใช้ auxiliary regression แทน &mdash; ทำงานได้ดีกว่าเมื่อ error ไม่ iid</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Hausman Test: Interactive Visualization</h2>
+    <div class="two-col">
+        <div class="interactive-container">
+            <h4>FE vs RE: เมื่อ Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) เปลี่ยน</h4>
+            <canvas id="hausmanCanvas" width="440" height="260"></canvas>
+            <div class="slider-group">
+                <label>Corr(&alpha;,x):</label>
+                <input type="range" id="corrSlider" min="0" max="90" value="0" oninput="drawHausmanDemo()">
+                <span class="val" id="corrVal">0.00</span>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <p><strong>ลองเลื่อน slider:</strong></p>
+                <ul>
+                    <li>Corr = 0: เส้น FE (น้ำเงิน) และ RE (แดง) ทับกัน &rarr; H<sub>0</sub> จริง</li>
+                    <li>Corr สูง: เส้นแยกออก &rarr; RE เริ่ม biased เพราะ &alpha;<sub>i</sub> สร้าง omitted variable bias</li>
+                    <li>FE ยังคง consistent เสมอ (slope ไม่เปลี่ยน)</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Robust Hausman test (Wooldridge):</strong></p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* Auxiliary regression approach</span>
+<span class="cmd">foreach</span> x of varlist lwage exp exp2 wks ed {
+  <span class="cmd">by</span> id: <span class="cmd">egen</span> mean`x' = mean(`x')
+  <span class="cmd">gen</span> md`x' = `x' - mean`x'
+  <span class="cmd">gen</span> red`x' = `x' - theta*mean`x'
+}
+<span class="cmd">regress</span> redlwage redexp redexp2 redwks reded
+        mdexp mdexp2 mdwks, <span class="opt">vce(cluster id)</span>
+<span class="cmd">test</span> mdexp mdexp2 mdwks
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Hausman Test: Simulation</h2>
+    <div class="two-col">
+        <div class="interactive-container">
+            <h4>Simulate Hausman Test</h4>
+            <canvas id="hausmanSimCanvas" width="440" height="260"></canvas>
+            <div style="text-align:center; margin-top:4px;">
+                <button class="interactive-btn" onclick="simHausman('h0')">Simulate H<sub>0</sub> (no corr)</button>
+                <button class="interactive-btn" onclick="simHausman('h1')">Simulate H<sub>1</sub> (corr=0.5)</button>
+                <button class="interactive-btn" onclick="simHausman('reset')">Reset</button>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <p><strong>วิธีอ่าน:</strong> แต่ละจุดคือ 1 simulation &mdash; plot (&beta;&#770;<sub>FE</sub>, &beta;&#770;<sub>RE</sub>)</p>
+                <ul>
+                    <li class="fragment">ภายใต้ H<sub>0</sub>: จุดกระจายตามเส้น 45&deg; (FE &ap; RE)</li>
+                    <li class="fragment">ภายใต้ H<sub>1</sub>: จุด RE เลื่อนออก (bias) แต่ FE ยังอยู่กลาง</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ข้อควรระวัง Hausman test:</strong></p>
+                <ul>
+                    <li>ต้อง fit FE ก่อน แล้ว RE &mdash; ลำดับสำคัญใน Stata</li>
+                    <li>Standard version assume homoskedasticity &mdash; ใช้ robust version ดีกว่า</li>
+                    <li>บางที V<sub>FE</sub> - V<sub>RE</sub> ไม่ positive definite &rarr; ใช้ <code>sigmamore</code> option</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- QUIZ 1: FE vs RE -->
+<section>
+    <h2>Quiz: FE vs RE</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> นักวิจัยต้องการศึกษาผลของการศึกษา (education) ต่อค่าจ้าง โดยใช้ panel data ที่ระดับการศึกษาไม่เปลี่ยนตลอดช่วงที่สำรวจ นักวิจัยควรเลือก estimator ใด?</p>
+    </div>
+    <div style="max-width: 700px;">
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz1', false)">A) Fixed Effects (FE) &mdash; เพราะ consistent เสมอ</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz1', false)">B) Between Effects (BE) &mdash; เพราะใช้ cross-section variation</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz1', true)">C) Random Effects (RE) &mdash; เพราะประมาณ coefficient ของ time-invariant variable ได้ แต่ต้องทดสอบ RE assumption ด้วย</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz1', false)">D) Pooled OLS &mdash; เพราะง่ายที่สุด</div>
+    </div>
+    <div class="quiz-feedback" id="quiz1-feedback"></div>
+</section>
+
+<section>
+    <h2>Prediction: xb vs xbu</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>สองแบบของ prediction หลัง RE:</strong></p>
+                <ul>
+                    <li><strong>xb</strong> = x'<sub>it</sub>&beta;&#770; &mdash; population-averaged prediction (ไม่รวม &alpha;<sub>i</sub>)</li>
+                    <li><strong>xbu</strong> = x'<sub>it</sub>&beta;&#770; + &alpha;&#770;<sub>i</sub> &mdash; individual-specific prediction (รวม &alpha;<sub>i</sub>)</li>
+                </ul>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmd">quietly xtreg</span> lwage exp exp2 wks ed, <span class="opt">re</span>
+<span class="cmd">predict</span> xbre, <span class="opt">xb</span>
+<span class="cmd">predict</span> xbure, <span class="opt">xbu</span>
+<span class="cmd">summarize</span> lwage xbols xbre xbure
+<span class="cmd">correlate</span> lwage xbols xbre xbure
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <p><strong>ผล:</strong></p>
+                <ul>
+                    <li>Corr(lwage, xb_ols) &ap; 0.30</li>
+                    <li>Corr(lwage, xb_re) &ap; 0.30 (คล้าย OLS)</li>
+                    <li>Corr(lwage, xbu_re) &ap; 0.85 (ดีขึ้นมาก!)</li>
+                </ul>
+                <p>เพราะ xbu รวม &alpha;&#770;<sub>i</sub> ที่อธิบาย ~67% ของ variance</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ใช้ xbu เมื่อ:</strong> ต้องการ predict สำหรับคนเดิมที่มีข้อมูลแล้ว</p>
+                <p><strong>ใช้ xb เมื่อ:</strong> predict สำหรับคนใหม่ที่ไม่รู้ &alpha;<sub>i</sub></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 5 -->
+
+<!-- ==================== SECTION 6: NONLINEAR PANEL ==================== -->
+<section>
+<section class="section-divider">
+    <h2>6. Nonlinear Panel Data Models</h2>
+    <p>Binary, Tobit, Count &mdash; ปัญหาที่ linear model ไม่มี</p>
+</section>
+
+<section>
+    <h2>Nonlinear Panel: ภาพรวม</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>แนวทางเดิม 4 แบบยังใช้ได้:</strong></p>
+                <ul>
+                    <li><strong>Pooled</strong> &mdash; ignore panel structure</li>
+                    <li><strong>PA (GEE)</strong> &mdash; model correlation, marginal effects</li>
+                    <li><strong>RE</strong> &mdash; assume &alpha;<sub>i</sub> independent of x</li>
+                    <li><strong>FE</strong> &mdash; allow correlation</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>แต่มีปัญหาใหม่!</strong></p>
+                <ul>
+                    <li><strong>Incidental Parameters Problem:</strong> FE ใน nonlinear model ไม่ consistent เมื่อ T fixed, N &rarr; &infin;</li>
+                    <li>ยกเว้น conditional logit &amp; Poisson FE ที่มี sufficient statistics</li>
+                    <li>Linear FE ไม่มีปัญหานี้เพราะ within-transform กำจัด &alpha;<sub>i</sub> ได้พอดี</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="interactive-container fragment">
+                <h4>Incidental Parameters Problem</h4>
+                <canvas id="incidentalCanvas" width="400" height="240"></canvas>
+                <div style="text-align:center; margin-top:4px;">
+                    <button class="interactive-btn" onclick="drawIncidental(3)">T = 3</button>
+                    <button class="interactive-btn" onclick="drawIncidental(5)">T = 5</button>
+                    <button class="interactive-btn" onclick="drawIncidental(10)">T = 10</button>
+                    <button class="interactive-btn" onclick="drawIncidental(50)">T = 50</button>
+                </div>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>Logit FE (T=3):</strong> bias &ap; 50%! ใน short panel ผลลัพธ์ FE logit อาจ inflate coefficients มากจนเชื่อถือไม่ได้</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ข้อมูล: Rand Health Insurance Experiment</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>RAND HIE:</strong> การทดลอง RCT ที่สุ่มอัตราร่วมจ่ายประกัน (coinsurance rate) &rarr; ลด endogeneity</p>
+                <p><strong>Unbalanced panel:</strong> บางคนอยู่ 1&ndash;5 ปี</p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmd">use</span> npanel.dta, <span class="opt">clear</span>
+<span class="cmd">xtset</span> id year
+<span class="cmd">xtdescribe</span>
+<span class="cmd">summarize</span> dmdu med mdu lcoins ndisease female age lfam child
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ตัวแปรตาม:</strong></p>
+                <ul>
+                    <li><strong>dmdu</strong> = binary (ไปพบแพทย์หรือไม่) &rarr; Logit</li>
+                    <li><strong>med</strong> = continuous, 22% เป็นศูนย์ &rarr; Tobit</li>
+                    <li><strong>mdu</strong> = count (จำนวนครั้งพบแพทย์) &rarr; Poisson/NegBin</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>Regressors:</strong></p>
+                <ul>
+                    <li><strong>lcoins</strong> = log(coinsurance rate) &mdash; randomly assigned!</li>
+                    <li><strong>ndisease</strong> = number of chronic diseases</li>
+                    <li><strong>female</strong> = เพศหญิง (time-invariant)</li>
+                    <li><strong>age</strong> = อายุ (time-varying)</li>
+                    <li><strong>lfam</strong> = log(family size)</li>
+                    <li><strong>child</strong> = เด็ก (&lt; 18 ปี)</li>
+                </ul>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>Time-varying regressors</strong> (age, lfam, child) มี within variation &mdash; FE ได้</p>
+                <p><strong>Time-invariant</strong> (female, ndisease) &mdash; FE drop, ต้อง RE หรือ PA</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Binary Outcome: Panel Logit</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+<span class="cmt">* Pooled logit with cluster-robust SE</span>
+<span class="cmd">logit</span> dmdu lcoins ndisease female age lfam child, <span class="opt">vce(cluster id)</span>
+
+<span class="cmt">* PA logit (exchangeable correlation)</span>
+<span class="cmd">xtlogit</span> dmdu lcoins ndisease female age lfam child, <span class="opt">pa corr(exch) vce(robust)</span>
+
+<span class="cmt">* RE logit</span>
+<span class="cmd">xtlogit</span> dmdu lcoins ndisease female age lfam child, <span class="opt">re</span>
+
+<span class="cmt">* FE logit (conditional logit)</span>
+<span class="cmd">xtlogit</span> dmdu lcoins ndisease female age lfam child, <span class="opt">fe</span>
+            </div>
+        </div>
+        <div>
+            <table class="compare-table fragment">
+                <tr><th>Variable</th><th>Pooled</th><th>PA</th><th>RE</th><th>FE</th></tr>
+                <tr><td>lcoins</td><td>-0.133</td><td>-0.110</td><td>-0.175</td><td>-0.088</td></tr>
+                <tr><td>ndisease</td><td>0.191</td><td>0.163</td><td>0.286</td><td class="highlight">dropped</td></tr>
+                <tr><td>female</td><td>0.488</td><td>0.383</td><td>0.719</td><td class="highlight">dropped</td></tr>
+            </table>
+            <div class="key-insight fragment">
+                <p><strong>สังเกต:</strong></p>
+                <ul>
+                    <li>RE coefficients &gt; Pooled/PA &mdash; เพราะ conditional on &alpha;<sub>i</sub> (subject-specific) ไม่ใช่ marginal</li>
+                    <li>FE drop ตัวแปร time-invariant (ndisease, female)</li>
+                    <li>FE logit = conditional logit &mdash; ใช้ sufficient statistics &rarr; consistent แม้ T เล็ก</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Panel Tobit &amp; Count Models</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Tobit (Censored at 0)</h3>
+                <p>22% ของ med = 0 &rarr; ข้อมูลถูก censor ที่ 0</p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* RE Tobit (FE Tobit มีปัญหา incidental param)</span>
+<span class="cmd">xttobit</span> med lcoins ndisease female age lfam child, <span class="opt">ll(0)</span>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Tobit FE ไม่แนะนำ:</strong> ไม่มี sufficient statistics สำหรับ &alpha;<sub>i</sub> &rarr; incidental parameters problem ทำให้ &beta;&#770; inconsistent</p>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>Count Data (Poisson &amp; NegBin)</h3>
+                <p>mdu (จำนวนครั้งพบแพทย์) = count variable ที่มี overdispersion</p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmt">* Poisson panel estimators</span>
+<span class="cmd">xtpoisson</span> mdu $xlist, <span class="opt">pa corr(unstr) vce(robust)</span>
+<span class="cmd">xtpoisson</span> mdu $xlist, <span class="opt">re</span>
+<span class="cmd">xtpoisson</span> mdu $xlist, <span class="opt">re normal</span>
+<span class="cmd">xtpoisson</span> mdu $xlist, <span class="opt">fe</span>
+
+<span class="cmt">* NegBin panel estimators</span>
+<span class="cmd">xtnbreg</span> mdu $xlist, <span class="opt">pa corr(exch) vce(robust)</span>
+<span class="cmd">xtnbreg</span> mdu $xlist, <span class="opt">re</span>
+<span class="cmd">xtnbreg</span> mdu $xlist, <span class="opt">fe</span>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>Poisson FE consistent</strong> แม้ T เล็ก (มี sufficient statistics) &mdash; แต่ <strong>NegBin FE</strong> อาจไม่ consistent</p>
+                <p>Poisson panel-robust SE แก้ overdispersion ได้</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>เปรียบเทียบ Count Models</h2>
+    <div class="two-col">
+        <div>
+            <table class="compare-table">
+                <tr><th></th><th>Pois PA</th><th>Pois RE</th><th>Pois RE (N)</th><th>Pois FE</th></tr>
+                <tr><td>lcoins</td><td>-0.098</td><td>-0.137</td><td>-0.108</td><td>-0.063</td></tr>
+                <tr><td>ndisease</td><td>0.114</td><td>0.132</td><td>0.132</td><td class="highlight">dropped</td></tr>
+                <tr><td>female</td><td>0.217</td><td>0.302</td><td>0.253</td><td class="highlight">dropped</td></tr>
+            </table>
+            <table class="compare-table fragment" style="margin-top:8px;">
+                <tr><th></th><th>Pois PA</th><th>NB PA</th><th>NB RE</th><th>NB FE</th></tr>
+                <tr><td>lcoins</td><td>-0.098</td><td>-0.106</td><td>-0.105</td><td>-0.090</td></tr>
+                <tr><td>ndisease</td><td>0.114</td><td>0.109</td><td>0.128</td><td class="highlight">dropped</td></tr>
+                <tr><td>female</td><td>0.217</td><td>0.209</td><td>0.261</td><td class="highlight">dropped</td></tr>
+            </table>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>Key observations:</strong></p>
+                <ul>
+                    <li>PA coefficients ให้ marginal effects (averaged over &alpha;<sub>i</sub>)</li>
+                    <li>RE coefficients &gt; PA เพราะเป็น conditional on &alpha;<sub>i</sub></li>
+                    <li>Poisson FE consistent &mdash; ใช้ได้แม้ overdispersed (ด้วย robust SE)</li>
+                    <li>NB RE vs NB FE: ระวัง NB FE อาจ inconsistent ใน short panel</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>แนะนำ:</strong> ถ้าสงสัย endogeneity ใช้ <strong>Poisson FE</strong> กับ robust SE &mdash; consistent, ไม่ต้อง assume distribution shape</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- QUIZ 2: Hausman test -->
+<section>
+    <h2>Quiz: Hausman Test</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> Hausman test ให้ &chi;<sup>2</sup> = 2.15 (p = 0.54) จากข้อมูลที่ค่อนข้างเล็ก (N=50, T=3) ควรสรุปอย่างไร?</p>
+    </div>
+    <div style="max-width: 700px;">
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz2', false)">A) ใช้ RE ได้อย่างมั่นใจเพราะ p-value สูง</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz2', true)">B) ยังไม่ควรสรุปว่า RE ดีกว่า &mdash; Hausman test อาจมี low power ใน small samples, ควรพิจารณาทฤษฎีประกอบ</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz2', false)">C) ใช้ FE ดีกว่าเสมอเพราะ consistent</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz2', false)">D) ผลไม่มีความหมายเพราะ Hausman test ใช้กับ nonlinear model เท่านั้น</div>
+    </div>
+    <div class="quiz-feedback" id="quiz2-feedback"></div>
+</section>
+
+<!-- QUIZ 3: Nonlinear panel -->
+<section>
+    <h2>Quiz: Nonlinear Panel Models</h2>
+    <div class="concept-box">
+        <p><strong>คำถาม:</strong> นักวิจัยมี panel data (N=500, T=4) ที่ตัวแปรตามเป็นจำนวนครั้งที่ไปโรงพยาบาล (count) และมี overdispersion สูง ควรเลือก estimator ใด?</p>
+    </div>
+    <div style="max-width: 700px;">
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz3', false)">A) Negative Binomial FE &mdash; เพราะจัดการ overdispersion ได้ดีที่สุด</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz3', true)">B) Poisson FE กับ panel-robust SE &mdash; consistent แม้ overdispersed และไม่มี incidental parameters problem</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz3', false)">C) OLS กับ log(count+1) &mdash; เพราะง่ายกว่า nonlinear model</div>
+        <div class="quiz-option" onclick="checkQuiz(this, 'quiz3', false)">D) Tobit FE &mdash; เพราะมีค่า 0 จำนวนมาก</div>
+    </div>
+    <div class="quiz-feedback" id="quiz3-feedback"></div>
+</section>
+
+</section><!-- end Section 6 -->
+
+<!-- ==================== SECTION 7: SUMMARY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>7. Summary &amp; Decision Tree</h2>
+    <p>เลือก estimator อย่างไร? &mdash; สรุป Workflow</p>
+</section>
+
+<section>
+    <h2>สรุป Workflow: Linear Panel</h2>
+    <div class="decision-tree">
+        <div class="dt-node dt-diamond">มี Panel Data?</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-label">ใช่</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-diamond">สงสัย Corr(&alpha;<sub>i</sub>, x)?</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-row">
+                    <div class="dt-branch">
+                        <div class="dt-label">ใช่ / ไม่แน่ใจ</div>
+                        <div class="dt-arrow">&darr;</div>
+                        <div class="dt-node dt-action">FE (xtreg, fe)<br>+ cluster SE</div>
+                    </div>
+                    <div class="dt-branch">
+                        <div class="dt-label">ไม่ (ทฤษฎี + Hausman)</div>
+                        <div class="dt-arrow">&darr;</div>
+                        <div class="dt-node dt-action2">RE (xtreg, re)<br>+ cluster SE</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-label">ไม่</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-yes">Cross-section<br>(OLS + robust SE)</div>
+            </div>
+        </div>
+    </div>
+    <div class="two-col" style="margin-top: 6px;">
+        <div class="key-insight">
+            <p><strong>ต้องการ time-invariant coefficients?</strong> &rarr; RE หรือ Correlated RE (Mundlak/Chamberlain)</p>
+        </div>
+        <div class="example-box">
+            <p><strong>ต้องการ weaker exogeneity?</strong> &rarr; First-Difference แทน FE</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>สรุป Workflow: Nonlinear Panel</h2>
+    <div class="decision-tree">
+        <div class="dt-node dt-diamond">ตัวแปรตามเป็นอะไร?</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-label">Binary</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-diamond">สงสัย Corr(&alpha;,x)?</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-row">
+                    <div class="dt-branch">
+                        <div class="dt-label">ใช่</div>
+                        <div class="dt-node dt-action">Conditional Logit FE<br>(consistent)</div>
+                    </div>
+                    <div class="dt-branch">
+                        <div class="dt-label">ไม่</div>
+                        <div class="dt-node dt-action2">RE Logit<br>หรือ PA GEE</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-label">Count</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-action">Poisson FE<br>+ robust SE</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-no" style="font-size:0.85em;">NB RE ถ้า overdispersion สำคัญ</div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-label">Censored</div>
+                <div class="dt-arrow">&darr;</div>
+                <div class="dt-node dt-yes">RE Tobit<br>(FE inconsistent!)</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>สรุป: คำสั่ง Stata หลัก</h2>
+    <table class="compare-table">
+        <tr><th>Estimator</th><th>Linear</th><th>Logit</th><th>Poisson</th><th>NegBin</th></tr>
+        <tr><td><strong>Pooled</strong></td><td>regress, vce(cluster)</td><td>logit, vce(cluster)</td><td>poisson, vce(cluster)</td><td>nbreg, vce(cluster)</td></tr>
+        <tr><td><strong>PA</strong></td><td>xtreg, pa</td><td>xtlogit, pa</td><td>xtpoisson, pa</td><td>xtnbreg, pa</td></tr>
+        <tr><td><strong>RE</strong></td><td>xtreg, re</td><td>xtlogit, re</td><td>xtpoisson, re</td><td>xtnbreg, re</td></tr>
+        <tr><td><strong>FE</strong></td><td>xtreg, fe</td><td>xtlogit, fe</td><td>xtpoisson, fe</td><td>xtnbreg, fe</td></tr>
+        <tr><td><strong>Hausman</strong></td><td colspan="4">hausman FE RE, sigmamore</td></tr>
+    </table>
+    <div class="two-col" style="margin-top:6px;">
+        <div class="key-insight">
+            <p><strong>ใช้ cluster-robust SE เสมอ:</strong> <code>vce(cluster id)</code> หรือ <code>vce(robust)</code> สำหรับ PA/RE</p>
+        </div>
+        <div class="example-box">
+            <p><strong>ก่อนใช้ panel commands:</strong> ต้อง <code>xtset id t</code> ก่อนเสมอ เพื่อบอก Stata ว่า id กับ time variable คืออะไร</p>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 7 -->
+
+</div><!-- end slides -->
+</div><!-- end reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script>
+Reveal.initialize({
+    hash: true,
+    slideNumber: true,
+    width: 1100,
+    height: 700,
+    margin: 0.04,
+    transition: 'fade',
+    transitionSpeed: 'fast',
+    plugins: []
+});
+
+// ============================================================
+// COLOR CONSTANTS
+// ============================================================
+const C = {
+    primary: '#1a2744', accent: '#d4534a', accent2: '#4a90d9',
+    accent3: '#3d9970', accent4: '#e8a838', text: '#2d3748',
+    textLight: '#718096', border: '#e2e8f0', red: '#d4534a',
+    blue: '#4a90d9', green: '#3d9970', orange: '#e8a838'
+};
+
+const COLORS = ['#4a90d9', '#d4534a', '#3d9970', '#e8a838', '#8b5cf6'];
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function getCtx(id) { return document.getElementById(id)?.getContext('2d'); }
+function clearCanvas(ctx, w, h) { ctx.clearRect(0, 0, w, h); }
+function seededRandom(seed) {
+    let s = seed;
+    return function() { s = (s * 16807 + 0) % 2147483647; return s / 2147483647; };
+}
+
+// ============================================================
+// 1. PANEL STRUCTURE CANVAS (Intro)
+// ============================================================
+// Generate fake panel data for 5 individuals, 5 time periods
+const panelData = [];
+const rng1 = seededRandom(42);
+const alphas = [0.5, -0.3, 0.8, -0.1, 0.2];
+const betas_true = 0.6;
+for (let i = 0; i < 5; i++) {
+    for (let t = 0; t < 5; t++) {
+        let x = 2 + t * 0.8 + rng1() * 1.5;
+        let y = alphas[i] + betas_true * x + (rng1() - 0.5) * 0.6;
+        panelData.push({ i, t, x, y });
+    }
+}
+
+function drawPanelStruct(mode) {
+    const ctx = getCtx('panelStructCanvas');
+    if (!ctx) return;
+    const W = 400, H = 240;
+    clearCanvas(ctx, W, H);
+
+    // Margins
+    const ml = 45, mr = 15, mt = 15, mb = 30;
+    const pw = W - ml - mr, ph = H - mt - mb;
+
+    // Compute means per individual
+    const means = [];
+    for (let i = 0; i < 5; i++) {
+        let pts = panelData.filter(d => d.i === i);
+        means.push({ x: pts.reduce((s, d) => s + d.x, 0) / pts.length, y: pts.reduce((s, d) => s + d.y, 0) / pts.length });
+    }
+    const grandMeanX = panelData.reduce((s, d) => s + d.x, 0) / panelData.length;
+    const grandMeanY = panelData.reduce((s, d) => s + d.y, 0) / panelData.length;
+
+    // Scale
+    let allX, allY;
+    if (mode === 'within') {
+        allX = panelData.map(d => d.x - means[d.i].x);
+        allY = panelData.map(d => d.y - means[d.i].y);
+    } else if (mode === 'between') {
+        allX = means.map(m => m.x);
+        allY = means.map(m => m.y);
+    } else {
+        allX = panelData.map(d => d.x);
+        allY = panelData.map(d => d.y);
+    }
+    const xMin = Math.min(...allX) - 0.3, xMax = Math.max(...allX) + 0.3;
+    const yMin = Math.min(...allY) - 0.3, yMax = Math.max(...allY) + 0.3;
+    const sx = v => ml + (v - xMin) / (xMax - xMin) * pw;
+    const sy = v => mt + ph - (v - yMin) / (yMax - yMin) * ph;
+
+    // Axes
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ph); ctx.lineTo(ml + pw, mt + ph); ctx.stroke();
+    ctx.fillStyle = C.textLight; ctx.font = '10px Sarabun';
+    ctx.fillText(mode === 'within' ? 'x - x\u0304\u1d62' : 'x', ml + pw / 2, H - 5);
+    ctx.save(); ctx.translate(10, mt + ph / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText(mode === 'within' ? 'y - y\u0304\u1d62' : 'y', 0, 0);
+    ctx.restore();
+
+    // Title
+    ctx.fillStyle = C.primary; ctx.font = 'bold 11px Sarabun';
+    const titles = { raw: 'Overall Variation', within: 'Within Variation (FE)', between: 'Between Variation (BE)' };
+    ctx.fillText(titles[mode], ml + 5, mt + 12);
+
+    if (mode === 'between') {
+        // Draw individual means as large dots
+        for (let i = 0; i < 5; i++) {
+            ctx.fillStyle = COLORS[i]; ctx.beginPath();
+            ctx.arc(sx(means[i].x), sy(means[i].y), 7, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Fira Code';
+            ctx.textAlign = 'center'; ctx.fillText('i' + (i + 1), sx(means[i].x), sy(means[i].y) + 3);
+            ctx.textAlign = 'left';
+        }
+    } else {
+        // Draw points colored by individual, connected with lines
+        for (let i = 0; i < 5; i++) {
+            let pts = panelData.filter(d => d.i === i);
+            ctx.strokeStyle = COLORS[i]; ctx.lineWidth = 1.2; ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            for (let j = 0; j < pts.length; j++) {
+                let px = mode === 'within' ? pts[j].x - means[i].x : pts[j].x;
+                let py = mode === 'within' ? pts[j].y - means[i].y : pts[j].y;
+                if (j === 0) ctx.moveTo(sx(px), sy(py)); else ctx.lineTo(sx(px), sy(py));
+            }
+            ctx.stroke(); ctx.setLineDash([]);
+
+            for (let j = 0; j < pts.length; j++) {
+                let px = mode === 'within' ? pts[j].x - means[i].x : pts[j].x;
+                let py = mode === 'within' ? pts[j].y - means[i].y : pts[j].y;
+                ctx.fillStyle = COLORS[i]; ctx.beginPath();
+                ctx.arc(sx(px), sy(py), 4, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        // Draw individual mean as cross in raw mode
+        if (mode === 'raw') {
+            for (let i = 0; i < 5; i++) {
+                ctx.strokeStyle = COLORS[i]; ctx.lineWidth = 2;
+                let cx = sx(means[i].x), cy = sy(means[i].y);
+                ctx.beginPath(); ctx.moveTo(cx - 5, cy); ctx.lineTo(cx + 5, cy); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx, cy - 5); ctx.lineTo(cx, cy + 5); ctx.stroke();
+            }
+        }
+    }
+
+    // Legend
+    ctx.font = '9px Sarabun';
+    for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = COLORS[i];
+        ctx.fillRect(W - 80, mt + 5 + i * 14, 8, 8);
+        ctx.fillStyle = C.text;
+        ctx.fillText('Person ' + (i + 1), W - 68, mt + 12 + i * 14);
+    }
+
+    // Update buttons
+    let btnLabels = { raw: 'Raw Data', within: 'Within', between: 'Between' };
+    let canvas = document.getElementById('panelStructCanvas');
+    if (canvas) {
+        let btns = canvas.parentElement?.querySelectorAll('.interactive-btn');
+        if (btns) btns.forEach(b => b.classList.toggle('active', b.textContent.trim() === btnLabels[mode]));
+    }
+}
+
+// ============================================================
+// 2. DATA EXPLORER (Within/Between/FD Transformations)
+// ============================================================
+// Mini dataset: 5 individuals, 3 periods
+const miniData = [
+    { id: 1, t: 1, x: 2, y: 5 }, { id: 1, t: 2, x: 3, y: 7 }, { id: 1, t: 3, x: 4, y: 8 },
+    { id: 2, t: 1, x: 1, y: 3 }, { id: 2, t: 2, x: 2, y: 4 }, { id: 2, t: 3, x: 3, y: 6 },
+    { id: 3, t: 1, x: 5, y: 10 }, { id: 3, t: 2, x: 6, y: 11 }, { id: 3, t: 3, x: 7, y: 13 },
+    { id: 4, t: 1, x: 3, y: 6 }, { id: 4, t: 2, x: 4, y: 7 }, { id: 4, t: 3, x: 5, y: 9 },
+    { id: 5, t: 1, x: 4, y: 8 }, { id: 5, t: 2, x: 5, y: 9 }, { id: 5, t: 3, x: 6, y: 12 },
+];
+
+function showTransform(mode) {
+    const ctx = getCtx('dataExplorer');
+    if (!ctx) return;
+    const W = 400, H = 280;
+    clearCanvas(ctx, W, H);
+
+    // Compute means
+    const idMeans = {};
+    for (let id = 1; id <= 5; id++) {
+        let pts = miniData.filter(d => d.id === id);
+        idMeans[id] = { x: pts.reduce((s, d) => s + d.x, 0) / 3, y: pts.reduce((s, d) => s + d.y, 0) / 3 };
+    }
+
+    // Transform data
+    let data = [];
+    let xlabel = 'x', ylabel = 'y';
+    if (mode === 'original') {
+        data = miniData.map(d => ({ ...d, px: d.x, py: d.y }));
+    } else if (mode === 'within') {
+        data = miniData.map(d => ({ ...d, px: d.x - idMeans[d.id].x, py: d.y - idMeans[d.id].y }));
+        xlabel = 'x - x\u0304\u1d62'; ylabel = 'y - y\u0304\u1d62';
+    } else if (mode === 'between') {
+        data = [];
+        for (let id = 1; id <= 5; id++) {
+            data.push({ id, t: 0, px: idMeans[id].x, py: idMeans[id].y });
+        }
+        xlabel = 'x\u0304\u1d62'; ylabel = 'y\u0304\u1d62';
+    } else if (mode === 'fd') {
+        data = [];
+        for (let id = 1; id <= 5; id++) {
+            let pts = miniData.filter(d => d.id === id).sort((a, b) => a.t - b.t);
+            for (let j = 1; j < pts.length; j++) {
+                data.push({ id, t: pts[j].t, px: pts[j].x - pts[j - 1].x, py: pts[j].y - pts[j - 1].y });
+            }
+        }
+        xlabel = '\u0394x'; ylabel = '\u0394y';
+    }
+
+    // Draw table on the left side
+    const tableW = 160, tableH = H - 20;
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, tableW, H);
+    ctx.strokeStyle = C.border; ctx.lineWidth = 1; ctx.strokeRect(0, 0, tableW, H);
+
+    // Table header
+    ctx.fillStyle = C.primary; ctx.fillRect(2, 2, tableW - 4, 18);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Fira Code';
+    ctx.fillText('id   t   ' + xlabel + '     ' + ylabel, 8, 14);
+
+    // Table rows
+    ctx.font = '9px Fira Code'; ctx.fillStyle = C.text;
+    const maxRows = Math.min(data.length, 15);
+    for (let i = 0; i < maxRows; i++) {
+        let d = data[i];
+        let bg = i % 2 === 0 ? '#fff' : '#f7fafc';
+        ctx.fillStyle = bg; ctx.fillRect(2, 22 + i * 16, tableW - 4, 16);
+        ctx.fillStyle = COLORS[(d.id - 1) % 5];
+        ctx.fillRect(2, 22 + i * 16, 3, 16);
+        ctx.fillStyle = C.text;
+        let row = String(d.id).padStart(2) + '   ' + String(d.t).padStart(1) + '   ' + d.px.toFixed(1).padStart(5) + '  ' + d.py.toFixed(1).padStart(5);
+        ctx.fillText(row, 8, 33 + i * 16);
+    }
+
+    // Scatter plot on the right
+    const plotL = tableW + 20, plotR = W - 10, plotT = 15, plotB = H - 25;
+    const plotW = plotR - plotL, plotH = plotB - plotT;
+
+    let xs = data.map(d => d.px), ys = data.map(d => d.py);
+    let xMin = Math.min(...xs) - 0.5, xMax = Math.max(...xs) + 0.5;
+    let yMin = Math.min(...ys) - 0.5, yMax = Math.max(...ys) + 0.5;
+    const sx = v => plotL + (v - xMin) / (xMax - xMin) * plotW;
+    const sy = v => plotT + plotH - (v - yMin) / (yMax - yMin) * plotH;
+
+    // Axes
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(plotL, plotT); ctx.lineTo(plotL, plotB); ctx.lineTo(plotR, plotB); ctx.stroke();
+    ctx.fillStyle = C.textLight; ctx.font = '9px Sarabun';
+    ctx.fillText(xlabel, plotL + plotW / 2 - 10, H - 5);
+
+    // Points
+    for (let d of data) {
+        ctx.fillStyle = COLORS[(d.id - 1) % 5];
+        ctx.beginPath(); ctx.arc(sx(d.px), sy(d.py), 5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+    }
+
+    // Title
+    const modeTitles = { original: 'Original Data', within: 'Within-Transformed', between: 'Between (Means)', fd: 'First-Differenced' };
+    ctx.fillStyle = C.primary; ctx.font = 'bold 10px Sarabun';
+    ctx.fillText(modeTitles[mode], plotL + 5, plotT + 10);
+
+    // Update buttons
+    let btnLabels = { original: 'Original', within: 'Within', between: 'Between', fd: 'First-Diff' };
+    let canvas = document.getElementById('dataExplorer');
+    if (canvas) {
+        let btns = canvas.parentElement?.querySelectorAll('.interactive-btn');
+        if (btns) btns.forEach(b => b.classList.toggle('active', b.textContent.trim() === btnLabels[mode]));
+    }
+}
+
+// ============================================================
+// 3. WITHIN vs BETWEEN VARIATION VISUALIZER
+// ============================================================
+function drawWBView(mode) {
+    const ctx = getCtx('withinBetweenCanvas');
+    if (!ctx) return;
+    const W = 440, H = 280;
+    clearCanvas(ctx, W, H);
+
+    const ml = 45, mr = 15, mt = 20, mb = 30;
+    const pw = W - ml - mr, ph = H - mt - mb;
+
+    // Generate data: 4 individuals, 6 time periods each
+    const rng = seededRandom(123);
+    const indivAlpha = [1.5, 3.0, 4.5, 6.0];
+    const slope = 0.5;
+    const pts = [];
+    for (let i = 0; i < 4; i++) {
+        for (let t = 0; t < 6; t++) {
+            let x = 2 + t * 1.2 + (rng() - 0.5) * 1.0;
+            let y = indivAlpha[i] + slope * x + (rng() - 0.5) * 0.8;
+            pts.push({ i, t, x, y });
+        }
+    }
+
+    // Compute individual means
+    const iMeans = [];
+    for (let i = 0; i < 4; i++) {
+        let p = pts.filter(d => d.i === i);
+        iMeans.push({ x: p.reduce((s, d) => s + d.x, 0) / p.length, y: p.reduce((s, d) => s + d.y, 0) / p.length });
+    }
+    const gMean = { x: pts.reduce((s, d) => s + d.x, 0) / pts.length, y: pts.reduce((s, d) => s + d.y, 0) / pts.length };
+
+    let plotPts, xLabel, yLabel, title;
+    if (mode === 'within') {
+        plotPts = pts.map(d => ({ i: d.i, x: d.x - iMeans[d.i].x, y: d.y - iMeans[d.i].y }));
+        xLabel = 'x\u1d62\u209c - x\u0304\u1d62'; yLabel = 'y\u1d62\u209c - y\u0304\u1d62';
+        title = 'Within Variation (mean-differenced)';
+    } else if (mode === 'between') {
+        plotPts = iMeans.map((m, i) => ({ i, x: m.x, y: m.y }));
+        xLabel = 'x\u0304\u1d62'; yLabel = 'y\u0304\u1d62';
+        title = 'Between Variation (individual means)';
+    } else {
+        plotPts = pts.map(d => ({ i: d.i, x: d.x, y: d.y }));
+        xLabel = 'x\u1d62\u209c'; yLabel = 'y\u1d62\u209c';
+        title = 'Overall Variation';
+    }
+
+    let xs = plotPts.map(d => d.x), ys = plotPts.map(d => d.y);
+    let xMin = Math.min(...xs) - 0.5, xMax = Math.max(...xs) + 0.5;
+    let yMin = Math.min(...ys) - 0.5, yMax = Math.max(...ys) + 0.5;
+    const sx = v => ml + (v - xMin) / (xMax - xMin) * pw;
+    const sy = v => mt + ph - (v - yMin) / (yMax - yMin) * ph;
+
+    // Grid
+    ctx.strokeStyle = '#eee'; ctx.lineWidth = 0.5;
+    for (let i = 0; i <= 4; i++) {
+        let gy = mt + (ph / 4) * i;
+        ctx.beginPath(); ctx.moveTo(ml, gy); ctx.lineTo(ml + pw, gy); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ph); ctx.lineTo(ml + pw, mt + ph); ctx.stroke();
+    ctx.fillStyle = C.textLight; ctx.font = '10px Sarabun';
+    ctx.fillText(xLabel, ml + pw / 2 - 15, H - 5);
+    ctx.save(); ctx.translate(12, mt + ph / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText(yLabel, -15, 0); ctx.restore();
+
+    // Title
+    ctx.fillStyle = C.primary; ctx.font = 'bold 11px Sarabun';
+    ctx.fillText(title, ml + 5, mt + 12);
+
+    // Fit line using OLS on plotPts
+    let n = plotPts.length;
+    let sumX = 0, sumY = 0, sumXX = 0, sumXY = 0;
+    for (let p of plotPts) { sumX += p.x; sumY += p.y; sumXX += p.x * p.x; sumXY += p.x * p.y; }
+    let bHat = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    let aHat = (sumY - bHat * sumX) / n;
+
+    // Draw fit line
+    ctx.strokeStyle = C.accent; ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+    let x1 = xMin, x2 = xMax;
+    ctx.beginPath(); ctx.moveTo(sx(x1), sy(aHat + bHat * x1)); ctx.lineTo(sx(x2), sy(aHat + bHat * x2)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw points
+    for (let p of plotPts) {
+        ctx.fillStyle = COLORS[p.i]; ctx.beginPath();
+        ctx.arc(sx(p.x), sy(p.y), mode === 'between' ? 8 : 4.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+
+    // If within mode, draw zero lines
+    if (mode === 'within') {
+        ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1; ctx.setLineDash([2, 4]);
+        if (0 >= yMin && 0 <= yMax) { ctx.beginPath(); ctx.moveTo(ml, sy(0)); ctx.lineTo(ml + pw, sy(0)); ctx.stroke(); }
+        if (0 >= xMin && 0 <= xMax) { ctx.beginPath(); ctx.moveTo(sx(0), mt); ctx.lineTo(sx(0), mt + ph); ctx.stroke(); }
+        ctx.setLineDash([]);
+    }
+
+    // Slope label
+    ctx.fillStyle = C.accent; ctx.font = 'bold 10px Fira Code';
+    ctx.fillText('\u03B2\u0302 = ' + bHat.toFixed(3), ml + pw - 80, mt + 25);
+
+    // Legend
+    ctx.font = '9px Sarabun';
+    let labels = ['Person 1', 'Person 2', 'Person 3', 'Person 4'];
+    for (let i = 0; i < 4; i++) {
+        ctx.fillStyle = COLORS[i]; ctx.fillRect(ml + pw - 80, mt + 40 + i * 14, 8, 8);
+        ctx.fillStyle = C.text; ctx.fillText(labels[i], ml + pw - 68, mt + 47 + i * 14);
+    }
+
+    // Update buttons
+    let canvas = document.getElementById('withinBetweenCanvas');
+    if (canvas) {
+        let btns = canvas.parentElement?.querySelectorAll('.interactive-btn');
+        if (btns) btns.forEach(b => {
+            let txt = b.textContent.trim();
+            b.classList.toggle('active', txt.startsWith(mode === 'overall' ? 'Overall' : mode === 'within' ? 'Within' : 'Between'));
+        });
+    }
+}
+
+// ============================================================
+// 4. FE vs RE HAUSMAN DEMO
+// ============================================================
+function drawHausmanDemo() {
+    const ctx = getCtx('hausmanCanvas');
+    if (!ctx) return;
+    const W = 440, H = 260;
+    clearCanvas(ctx, W, H);
+
+    const corrVal = parseFloat(document.getElementById('corrSlider')?.value || 0) / 100;
+    document.getElementById('corrVal').textContent = corrVal.toFixed(2);
+
+    const ml = 50, mr = 15, mt = 20, mb = 30;
+    const pw = W - ml - mr, ph = H - mt - mb;
+
+    // Generate data
+    const rng = seededRandom(77);
+    const N = 80, T = 5;
+    const trueBeta = 1.0;
+    let pts = [];
+
+    for (let i = 0; i < N; i++) {
+        let alphaBase = (rng() - 0.5) * 3;
+        for (let t = 0; t < T; t++) {
+            let xBase = 2 + rng() * 4;
+            let alphaI = alphaBase + corrVal * xBase * 2; // correlation between alpha and x
+            let y = alphaI + trueBeta * xBase + (rng() - 0.5) * 2;
+            pts.push({ i, x: xBase, y, alpha: alphaI });
+        }
+    }
+
+    // Compute FE estimate (within)
+    let iMeans = {};
+    for (let i = 0; i < N; i++) {
+        let p = pts.filter(d => d.i === i);
+        iMeans[i] = { x: p.reduce((s, d) => s + d.x, 0) / T, y: p.reduce((s, d) => s + d.y, 0) / T };
+    }
+    let wPts = pts.map(d => ({ x: d.x - iMeans[d.i].x, y: d.y - iMeans[d.i].y }));
+    let swXY = 0, swXX = 0;
+    for (let p of wPts) { swXY += p.x * p.y; swXX += p.x * p.x; }
+    let betaFE = swXX > 0 ? swXY / swXX : 0;
+
+    // Compute pooled OLS (proxy for RE in this simplified demo)
+    let sXY = 0, sXX = 0, sX = 0, sY = 0, n = pts.length;
+    for (let p of pts) { sX += p.x; sY += p.y; sXY += p.x * p.y; sXX += p.x * p.x; }
+    let betaRE = (n * sXY - sX * sY) / (n * sXX - sX * sX);
+
+    // Plot area
+    let allX = pts.map(d => d.x), allY = pts.map(d => d.y);
+    let xMin = Math.min(...allX) - 0.3, xMax = Math.max(...allX) + 0.3;
+    let yMin = Math.min(...allY) - 1, yMax = Math.max(...allY) + 1;
+    const sx = v => ml + (v - xMin) / (xMax - xMin) * pw;
+    const sy = v => mt + ph - (v - yMin) / (yMax - yMin) * ph;
+
+    // Axes
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ph); ctx.lineTo(ml + pw, mt + ph); ctx.stroke();
+    ctx.fillStyle = C.textLight; ctx.font = '10px Sarabun';
+    ctx.fillText('x', ml + pw / 2, H - 5);
+
+    // Draw points (sample of 80)
+    for (let j = 0; j < Math.min(pts.length, 200); j += 2) {
+        let d = pts[j];
+        ctx.fillStyle = 'rgba(100,140,180,0.25)'; ctx.beginPath();
+        ctx.arc(sx(d.x), sy(d.y), 2.5, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // FE line (within slope through grand mean)
+    let gx = sX / n, gy = sY / n;
+    let aFE = gy - betaFE * gx;
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(sx(xMin), sy(aFE + betaFE * xMin)); ctx.lineTo(sx(xMax), sy(aFE + betaFE * xMax)); ctx.stroke();
+
+    // RE line
+    let aRE = (sY - betaRE * sX) / n;
+    ctx.strokeStyle = C.red; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(sx(xMin), sy(aRE + betaRE * xMin)); ctx.lineTo(sx(xMax), sy(aRE + betaRE * xMax)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // True line
+    ctx.strokeStyle = C.green; ctx.lineWidth = 1.5; ctx.setLineDash([2, 3]);
+    let aTrue = gy - trueBeta * gx;
+    ctx.beginPath(); ctx.moveTo(sx(xMin), sy(aTrue + trueBeta * xMin)); ctx.lineTo(sx(xMax), sy(aTrue + trueBeta * xMax)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Legend
+    ctx.font = 'bold 10px Sarabun';
+    ctx.fillStyle = C.blue; ctx.fillText('FE: \u03B2\u0302 = ' + betaFE.toFixed(3), ml + 5, mt + 15);
+    ctx.fillStyle = C.red; ctx.fillText('RE: \u03B2\u0302 = ' + betaRE.toFixed(3), ml + 5, mt + 30);
+    ctx.fillStyle = C.green; ctx.fillText('True: \u03B2 = ' + trueBeta.toFixed(3), ml + 5, mt + 45);
+
+    // Hausman statistic indicator
+    let diff = Math.abs(betaFE - betaRE);
+    ctx.fillStyle = diff > 0.15 ? C.red : C.green;
+    ctx.font = 'bold 11px Fira Code';
+    ctx.fillText('|\u03B2FE - \u03B2RE| = ' + diff.toFixed(3) + (diff > 0.15 ? ' (Reject H\u2080)' : ' (Fail to reject)'), ml + pw - 220, mt + 15);
+}
+
+// ============================================================
+// 5. HAUSMAN SIMULATION
+// ============================================================
+let hausmanSimData = { h0: [], h1: [] };
+
+function simHausman(mode) {
+    if (mode === 'reset') { hausmanSimData = { h0: [], h1: [] }; drawHausmanSim(); return; }
+
+    const rng = seededRandom(Date.now() % 100000);
+    const N = 50, T = 5, trueBeta = 1.0;
+    const corrVal = mode === 'h1' ? 0.5 : 0;
+
+    for (let sim = 0; sim < 30; sim++) {
+        let pts = [];
+        for (let i = 0; i < N; i++) {
+            let alphaBase = (rng() - 0.5) * 2;
+            for (let t = 0; t < T; t++) {
+                let x = 2 + rng() * 4;
+                let alpha = alphaBase + corrVal * x;
+                let y = alpha + trueBeta * x + (rng() - 0.5) * 2;
+                pts.push({ i, x, y });
+            }
+        }
+        // FE
+        let iM = {};
+        for (let i = 0; i < N; i++) {
+            let p = pts.filter(d => d.i === i);
+            iM[i] = { x: p.reduce((s, d) => s + d.x, 0) / T, y: p.reduce((s, d) => s + d.y, 0) / T };
+        }
+        let wXY = 0, wXX = 0;
+        for (let p of pts) { let dx = p.x - iM[p.i].x, dy = p.y - iM[p.i].y; wXY += dx * dy; wXX += dx * dx; }
+        let bFE = wXX > 0 ? wXY / wXX : 0;
+        // OLS
+        let sX = 0, sY = 0, sXY = 0, sXX = 0, n = pts.length;
+        for (let p of pts) { sX += p.x; sY += p.y; sXY += p.x * p.y; sXX += p.x * p.x; }
+        let bRE = (n * sXY - sX * sY) / (n * sXX - sX * sX);
+
+        hausmanSimData[mode].push({ fe: bFE, re: bRE });
+    }
+    drawHausmanSim();
+}
+
+function drawHausmanSim() {
+    const ctx = getCtx('hausmanSimCanvas');
+    if (!ctx) return;
+    const W = 440, H = 260;
+    clearCanvas(ctx, W, H);
+
+    const ml = 50, mr = 15, mt = 20, mb = 30;
+    const pw = W - ml - mr, ph = H - mt - mb;
+
+    let allPts = [...hausmanSimData.h0, ...hausmanSimData.h1];
+    if (allPts.length === 0) {
+        ctx.fillStyle = C.textLight; ctx.font = '12px Sarabun'; ctx.textAlign = 'center';
+        ctx.fillText('Click a button to simulate', W / 2, H / 2);
+        ctx.textAlign = 'left'; return;
+    }
+
+    let feVals = allPts.map(d => d.fe), reVals = allPts.map(d => d.re);
+    let allVals = [...feVals, ...reVals];
+    let vMin = Math.min(...allVals) - 0.1, vMax = Math.max(...allVals) + 0.1;
+    const sx = v => ml + (v - vMin) / (vMax - vMin) * pw;
+    const sy = v => mt + ph - (v - vMin) / (vMax - vMin) * ph;
+
+    // Axes
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ph); ctx.lineTo(ml + pw, mt + ph); ctx.stroke();
+    ctx.fillStyle = C.textLight; ctx.font = '10px Sarabun';
+    ctx.fillText('\u03B2\u0302_FE', ml + pw / 2, H - 5);
+    ctx.save(); ctx.translate(12, mt + ph / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('\u03B2\u0302_RE', -15, 0); ctx.restore();
+
+    // 45-degree line
+    ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(sx(vMin), sy(vMin)); ctx.lineTo(sx(vMax), sy(vMax)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // True beta line
+    ctx.strokeStyle = C.green; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+    ctx.beginPath(); ctx.moveTo(sx(1), mt); ctx.lineTo(sx(1), mt + ph); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ml, sy(1)); ctx.lineTo(ml + pw, sy(1)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // H0 points
+    for (let p of hausmanSimData.h0) {
+        ctx.fillStyle = 'rgba(74,144,217,0.6)'; ctx.beginPath();
+        ctx.arc(sx(p.fe), sy(p.re), 4, 0, Math.PI * 2); ctx.fill();
+    }
+    // H1 points
+    for (let p of hausmanSimData.h1) {
+        ctx.fillStyle = 'rgba(212,83,74,0.6)'; ctx.beginPath();
+        ctx.arc(sx(p.fe), sy(p.re), 4, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Legend
+    ctx.font = '10px Sarabun';
+    ctx.fillStyle = C.blue; ctx.fillRect(ml + 5, mt + 5, 10, 10);
+    ctx.fillStyle = C.text; ctx.fillText('H\u2080 (n=' + hausmanSimData.h0.length + ')', ml + 20, mt + 14);
+    ctx.fillStyle = C.red; ctx.fillRect(ml + 5, mt + 20, 10, 10);
+    ctx.fillStyle = C.text; ctx.fillText('H\u2081 (n=' + hausmanSimData.h1.length + ')', ml + 20, mt + 29);
+}
+
+// ============================================================
+// 6. INCIDENTAL PARAMETERS PROBLEM
+// ============================================================
+function drawIncidental(T) {
+    const ctx = getCtx('incidentalCanvas');
+    if (!ctx) return;
+    const W = 400, H = 240;
+    clearCanvas(ctx, W, H);
+
+    const ml = 50, mr = 20, mt = 25, mb = 35;
+    const pw = W - ml - mr, ph = H - mt - mb;
+
+    // Simulate incidental parameters bias for logit FE
+    // Bias formula approximation: beta_FE ~ beta_true * T/(T-1) for logit
+    // More precisely for logit: asymptotic bias ~ beta/(T-1) for simple case
+    const trueBeta = 1.0;
+    const Nvals = [20, 50, 100, 200, 500, 1000];
+    const rng = seededRandom(555 + T);
+
+    // For each N, simulate FE logit bias
+    let results = [];
+    for (let N of Nvals) {
+        // Analytical approximation: bias ~ beta / (T-1)
+        let biasedBeta = trueBeta * (1 + 1 / (T - 1));
+        // Add some noise
+        let noise = (rng() - 0.5) * 0.1 / Math.sqrt(N / 100);
+        results.push({ N, beta: biasedBeta + noise });
+    }
+
+    // Also add "consistent" estimate for comparison
+    let consistentResults = Nvals.map(N => ({ N, beta: trueBeta + (rng() - 0.5) * 0.05 / Math.sqrt(N / 100) }));
+
+    // Scale
+    let allBeta = [...results.map(r => r.beta), ...consistentResults.map(r => r.beta), trueBeta];
+    let bMin = Math.min(...allBeta) - 0.1, bMax = Math.max(...allBeta) + 0.1;
+    const sx = (v, idx) => ml + (idx / (Nvals.length - 1)) * pw;
+    const sy = v => mt + ph - (v - bMin) / (bMax - bMin) * ph;
+
+    // Grid
+    ctx.strokeStyle = '#eee'; ctx.lineWidth = 0.5;
+    for (let i = 0; i <= 4; i++) {
+        let gy = mt + (ph / 4) * i;
+        ctx.beginPath(); ctx.moveTo(ml, gy); ctx.lineTo(ml + pw, gy); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ph); ctx.lineTo(ml + pw, mt + ph); ctx.stroke();
+
+    // X labels
+    ctx.fillStyle = C.textLight; ctx.font = '9px Fira Code'; ctx.textAlign = 'center';
+    for (let idx = 0; idx < Nvals.length; idx++) {
+        ctx.fillText('N=' + Nvals[idx], sx(0, idx), mt + ph + 15);
+    }
+    ctx.textAlign = 'left';
+    ctx.fillStyle = C.textLight; ctx.font = '10px Sarabun';
+    ctx.fillText('\u03B2\u0302', 15, mt + ph / 2);
+
+    // True beta line
+    ctx.strokeStyle = C.green; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(ml, sy(trueBeta)); ctx.lineTo(ml + pw, sy(trueBeta)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = C.green; ctx.font = '9px Sarabun';
+    ctx.fillText('True \u03B2 = 1.0', ml + pw - 70, sy(trueBeta) - 5);
+
+    // FE logit line (biased)
+    ctx.strokeStyle = C.red; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let idx = 0; idx < results.length; idx++) {
+        if (idx === 0) ctx.moveTo(sx(0, idx), sy(results[idx].beta));
+        else ctx.lineTo(sx(0, idx), sy(results[idx].beta));
+    }
+    ctx.stroke();
+    for (let idx = 0; idx < results.length; idx++) {
+        ctx.fillStyle = C.red; ctx.beginPath();
+        ctx.arc(sx(0, idx), sy(results[idx].beta), 4, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Consistent line (e.g., conditional logit or linear FE)
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let idx = 0; idx < consistentResults.length; idx++) {
+        if (idx === 0) ctx.moveTo(sx(0, idx), sy(consistentResults[idx].beta));
+        else ctx.lineTo(sx(0, idx), sy(consistentResults[idx].beta));
+    }
+    ctx.stroke();
+    for (let idx = 0; idx < consistentResults.length; idx++) {
+        ctx.fillStyle = C.blue; ctx.beginPath();
+        ctx.arc(sx(0, idx), sy(consistentResults[idx].beta), 4, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Title & legend
+    ctx.fillStyle = C.primary; ctx.font = 'bold 11px Sarabun';
+    ctx.fillText('Incidental Parameters Problem (T = ' + T + ')', ml + 5, mt - 5);
+
+    ctx.font = '9px Sarabun';
+    ctx.fillStyle = C.red; ctx.fillRect(ml + 5, mt + 5, 12, 3);
+    ctx.fillStyle = C.text; ctx.fillText('FE Logit (biased, \u03B2\u0302 \u2248 ' + (trueBeta * (1 + 1 / (T - 1))).toFixed(2) + ')', ml + 22, mt + 10);
+    ctx.fillStyle = C.blue; ctx.fillRect(ml + 5, mt + 18, 12, 3);
+    ctx.fillStyle = C.text; ctx.fillText('Conditional Logit / Linear FE (consistent)', ml + 22, mt + 23);
+
+    // Bias annotation
+    let bias = trueBeta / (T - 1);
+    ctx.fillStyle = C.accent; ctx.font = 'bold 10px Fira Code';
+    ctx.fillText('Bias \u2248 \u03B2/(T-1) = ' + bias.toFixed(2) + ' (' + (bias / trueBeta * 100).toFixed(0) + '%)', ml + pw - 180, mt + ph - 10);
+}
+
+// ============================================================
+// QUIZ HANDLER
+// ============================================================
+function checkQuiz(el, quizId, isCorrect) {
+    let parent = el.parentElement;
+    let options = parent.querySelectorAll('.quiz-option');
+    let feedback = document.getElementById(quizId + '-feedback');
+
+    if (isCorrect) {
+        options.forEach(o => { o.style.pointerEvents = 'none'; o.classList.remove('wrong'); });
+        el.classList.add('correct');
+        feedback.style.display = 'block';
+        feedback.style.background = '#f0faf4';
+        feedback.style.color = '#276749';
+        if (quizId === 'quiz1') {
+            feedback.innerHTML = '<strong>Correct!</strong> FE ไม่สามารถประมาณค่าของตัวแปร time-invariant ได้ ต้องใช้ RE (แต่ต้องทดสอบว่า RE assumption ถูกต้อง) หรือ Correlated RE (Mundlak approach)';
+        } else if (quizId === 'quiz2') {
+            feedback.innerHTML = '<strong>Correct!</strong> Hausman test มี low power ใน small samples &mdash; fail to reject ไม่ได้แปลว่า H\u2080 จริง ควรพิจารณาทฤษฎีเศรษฐศาสตร์ด้วยว่า \u03B1\u1d62 น่าจะสัมพันธ์กับ x หรือไม่';
+        } else if (quizId === 'quiz3') {
+            feedback.innerHTML = '<strong>Correct!</strong> Poisson FE มี sufficient statistics จึง consistent แม้ T เล็ก และ panel-robust SE ทำให้ valid แม้มี overdispersion ส่วน NB FE อาจ inconsistent ใน short panel';
+        }
+    } else {
+        el.classList.add('wrong');
+        feedback.style.display = 'block';
+        feedback.style.background = '#fdf2f2';
+        feedback.style.color = C.red;
+        feedback.innerHTML = '<strong>Not quite</strong> &mdash; try again!';
+        setTimeout(() => {
+            options.forEach(o => { o.style.pointerEvents = 'auto'; o.classList.remove('wrong'); });
+            feedback.style.display = 'none';
+        }, 2000);
+    }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+let initialized = false;
+function initAll() {
+    if (initialized) return;
+    initialized = true;
+    drawPanelStruct('raw');
+    showTransform('original');
+    drawWBView('overall');
+    drawHausmanDemo();
+    drawHausmanSim();
+    drawIncidental(3);
+}
+
+Reveal.on('ready', initAll);
+Reveal.on('slidechanged', () => {
+    requestAnimationFrame(() => {
+        let slide = Reveal.getCurrentSlide();
+        if (slide.querySelector('#panelStructCanvas')) drawPanelStruct('raw');
+        if (slide.querySelector('#dataExplorer')) showTransform('original');
+        if (slide.querySelector('#withinBetweenCanvas')) drawWBView('overall');
+        if (slide.querySelector('#hausmanCanvas')) drawHausmanDemo();
+        if (slide.querySelector('#hausmanSimCanvas')) drawHausmanSim();
+        if (slide.querySelector('#incidentalCanvas')) drawIncidental(3);
+    });
+});
+</script>
+
+</body>
+</html>

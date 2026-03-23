@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Difference-in-Differences | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal { font-family: 'Sarabun', 'Segoe UI', sans-serif; color: var(--text); }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif; color: var(--primary);
+            font-weight: 700; text-transform: none; line-height: 1.6; padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: hidden; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif; transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px; font-size: 13px;
+            color: rgba(0,0,0,0.35); z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer { position: fixed; bottom: 8px; left: 16px; z-index: 100; pointer-events: none; opacity: 0.45; }
+        .logo-footer img { height: 38px; width: auto; }
+
+        /* ---- DID-specific ---- */
+        .did-cell-table { width: 100%; border-collapse: collapse; font-size: 0.5em; margin: 4px 0; }
+        .did-cell-table th, .did-cell-table td { padding: 6px 10px; text-align: center; border: 1px solid var(--border); }
+        .did-cell-table th { background: var(--primary); color: #fff; font-weight: 600; }
+        .did-cell-table .diff-col { background: #fefce8; font-weight: 700; color: var(--accent); }
+        .did-cell-table .did-cell { background: #fef5f4; font-weight: 700; color: var(--accent); font-size: 1.1em; }
+
+        .input-cell { width: 60px; padding: 3px 5px; font-size: 1em; text-align: center; border: 1.5px solid var(--accent2); border-radius: 4px; font-family: 'Fira Code', monospace; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer"><img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University"></div>
+<div class="instructor-footer">ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</div>
+
+<div class="reveal">
+<div class="slides">
+
+<section>
+
+
+<!-- ==================== TITLE ==================== -->
+</section>
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>Difference-in-Differences</h1>
+    <div class="subtitle">Chapter 8 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Causal Inference &bull; DID Setup &bull; Common Trends &bull; Covariates &bull; Multiple Periods &bull; Autor (2003) &bull; Summary</p>
+    </div>
+</section>
+
+<section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1: Causal Inference Framework -->
+<!-- ============================================================ -->
+</section>
+
+<section>
+<section class="section-divider">
+    <h2>1. Causal Inference Framework</h2>
+    <p>Potential Outcomes, SUTVA, และ Conditional Independence</p>
+</section>
+
+<!-- Potential Outcomes -->
+<section>
+    <h2>Potential Outcomes Framework (Rubin Causal Model)</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>แนวคิดหลัก</h3>
+                <p>สำหรับแต่ละหน่วยสังเกต <em>i</em> มี <strong>ผลลัพธ์ที่เป็นไปได้ 2 แบบ</strong>:</p>
+                <ul>
+                    <li class="fragment"><span class="katex">Y_i(0)</span> = ผลลัพธ์เมื่อ<strong>ไม่ได้รับ</strong> treatment</li>
+                    <li class="fragment"><span class="katex">Y_i(1)</span> = ผลลัพธ์เมื่อ<strong>ได้รับ</strong> treatment</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <h3>Treatment Effect สำหรับหน่วย i</h3>
+                <div class="math-block">
+                    <span class="katex">\tau_i = Y_i(1) - Y_i(0)</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>Fundamental Problem of Causal Inference</h3>
+                <p>เราสังเกตได้เพียง <strong>ผลลัพธ์เดียว</strong> สำหรับแต่ละหน่วย:</p>
+                <div class="math-block">
+                    <span class="katex">Y_i = D_i \cdot Y_i(1) + (1 - D_i) \cdot Y_i(0)</span>
+                </div>
+                <p>โดย <span class="katex">D_i \in \{0, 1\}</span> = สถานะการรับ treatment</p>
+            </div>
+            <div class="example-box fragment">
+                <h3>ตัวอย่าง</h3>
+                <p>ถ้า <span class="katex">D_i = 1</span> เราเห็น <span class="katex">Y_i(1)</span> แต่ไม่เห็น <span class="katex">Y_i(0)</span> (counterfactual) ดังนั้น <span class="katex">\tau_i</span> ไม่สามารถคำนวณได้โดยตรง</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ATE and ATT -->
+<section>
+    <h2>พารามิเตอร์เชิงสาเหตุ: ATE และ ATT</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Average Treatment Effect (ATE)</h3>
+                <div class="math-block">
+                    <span class="katex">\text{ATE} = E[Y(1) - Y(0)]</span>
+                </div>
+                <p class="fragment">= ผลกระทบเฉลี่ยสำหรับ<strong>ทุกคน</strong>ในประชากร</p>
+                <p class="fragment">ถ้าเราสุ่มได้สมบูรณ์ (RCT) เราสามารถประมาณค่านี้ได้โดยตรง</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight">
+                <h3>Average Treatment Effect on the Treated (ATT)</h3>
+                <div class="math-block">
+                    <span class="katex">\text{ATT} = E[Y(1) - Y(0) \mid D = 1]</span>
+                </div>
+                <p class="fragment">= ผลกระทบเฉลี่ยสำหรับ<strong>ผู้ที่ได้รับ treatment จริง</strong>เท่านั้น</p>
+                <p class="fragment">ในบริบท DID มักสนใจ ATT มากกว่า ATE</p>
+            </div>
+        </div>
+    </div>
+    <div class="example-box fragment" style="margin-top:5px;">
+        <h3>ทำไม ATT ไม่เท่ากับ ATE?</h3>
+        <p>เพราะคนที่เลือกเข้ารับ treatment อาจมีลักษณะแตกต่างจากคนทั่วไป เช่น คนที่เลือกเรียนต่อปริญญาโทอาจมี ability สูงกว่าเฉลี่ย ดังนั้นผลของการศึกษาอาจต่างกันระหว่าง ATE กับ ATT</p>
+    </div>
+</section>
+
+<!-- SUTVA -->
+<section>
+    <h2>SUTVA: Stable Unit Treatment Value Assumption</h2>
+    <div class="concept-box">
+        <h3>สมมติฐานพื้นฐาน</h3>
+        <p>SUTVA ประกอบด้วย 2 ส่วน:</p>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="key-insight fragment">
+                <h3>1. No Interference</h3>
+                <p>ผลลัพธ์ของหน่วย <em>i</em> ไม่ขึ้นกับสถานะ treatment ของหน่วยอื่น</p>
+                <div class="math-block">
+                    <span class="katex">Y_i(D_1, \ldots, D_N) = Y_i(D_i)</span>
+                </div>
+                <p class="fragment"><strong>ตัวอย่างการละเมิด:</strong> วัคซีนสร้างภูมิคุ้มกันหมู่ ทำให้คนไม่ฉีดก็ได้ประโยชน์ (spillover)</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>2. No Hidden Variation in Treatment</h3>
+                <p>ไม่มีรูปแบบ treatment ที่ซ่อนอยู่ หน่วยที่ได้รับ treatment ทุกหน่วยได้รับ treatment แบบเดียวกัน</p>
+                <p class="fragment"><strong>ตัวอย่างการละเมิด:</strong> นโยบายค่าแรงขั้นต่ำที่แต่ละรัฐบังคับใช้เข้มงวดไม่เท่ากัน</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CIA -->
+<section>
+    <h2>Conditional Independence Assumption (CIA)</h2>
+    <div class="concept-box">
+        <h3>นิยาม</h3>
+        <div class="math-block">
+            <span class="katex">\{Y(0), Y(1)\} \perp D \mid X</span>
+        </div>
+        <p>เมื่อควบคุมตัวแปร <strong>X</strong> (confounders) แล้ว การได้รับ treatment เป็นอิสระจาก potential outcomes</p>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="key-insight fragment">
+                <h3>X คืออะไร?</h3>
+                <p><strong>X = Confounders</strong> คือตัวแปรที่เป็นสาเหตุร่วมของทั้ง D (treatment) และ Y (outcome)</p>
+                <p>ถ้าไม่ควบคุม X จะได้ ATE ที่มี bias</p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ภายใต้ SUTVA + CIA</h3>
+                <div class="math-block">
+                    <span class="katex">Y = \alpha + \beta D + \gamma X + \varepsilon</span>
+                </div>
+                <p>ค่าสัมประสิทธิ์ <span class="katex">\beta</span> = <strong>ATE</strong></p>
+                <p>แต่ในทางปฏิบัติ CIA มักไม่สมจริง เพราะมี unobservable confounders ที่ควบคุมไม่ได้</p>
+            </div>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top:5px;">
+        <h3>จาก CIA สู่ DID</h3>
+        <p>เมื่อ CIA ไม่สมจริง (มี unobserved confounders) เราต้องหา <strong>กลยุทธ์การระบุ (identification strategy)</strong> อื่น เช่น DID ที่ใช้ <strong>ข้อมูลก่อน-หลัง</strong> มาช่วยกำจัด time-invariant confounders</p>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: DID Basic Setup -->
+<!-- ============================================================ -->
+</section>
+
+<section>
+<section class="section-divider">
+    <h2>2. DID: แนวคิดพื้นฐาน</h2>
+    <p>สมการ DID, การตั้ง 2x2 Table, และการตีความ</p>
+</section>
+
+<!-- DID Intuition -->
+<section>
+    <h2>แนวคิดหลักของ Difference-in-Differences</h2>
+    <div class="concept-box">
+        <h3>ไอเดียหลัก</h3>
+        <p>ใช้ <strong>2 กลุ่ม</strong> (treatment vs. control) และ <strong>2 ช่วงเวลา</strong> (ก่อน vs. หลัง) เพื่อกำจัด confounders ที่คงที่ตามเวลา</p>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="example-box fragment">
+                <h3>Setup พื้นฐาน</h3>
+                <ul>
+                    <li><strong>2 ช่วงเวลา:</strong> t = 0 (ก่อน) และ t = 1 (หลัง)</li>
+                    <li><strong>2 กลุ่ม:</strong> Treatment (Group = 1) และ Control (Group = 0)</li>
+                    <li>ที่ t = 0 <strong>ไม่มีใครได้รับ treatment</strong></li>
+                    <li>ที่ t = 1 เฉพาะ treatment group ได้รับ treatment</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <table class="did-cell-table fragment">
+                <tr><th></th><th>t = 0 (ก่อน)</th><th>t = 1 (หลัง)</th><th class="diff-col">ผลต่าง</th></tr>
+                <tr><td><strong>Treatment</strong></td><td>A</td><td>B</td><td class="diff-col">B - A</td></tr>
+                <tr><td><strong>Control</strong></td><td>C</td><td>D</td><td class="diff-col">D - C</td></tr>
+                <tr><td></td><td></td><td></td><td class="did-cell">DID = (B-A) - (D-C)</td></tr>
+            </table>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top:5px;">
+        <h3>ทำไมต้อง "สองชั้น"?</h3>
+        <p><strong>ผลต่างชั้นที่ 1:</strong> (B - A) = การเปลี่ยนแปลงของ treatment group รวมทั้ง treatment effect + time trend<br>
+        <strong>ผลต่างชั้นที่ 2:</strong> ลบ (D - C) ออก = หักผล time trend ที่เกิดกับทุกคน เหลือเฉพาะ <strong>treatment effect</strong></p>
+    </div>
+</section>
+
+<!-- DID Equation -->
+<section>
+    <h2>สมการ DID</h2>
+    <div class="concept-box">
+        <h3>สมการถดถอย DID (2x2)</h3>
+        <div class="math-block">
+            <span class="katex">Y_{it} = \alpha + \beta \cdot \text{Group}_i + \gamma \cdot \text{Post}_t + \delta \cdot (\text{Group}_i \times \text{Post}_t) + \varepsilon_{it}</span>
+        </div>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="example-box fragment">
+                <h3>ความหมายของสัมประสิทธิ์</h3>
+                <ul>
+                    <li><span class="katex">\alpha</span> = ค่าเฉลี่ย Y ของ control group ที่ t=0</li>
+                    <li><span class="katex">\beta</span> = ความแตกต่างระหว่าง treatment กับ control ที่ t=0</li>
+                    <li><span class="katex">\gamma</span> = time trend (การเปลี่ยนแปลงของ control)</li>
+                    <li><span class="katex">\delta</span> = <strong>DID estimate = ATT</strong></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <table class="did-cell-table fragment">
+                <tr><th></th><th>t = 0</th><th>t = 1</th></tr>
+                <tr><td><strong>Treatment</strong></td><td><span class="katex">\alpha + \beta</span></td><td><span class="katex">\alpha + \beta + \gamma + \delta</span></td></tr>
+                <tr><td><strong>Control</strong></td><td><span class="katex">\alpha</span></td><td><span class="katex">\alpha + \gamma</span></td></tr>
+            </table>
+            <div class="key-insight fragment" style="margin-top:5px;">
+                <h3>DID = <span class="katex">\delta</span></h3>
+                <p><span class="katex">(\alpha+\beta+\gamma+\delta - (\alpha+\beta)) - ((\alpha+\gamma) - \alpha) = \delta</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="stata-code fragment">
+        <span class="cmt">* สมการ DID ใน Stata</span><br>
+        <span class="cmd">gen</span> treat_post = group * post<br>
+        <span class="cmd">reg</span> y group post treat_post, <span class="opt">vce(cluster state)</span>
+    </div>
+</section>
+
+<!-- DID Panel vs Cross-Section -->
+<section>
+    <h2>DID: Panel Data vs. Repeated Cross-Sections</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Panel Data</h3>
+                <p>ติดตามหน่วยเดิมทั้ง 2 ช่วงเวลา</p>
+                <ul>
+                    <li class="fragment">สามารถใช้ <strong>first-difference</strong> ได้</li>
+                    <li class="fragment"><span class="katex">\Delta Y_i = Y_{i1} - Y_{i0}</span></li>
+                    <li class="fragment">แล้วเทียบ <span class="katex">E[\Delta Y | D=1] - E[\Delta Y | D=0]</span></li>
+                    <li class="fragment">ข้อดี: กำจัด individual fixed effects</li>
+                </ul>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* First-difference approach</span><br>
+                <span class="cmd">xtset</span> id time<br>
+                <span class="cmd">reg</span> D.y group, <span class="opt">vce(cluster id)</span>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>Repeated Cross-Sections</h3>
+                <p>หน่วยสังเกตต่างกันในแต่ละช่วงเวลา</p>
+                <ul>
+                    <li class="fragment">ใช้สมการ DID มาตรฐานกับ group mean</li>
+                    <li class="fragment">ไม่ต้องติดตามหน่วยเดิม</li>
+                    <li class="fragment">ข้อดี: ข้อมูลหาง่ายกว่า, ไม่มี attrition</li>
+                    <li class="fragment">ข้อเสีย: ไม่สามารถกำจัด individual FE</li>
+                </ul>
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* Repeated cross-section DID</span><br>
+                <span class="cmd">reg</span> y group post group_post, <span class="opt">vce(robust)</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive: DID Visualizer -->
+<section>
+    <h2>DID Visualizer</h2>
+    <div class="interactive-container">
+        <h4>ปรับค่าเพื่อดูว่า DID ประมาณค่า treatment effect อย่างไร</h4>
+        <div class="two-col">
+            <div>
+                <canvas id="didCanvas" width="480" height="300"></canvas>
+            </div>
+            <div>
+                <div class="slider-group">
+                    <label>Level Gap:</label>
+                    <input type="range" id="sliderGap" min="-3" max="3" step="0.5" value="1">
+                    <span class="val" id="valGap">1.0</span>
+                </div>
+                <div class="slider-group">
+                    <label>Common Trend:</label>
+                    <input type="range" id="sliderTrend" min="-2" max="4" step="0.5" value="2">
+                    <span class="val" id="valTrend">2.0</span>
+                </div>
+                <div class="slider-group">
+                    <label>Treatment Effect:</label>
+                    <input type="range" id="sliderEffect" min="-3" max="5" step="0.5" value="2">
+                    <span class="val" id="valEffect">2.0</span>
+                </div>
+                <div class="concept-box" style="margin-top:8px;">
+                    <p><strong>DID estimate:</strong> <span id="didEstimate" style="color:var(--accent);font-weight:700;font-size:1.1em;">2.0</span></p>
+                    <p style="font-size:0.48em; margin-top:3px;">เส้นประ = counterfactual (treatment group ถ้าไม่ได้รับ treatment)<br>
+                    พื้นที่สีแดง = treatment effect ที่ DID ประมาณได้</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive: 2x2 DID Table Calculator -->
+<section>
+    <h2>DID Table Calculator</h2>
+    <div class="interactive-container">
+        <h4>ใส่ค่าเฉลี่ย Y เพื่อคำนวณ DID ทีละขั้น</h4>
+        <table class="did-cell-table" style="max-width:600px; margin:0 auto;">
+            <tr>
+                <th></th><th>t = 0 (ก่อน)</th><th>t = 1 (หลัง)</th><th class="diff-col">First Diff</th>
+            </tr>
+            <tr>
+                <td><strong>Treatment</strong></td>
+                <td><input class="input-cell" id="cellA" type="number" value="5" oninput="calcDID()"></td>
+                <td><input class="input-cell" id="cellB" type="number" value="9" oninput="calcDID()"></td>
+                <td class="diff-col" id="diffTreat">4.0</td>
+            </tr>
+            <tr>
+                <td><strong>Control</strong></td>
+                <td><input class="input-cell" id="cellC" type="number" value="3" oninput="calcDID()"></td>
+                <td><input class="input-cell" id="cellD" type="number" value="5" oninput="calcDID()"></td>
+                <td class="diff-col" id="diffControl">2.0</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:right;font-weight:700;">DID = First Diff (Treat) - First Diff (Control) =</td>
+                <td class="did-cell" id="didResult">2.0</td>
+            </tr>
+        </table>
+        <div class="key-insight" style="margin-top:8px; max-width:600px; margin-left:auto; margin-right:auto;">
+            <p id="didExplanation">Treatment group เพิ่มขึ้น 4.0 แต่ control เพิ่มขึ้นเพียง 2.0 ดังนั้น treatment effect = 4.0 - 2.0 = <strong>2.0</strong></p>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: Common Trends -->
+<!-- ============================================================ -->
+</section>
+
+<section>
+<section class="section-divider">
+    <h2>3. Common Trends Assumption</h2>
+    <p>สมมติฐานที่สำคัญที่สุดของ DID</p>
+</section>
+
+<!-- Common Trends Explanation -->
+<section>
+    <h2>สมมติฐาน Common (Parallel) Trends</h2>
+    <div class="key-insight">
+        <h3>สมมติฐานหลัก</h3>
+        <div class="math-block">
+            <span class="katex">E[Y(0)_{t=1} - Y(0)_{t=0} \mid D = 1] = E[Y(0)_{t=1} - Y(0)_{t=0} \mid D = 0]</span>
+        </div>
+        <p>ถ้าไม่มี treatment ทั้ง 2 กลุ่มจะมี <strong>แนวโน้มการเปลี่ยนแปลงที่เหมือนกัน</strong></p>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="concept-box fragment">
+                <h3>สิ่งที่ต้องเป็นจริง</h3>
+                <ul>
+                    <li>ระดับ (level) ต่างกันได้</li>
+                    <li>แต่ <strong>การเปลี่ยนแปลง (trend)</strong> ต้องเหมือนกัน</li>
+                    <li>ถ้าไม่มีนโยบาย ทั้งสองกลุ่มจะขึ้น/ลงเท่ากัน</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ถ้าสมมติฐานผิด (Violation)</h3>
+                <ul>
+                    <li>Treatment group มี trend ที่ต่างจาก control อยู่แล้ว</li>
+                    <li>DID estimate จะมี <strong>bias</strong></li>
+                    <li>Bias = ส่วนต่างของ trend ที่ไม่ได้มาจาก treatment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="example-box fragment" style="margin-top:5px;">
+        <h3>การทดสอบ (ไม่สมบูรณ์)</h3>
+        <p>ดู <strong>pre-treatment trends</strong>: ถ้าก่อน treatment ทั้ง 2 กลุ่มมี trend ขนานกัน ก็พอมั่นใจได้ (แต่ไม่ได้พิสูจน์) ว่าหลัง treatment ก็จะขนานถ้าไม่มี treatment</p>
+    </div>
+</section>
+
+<!-- Interactive: Common Trends Violation -->
+<section>
+    <h2>Common Trends Violation</h2>
+    <div class="interactive-container">
+        <h4>ดูว่าเกิดอะไรเมื่อ Parallel Trends ถูกละเมิด</h4>
+        <div class="two-col">
+            <div>
+                <canvas id="violationCanvas" width="480" height="280"></canvas>
+            </div>
+            <div>
+                <div class="slider-group">
+                    <label>Treat Slope:</label>
+                    <input type="range" id="sliderTreatSlope" min="0" max="5" step="0.5" value="3">
+                    <span class="val" id="valTreatSlope">3.0</span>
+                </div>
+                <div class="slider-group">
+                    <label>Control Slope:</label>
+                    <input type="range" id="sliderCtrlSlope" min="0" max="5" step="0.5" value="2">
+                    <span class="val" id="valCtrlSlope">2.0</span>
+                </div>
+                <div class="slider-group">
+                    <label>True Effect:</label>
+                    <input type="range" id="sliderTrueEffect" min="0" max="4" step="0.5" value="1">
+                    <span class="val" id="valTrueEffect">1.0</span>
+                </div>
+                <div class="key-insight" style="margin-top:8px;">
+                    <p><strong>DID estimate:</strong> <span id="violDID" style="font-weight:700;">2.0</span></p>
+                    <p><strong>True effect:</strong> <span id="violTrue" style="font-weight:700;color:var(--accent3);">1.0</span></p>
+                    <p><strong>Bias:</strong> <span id="violBias" style="font-weight:700;color:var(--accent);">1.0</span></p>
+                    <p style="font-size:0.45em;">Bias = ส่วนต่างของ slope ระหว่าง 2 กลุ่ม</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 1: Common Trends -->
+<section>
+    <h2>Quiz: Common Trends</h2>
+    <div class="concept-box">
+        <h3>คำถาม</h3>
+        <p>สมมติฐาน Common Trends (Parallel Trends) ของ DID หมายความว่าอะไร?</p>
+    </div>
+    <div style="margin-top:8px;">
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q1')">A) กลุ่ม treatment และ control ต้องมีค่าเฉลี่ย Y เท่ากันก่อนได้รับ treatment</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q1')">B) กลุ่ม treatment และ control ต้องมีจำนวนหน่วยสังเกตเท่ากัน</div>
+        <div class="quiz-option" onclick="checkQuiz(this, true, 'q1')">C) ถ้าไม่มี treatment ทั้ง 2 กลุ่มจะมีแนวโน้มการเปลี่ยนแปลงของ Y เหมือนกัน</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q1')">D) treatment effect ต้องคงที่ตลอดทุกช่วงเวลา</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q1"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: Covariates & Extensions -->
+<!-- ============================================================ -->
+</section>
+
+<section>
+<section class="section-divider">
+    <h2>4. ตัวแปรควบคุมและส่วนขยาย</h2>
+    <p>Covariates, Time-invariant X, Heterogeneous Effects</p>
+</section>
+
+<!-- Covariates -->
+<section>
+    <h2>บทบาทของตัวแปรควบคุม (Covariates) ใน DID</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ทำไมต้องเพิ่ม X?</h3>
+                <ul>
+                    <li class="fragment"><strong>ลด SE:</strong> ควบคุมความแปรปรวนที่ไม่ได้มาจาก treatment</li>
+                    <li class="fragment"><strong>ช่วย identification:</strong> ทำให้ parallel trends assumption สมเหตุสมผลมากขึ้น</li>
+                    <li class="fragment"><strong>ตรวจสอบ robustness:</strong> ถ้าผลเปลี่ยนเมื่อเพิ่ม X อาจสะท้อนปัญหา</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>Time-invariant Covariates</h3>
+                <p>ตัวแปรที่ไม่เปลี่ยนตามเวลา (เช่น เพศ, เชื้อชาติ) ถูกกำจัดโดย FE</p>
+                <p>แต่สามารถให้ trend แตกต่างตาม X ได้:</p>
+                <div class="math-block">
+                    <span class="katex">Y_{it} = \alpha_i + \lambda_t + \delta(D \times Post) + X_i \cdot t + \varepsilon_{it}</span>
+                </div>
+                <p style="font-size:0.48em;"><span class="katex">X_i \cdot t</span> = ให้ trend แตกต่างตามลักษณะของหน่วย</p>
+            </div>
+        </div>
+    </div>
+    <div class="example-box fragment" style="margin-top:5px;">
+        <h3>Heterogeneous Treatment Effects</h3>
+        <div class="math-block">
+            <span class="katex">Y_{it} = \alpha_i + \lambda_t + \delta_1(D \times Post) + \delta_2(D \times Post \times X) + \ldots + \varepsilon_{it}</span>
+        </div>
+        <p>Interaction <span class="katex">D \times Post \times X</span> ช่วยให้เห็นว่า treatment effect แตกต่างกันตาม X อย่างไร</p>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: Multiple Periods -->
+<!-- ============================================================ -->
+</section>
+
+<section>
+<section class="section-divider">
+    <h2>5. Multiple Periods & Groups</h2>
+    <p>DID เมื่อมีมากกว่า 2 ช่วงเวลาและหลายกลุ่ม</p>
+</section>
+
+<!-- Multiple Periods -->
+<section>
+    <h2>DID กับหลายช่วงเวลา (t > 2)</h2>
+    <div class="concept-box">
+        <h3>สมการ Two-way Fixed Effects (TWFE)</h3>
+        <div class="math-block">
+            <span class="katex">Y_{igt} = \alpha_g + \lambda_t + \delta \cdot D_{gt} + \varepsilon_{igt}</span>
+        </div>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="example-box fragment">
+                <h3>ส่วนประกอบ</h3>
+                <ul>
+                    <li><span class="katex">\alpha_g</span> = <strong>Group FE</strong> ควบคุมลักษณะที่คงที่ของแต่ละกลุ่ม</li>
+                    <li><span class="katex">\lambda_t</span> = <strong>Time FE</strong> ควบคุม common shocks ที่เกิดกับทุกกลุ่ม</li>
+                    <li><span class="katex">D_{gt}</span> = 1 ถ้ากลุ่ม g ได้รับ treatment ในช่วง t (หรือก่อนหน้า)</li>
+                    <li><span class="katex">\delta</span> = <strong>ATT</strong></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ข้อควรระวัง (Staggered Treatment)</h3>
+                <p>เมื่อกลุ่มต่างๆ ได้รับ treatment ในเวลาที่ต่างกัน (staggered adoption):</p>
+                <ul>
+                    <li>TWFE อาจให้ค่า <span class="katex">\delta</span> ที่มี bias</li>
+                    <li>เนื่องจาก "already-treated" units ถูกใช้เป็น control</li>
+                    <li>วิธีแก้: Callaway & Sant'Anna (2021), Sun & Abraham (2021)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="stata-code fragment">
+        <span class="cmt">* TWFE DID in Stata</span><br>
+        <span class="cmd">reg</span> y treat_post <span class="opt">i.state i.year</span>, <span class="opt">cluster(state)</span>
+    </div>
+</section>
+
+<!-- Event Study -->
+<section>
+    <h2>Event Study Design</h2>
+    <div class="concept-box">
+        <h3>แนวคิด</h3>
+        <p>แทนที่จะประมาณ <span class="katex">\delta</span> เดียว ให้ประมาณ treatment effect <strong>แยกตามระยะเวลา</strong>ก่อน/หลัง treatment</p>
+        <div class="math-block">
+            <span class="katex">Y_{it} = \alpha_i + \lambda_t + \sum_{k \neq -1} \delta_k \cdot \mathbf{1}[t - t^*_i = k] + \varepsilon_{it}</span>
+        </div>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="example-box fragment">
+                <h3>Pre-trends Test</h3>
+                <ul>
+                    <li><span class="katex">\delta_k</span> สำหรับ k < 0 ควร <strong>ไม่แตกต่างจาก 0</strong></li>
+                    <li>ถ้า pre-treatment coefficients = 0 แสดงว่า parallel trends น่าเชื่อ</li>
+                    <li>ถ้า pre-treatment coefficients มี trend ชัดเจน แสดงว่า parallel trends อาจถูกละเมิด</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>Post-treatment Effects</h3>
+                <ul>
+                    <li><span class="katex">\delta_k</span> สำหรับ k > 0 แสดง dynamic treatment effects</li>
+                    <li>เห็นว่า treatment effect เพิ่มขึ้น/คงที่/ลดลงตามเวลา</li>
+                    <li>k = -1 เป็น reference period (normalized to 0)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive: Event Study Plot -->
+<section>
+    <h2>Event Study Plot</h2>
+    <div class="interactive-container">
+        <h4>ลากจุดเพื่อสร้าง event study pattern (pre-trends flat = ดี)</h4>
+        <canvas id="eventCanvas" width="700" height="320"></canvas>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:4px;">
+            <button class="interactive-btn" onclick="setEventPattern('good')">Pre-trends ดี</button>
+            <button class="interactive-btn" onclick="setEventPattern('bad')">Pre-trends ไม่ดี</button>
+            <button class="interactive-btn" onclick="setEventPattern('dynamic')">Dynamic Effect</button>
+            <button class="interactive-btn" onclick="setEventPattern('reset')">Reset</button>
+        </div>
+    </div>
+</section>
+
+<!-- Quiz 2: DID Equation -->
+<section>
+    <h2>Quiz: สมการ DID</h2>
+    <div class="concept-box">
+        <h3>คำถาม</h3>
+        <p>ในสมการ <span class="katex">Y_{it} = \alpha + \beta \cdot Group_i + \gamma \cdot Post_t + \delta \cdot (Group_i \times Post_t) + \varepsilon_{it}</span><br>
+        ค่าสัมประสิทธิ์ <span class="katex">\delta</span> หมายถึงอะไร?</p>
+    </div>
+    <div style="margin-top:8px;">
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q2')">A) ความแตกต่างของค่าเฉลี่ย Y ระหว่าง treatment กับ control ก่อนได้รับ treatment</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q2')">B) การเปลี่ยนแปลงค่าเฉลี่ย Y ของ control group ระหว่าง t=0 และ t=1</div>
+        <div class="quiz-option" onclick="checkQuiz(this, true, 'q2')">C) DID estimate ของ treatment effect = ผลต่างของผลต่าง</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q2')">D) ค่าเฉลี่ย Y ของ treatment group หลังได้รับ treatment</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q2"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: Empirical Application -->
+<!-- ============================================================ -->
+</section>
+
+<section>
+<section class="section-divider">
+    <h2>6. Empirical Application</h2>
+    <p>Autor (2003): Employment-at-Will Doctrine และ Temporary Employment</p>
+</section>
+
+<!-- Autor Background -->
+<section>
+    <h2>Autor (2003): บริบทงานวิจัย</h2>
+    <div class="concept-box">
+        <h3>คำถามวิจัย</h3>
+        <p>การยกเว้นหลัก employment-at-will มีผลต่อการจ้างงานแรงงานชั่วคราว (Temporary Help Services: THS) หรือไม่?</p>
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="example-box fragment">
+                <h3>Employment-at-Will Doctrine</h3>
+                <p>หลักกฎหมายแรงงานสหรัฐ: นายจ้างสามารถเลิกจ้างลูกจ้างได้ทุกเมื่อ โดยไม่ต้องมีเหตุผล</p>
+                <p>แต่ระหว่างปี 1979-1995 รัฐต่างๆ เริ่มยอมรับ <strong>ข้อยกเว้น</strong> ที่จำกัดสิทธิ์นี้:</p>
+                <ul>
+                    <li class="fragment"><strong>mico</strong> - Implied Contract Exception</li>
+                    <li class="fragment"><strong>mppa</strong> - Public Policy Exception</li>
+                    <li class="fragment"><strong>mgfa</strong> - Good Faith Exception</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>สมมติฐาน</h3>
+                <p>เมื่อการเลิกจ้างยากขึ้น (ข้อยกเว้น employment-at-will) นายจ้างจะหันไปใช้ <strong>แรงงานชั่วคราว</strong>แทน เพราะ:</p>
+                <ul>
+                    <li>ยืดหยุ่นกว่า</li>
+                    <li>ไม่ต้องรับผิดชอบกฎหมายเลิกจ้าง</li>
+                    <li>ลดความเสี่ยงทางกฎหมาย</li>
+                </ul>
+            </div>
+            <div class="concept-box fragment">
+                <h3>DID Design</h3>
+                <p><strong>Treatment:</strong> รัฐที่ยอมรับข้อยกเว้น<br>
+                <strong>Control:</strong> รัฐที่ยังไม่ยอมรับ<br>
+                <strong>Outcome:</strong> log THS employment share</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Autor Figure 2 -->
+<section>
+    <h2>Replicating Autor (2003) Figure 2</h2>
+    <div class="stata-code">
+        <span class="cmd">use</span> autor-jole-2003-edited.dta, <span class="opt">clear</span><br>
+        <span class="cmd">drop</span> <span class="opt">if</span> year < <span class="num">79</span> | year > <span class="num">95</span><br>
+        <span class="cmd">reg</span> lstateths lnemp <span class="cmt">/* residualize log THS */</span><br>
+        <span class="cmd">predict</span> ehat, <span class="opt">resid</span><br>
+        <span class="cmd">bysort</span> state: <span class="cmd">g</span> a = ehat[<span class="num">1</span>]<br>
+        <span class="cmd">g</span> lrelativeg = ehat - a <span class="cmt">/* relative to base year */</span><br>
+        <span class="cmd">g</span> any = (mico + mppa + mgfa > <span class="num">0</span> & mico + mppa + mgfa < .)<br>
+        <span class="cmd">collapse</span> (mean) lrelativeg (sum) any, by(year)<br>
+        <span class="cmd">replace</span> year = year + <span class="num">1900</span><br>
+        <span class="cmd">twoway</span> (connected lrelativeg year) (connected any year, <span class="opt">yaxis(2)</span>)
+    </div>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="concept-box fragment">
+                <h3>ขั้นตอนการสร้างกราฟ</h3>
+                <ol>
+                    <li>Residualize log THS ด้วย log employment</li>
+                    <li>สร้าง relative growth (เทียบกับปีฐาน)</li>
+                    <li>สร้างตัวแปร any = จำนวนรัฐที่มีข้อยกเว้น</li>
+                    <li>Collapse เป็นค่าเฉลี่ยรายปี</li>
+                    <li>Plot dual-axis graph</li>
+                </ol>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ผลที่คาดหวัง</h3>
+                <p>เมื่อจำนวนรัฐที่มีข้อยกเว้นเพิ่มขึ้น (แกนขวา) THS employment ก็เพิ่มขึ้น (แกนซ้าย) เป็นหลักฐานเบื้องต้นว่า employment-at-will exceptions เพิ่ม THS</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive: Autor Replication -->
+<section>
+    <h2>Autor (2003): Dual-Axis Visualization</h2>
+    <div class="interactive-container">
+        <h4>THS Growth (แกนซ้าย) vs. จำนวนรัฐที่มีข้อยกเว้น (แกนขวา)</h4>
+        <canvas id="autorCanvas" width="700" height="340"></canvas>
+    </div>
+</section>
+
+<!-- Table 3 Replication -->
+<section>
+    <h2>Replicating Autor (2003) Table 3</h2>
+    <div class="concept-box">
+        <h3>8 Models (Col 1-8)</h3>
+        <p>แยกผลของข้อยกเว้นแต่ละประเภท (mico, mppa, mgfa) ทีละตัวและรวมกัน + ทดสอบ robustness ด้วย state-specific time trends</p>
+    </div>
+    <div class="stata-code" style="font-size:0.42em !important;">
+        <span class="cmt">* Columns 1-2: Implied contract only (without/with state trends)</span><br>
+        <span class="cmd">qui reg</span> lstateths mico <span class="opt">i.year i.state</span>, <span class="opt">cluster(state)</span><br>
+        <span class="cmd">est store</span> col_1<br>
+        <span class="cmd">qui reg</span> lstateths mico <span class="opt">i.year i.state</span> state#c.t, <span class="opt">cluster(state)</span><br>
+        <span class="cmd">est store</span> col_2<br><br>
+        <span class="cmt">* Columns 3-6: mppa only, mgfa only (each without/with trends)</span><br>
+        <span class="cmt">* Columns 7-8: All three exceptions</span><br>
+        <span class="cmd">qui reg</span> lstateths mico mppa mgfa <span class="opt">i.year i.state</span>, <span class="opt">cluster(state)</span><br>
+        <span class="cmd">est store</span> col_7<br>
+        <span class="cmd">qui reg</span> lstateths mico mppa mgfa <span class="opt">i.year i.state</span> state#c.t, <span class="opt">cluster(state)</span><br>
+        <span class="cmd">est store</span> col_8<br><br>
+        <span class="cmd">est tab</span> col_*, <span class="opt">keep(mico mppa mgfa) star(0.1 0.05 0.01)</span>
+    </div>
+</section>
+
+<!-- Table 3 Results -->
+<section>
+    <h2>Autor (2003) Table 3: ผลลัพธ์</h2>
+    <table class="compare-table">
+        <tr>
+            <th>ตัวแปร</th>
+            <th>(1) mico</th>
+            <th>(2) mico + Trends</th>
+            <th>(7) All Exc.</th>
+            <th>(8) All + Trends</th>
+        </tr>
+        <tr>
+            <td><strong>mico</strong> (Implied Contract)</td>
+            <td class="highlight">0.117***</td>
+            <td class="highlight">0.092**</td>
+            <td class="highlight">0.091**</td>
+            <td class="highlight">0.082**</td>
+        </tr>
+        <tr>
+            <td><strong>mppa</strong> (Public Policy)</td>
+            <td>-</td>
+            <td>-</td>
+            <td>0.044</td>
+            <td>-0.018</td>
+        </tr>
+        <tr>
+            <td><strong>mgfa</strong> (Good Faith)</td>
+            <td>-</td>
+            <td>-</td>
+            <td>0.071</td>
+            <td>0.031</td>
+        </tr>
+        <tr>
+            <td>State FE</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td>
+        </tr>
+        <tr>
+            <td>Year FE</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td>
+        </tr>
+        <tr>
+            <td>State Trends</td><td>No</td><td>Yes</td><td>No</td><td>Yes</td>
+        </tr>
+    </table>
+    <div class="two-col" style="margin-top:5px;">
+        <div>
+            <div class="key-insight fragment">
+                <h3>ข้อสรุปสำคัญ</h3>
+                <ul>
+                    <li><strong>mico</strong>: robust ทั้งที่มีและไม่มี state trends</li>
+                    <li><strong>mppa, mgfa</strong>: ไม่ robust เมื่อเพิ่ม state trends</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>การตีความ</h3>
+                <p>Implied contract exception เท่านั้นที่มีผลชัดเจนต่อ THS employment การเพิ่ม state-specific trends ทำหน้าที่ทดสอบ common trends assumption</p>
+                <p style="font-size:0.45em; color:var(--text-light);">Col 3-6 (mppa/mgfa แยกตัว) ละไว้ ดูผลเต็มใน do-file</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Robustness: State Trends -->
+<section>
+    <h2>State-Specific Time Trends: ทำไมต้องทดสอบ?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ปัญหา</h3>
+                <p>Common trends assumption อาจไม่สมจริงถ้ารัฐต่างๆ มี <strong>แนวโน้มเศรษฐกิจ</strong>ที่ต่างกัน</p>
+                <p class="fragment">เช่น รัฐที่อุตสาหกรรมกำลังเติบโตอาจมี THS สูงขึ้นอยู่แล้ว ไม่ว่าจะมีข้อยกเว้น employment-at-will หรือไม่</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>วิธีทดสอบ</h3>
+                <p>เพิ่ม <strong>state-specific linear time trends</strong>:</p>
+                <div class="stata-code">
+                    <span class="cmd">reg</span> y mico <span class="opt">i.year i.state</span> state#c.t, <span class="opt">cluster(state)</span>
+                </div>
+                <p style="margin-top:4px;"><code>state#c.t</code> = interaction ระหว่าง state FE กับ linear time trend</p>
+            </div>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top:5px;">
+        <h3>การตีความ</h3>
+        <ul>
+            <li>ถ้าผล <strong>ไม่เปลี่ยน</strong> เมื่อเพิ่ม state trends = ผลมี robustness สูง (mico)</li>
+            <li>ถ้าผล <strong>เปลี่ยนมาก</strong> (เช่น หายไป) = อาจเกิดจาก differential trends ไม่ใช่ treatment effect จริง (mppa, mgfa)</li>
+        </ul>
+    </div>
+</section>
+
+<!-- Quiz 3: Robustness -->
+<section>
+    <h2>Quiz: Robustness Test</h2>
+    <div class="concept-box">
+        <h3>คำถาม</h3>
+        <p>ในงานวิจัย Autor (2003) เมื่อเพิ่ม state-specific time trends เข้าไปในสมการ DID ผลของ mppa และ mgfa หายไป สิ่งนี้หมายความว่าอย่างไร?</p>
+    </div>
+    <div style="margin-top:8px;">
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q3')">A) mppa และ mgfa ไม่มีผลจริงๆ ต่อตัวแปรใดเลย</div>
+        <div class="quiz-option" onclick="checkQuiz(this, true, 'q3')">B) ผลที่เห็นเดิมอาจมาจาก differential trends ระหว่างรัฐ ไม่ใช่ treatment effect จริง</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q3')">C) ข้อมูลมี multicollinearity สูงเกินไป</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q3')">D) State FE ทำงานผิดพลาด</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q3"></div>
+</section>
+
+<!-- Quiz 4: When DID is valid -->
+<section>
+    <h2>Quiz: เมื่อไหร่ DID ใช้ได้?</h2>
+    <div class="concept-box">
+        <h3>คำถาม</h3>
+        <p>สถานการณ์ใดต่อไปนี้ DID <strong>ไม่เหมาะสม</strong>?</p>
+    </div>
+    <div style="margin-top:8px;">
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q4')">A) Treatment group มีค่าเฉลี่ย Y สูงกว่า control ก่อน treatment</div>
+        <div class="quiz-option" onclick="checkQuiz(this, true, 'q4')">B) Treatment group มี trend ที่เพิ่มขึ้นเร็วกว่า control อยู่แล้วก่อน treatment</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q4')">C) จำนวนหน่วยใน treatment group น้อยกว่า control group</div>
+        <div class="quiz-option" onclick="checkQuiz(this, false, 'q4')">D) ข้อมูลเป็น repeated cross-sections ไม่ใช่ panel</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q4"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: Summary & Decision Tree -->
+<!-- ============================================================ -->
+</section>
+
+<section>
+<section class="section-divider">
+    <h2>7. สรุปและ Decision Tree</h2>
+    <p>แนวทางการใช้ DID ในงานวิจัย</p>
+</section>
+
+<!-- Summary -->
+<section>
+    <h2>สรุป: Difference-in-Differences</h2>
+    <div class="three-col">
+        <div>
+            <div class="concept-box">
+                <h3>แนวคิดหลัก</h3>
+                <ul>
+                    <li>ใช้ข้อมูลก่อน-หลังจาก 2 กลุ่มขึ้นไป</li>
+                    <li>กำจัด time-invariant confounders</li>
+                    <li>กำจัด common time shocks</li>
+                    <li>เหลือเฉพาะ treatment effect</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight">
+                <h3>สมมติฐานสำคัญ</h3>
+                <ul>
+                    <li><strong>Parallel Trends</strong></li>
+                    <li>SUTVA</li>
+                    <li>No Anticipation</li>
+                    <li>Stable Composition</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box">
+                <h3>Robustness Checks</h3>
+                <ul>
+                    <li>Pre-trends test</li>
+                    <li>Event study plot</li>
+                    <li>State-specific trends</li>
+                    <li>Placebo tests</li>
+                    <li>เปลี่ยน control group</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="stata-code" style="margin-top:8px;">
+        <span class="cmt">* Complete DID workflow in Stata</span><br>
+        <span class="cmd">use</span> data.dta, <span class="opt">clear</span><br>
+        <span class="cmd">gen</span> treat_post = treat * post<br>
+        <span class="cmd">reg</span> y treat_post <span class="opt">i.group i.time</span>, <span class="opt">cluster(group)</span> <span class="cmt">/* Basic TWFE */</span><br>
+        <span class="cmd">reg</span> y treat_post <span class="opt">i.group i.time</span> group#c.t, <span class="opt">cluster(group)</span> <span class="cmt">/* + State trends */</span><br>
+        <span class="cmd">esttab</span>, <span class="opt">se star(* 0.10 ** 0.05 *** 0.01)</span>
+    </div>
+</section>
+
+<!-- Decision Tree -->
+<section>
+    <h2>Decision Tree: เลือกใช้ DID เมื่อไหร่?</h2>
+    <div class="decision-tree">
+        <div class="dt-node dt-diamond">มีข้อมูลก่อน-หลัง treatment?</div>
+        <div class="dt-row">
+            <div class="dt-branch">
+                <div class="dt-arrow">&#8595;<br><span class="dt-label">ใช่</span></div>
+                <div class="dt-node dt-diamond">มี control group ที่เหมาะสม?</div>
+                <div class="dt-row">
+                    <div class="dt-branch">
+                        <div class="dt-arrow">&#8595;<br><span class="dt-label">ใช่</span></div>
+                        <div class="dt-node dt-diamond">Parallel Trends สมเหตุสมผล?</div>
+                        <div class="dt-row">
+                            <div class="dt-branch">
+                                <div class="dt-arrow">&#8595;<br><span class="dt-label">ใช่</span></div>
+                                <div class="dt-node dt-action">ใช้ DID</div>
+                            </div>
+                            <div class="dt-branch">
+                                <div class="dt-arrow">&#8595;<br><span class="dt-label">ไม่</span></div>
+                                <div class="dt-node dt-action2">พิจารณา SCM หรือ CIC</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dt-branch">
+                        <div class="dt-arrow">&#8595;<br><span class="dt-label">ไม่</span></div>
+                        <div class="dt-node dt-yes">พิจารณา ITS หรือ RDD</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-arrow">&#8595;<br><span class="dt-label">ไม่</span></div>
+                <div class="dt-node dt-no">ใช้ cross-section + CIA</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Key Takeaways -->
+<section>
+    <h2>Key Takeaways</h2>
+    <div class="two-col">
+        <div>
+            <div class="key-insight">
+                <h3>สิ่งที่ต้องจำ</h3>
+                <ol>
+                    <li class="fragment"><strong>DID = ผลต่างของผลต่าง</strong> กำจัด time-invariant confounders และ common shocks</li>
+                    <li class="fragment"><strong>Parallel Trends</strong> คือสมมติฐานที่สำคัญที่สุด ต้องทดสอบด้วย pre-trends</li>
+                    <li class="fragment"><strong>TWFE</strong> ขยาย DID ไปหลายช่วงเวลาและกลุ่ม ด้วย group FE + time FE</li>
+                    <li class="fragment"><strong>Robustness</strong>: เพิ่ม state-specific trends, placebo tests, event study</li>
+                </ol>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>Autor (2003) สอนอะไร?</h3>
+                <ul>
+                    <li class="fragment">DID ใช้กับ staggered policy adoption ได้ดี</li>
+                    <li class="fragment">ต้องตรวจสอบ robustness เสมอ</li>
+                    <li class="fragment">ผลที่ไม่ robust (mppa, mgfa) อาจมาจาก differential trends</li>
+                    <li class="fragment">Implied contract (mico) เป็นข้อยกเว้นเดียวที่มีผล robust ต่อ THS</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <h3>สำหรับงานวิจัยของคุณ</h3>
+                <p>ทุกครั้งที่ใช้ DID ต้องรายงาน: (1) event study plot, (2) ผลเมื่อเพิ่ม trends, (3) placebo test</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</section>
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<!-- ============================================================ -->
+<!-- SCRIPTS -->
+<!-- ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+<script>
+// ============================================================
+// Reveal.js init
+// ============================================================
+Reveal.initialize({
+    hash: true, slideNumber: true,
+    width: 1100, height: 700, margin: 0.04,
+    transition: 'fade', transitionSpeed: 'fast',
+    plugins: []
+});
+
+// ============================================================
+// KaTeX render
+// ============================================================
+function renderKaTeX() {
+    document.querySelectorAll('.katex').forEach(el => {
+        if (el.querySelector('.katex-mathml')) return; // already rendered
+        try { katex.render(el.textContent, el, { throwOnError: false, displayMode: false }); } catch(e) {}
+    });
+    document.querySelectorAll('.math-block').forEach(el => {
+        if (el.querySelector('.katex-mathml')) return; // already rendered
+        let span = el.querySelector('.katex');
+        if (!span) {
+            try { katex.render(el.textContent, el, { throwOnError: false, displayMode: true }); } catch(e) {}
+        }
+    });
+}
+
+// ============================================================
+// Quiz system
+// ============================================================
+function checkQuiz(el, correct, qid) {
+    let parent = el.parentElement;
+    let opts = parent.querySelectorAll('.quiz-option');
+    opts.forEach(o => { o.style.pointerEvents = 'none'; });
+    let fb = document.getElementById('fb-' + qid);
+    if (correct) {
+        el.classList.add('correct');
+        fb.style.display = 'block';
+        fb.style.background = '#f0faf4';
+        fb.style.color = '#276749';
+        fb.textContent = 'ถูกต้อง!';
+    } else {
+        el.classList.add('wrong');
+        opts.forEach(o => { if (o.getAttribute('onclick').includes('true')) o.classList.add('correct'); });
+        fb.style.display = 'block';
+        fb.style.background = '#fef5f4';
+        fb.style.color = '#9b2c2c';
+        if (qid === 'q1') fb.textContent = 'ไม่ถูกต้อง Parallel trends หมายถึงถ้าไม่มี treatment ทั้ง 2 กลุ่มจะมีแนวโน้มเดียวกัน (ไม่ใช่ระดับเท่ากัน)';
+        else if (qid === 'q2') fb.textContent = 'ไม่ถูกต้อง delta คือ DID estimate = (B-A) - (D-C) ผลต่างของผลต่าง';
+        else if (qid === 'q3') fb.textContent = 'ไม่ถูกต้อง เมื่อผลหายไปเพราะ state trends แสดงว่าผลเดิมอาจมาจาก differential trends';
+        else if (qid === 'q4') fb.textContent = 'ไม่ถูกต้อง DID ไม่เหมาะเมื่อ treatment group มี trend ต่างจาก control อยู่แล้วก่อน treatment (parallel trends ถูกละเมิด)';
+    }
+}
+
+// ============================================================
+// DID Table Calculator
+// ============================================================
+function calcDID() {
+    let A = parseFloat(document.getElementById('cellA').value) || 0;
+    let B = parseFloat(document.getElementById('cellB').value) || 0;
+    let C = parseFloat(document.getElementById('cellC').value) || 0;
+    let D = parseFloat(document.getElementById('cellD').value) || 0;
+    let diffT = B - A;
+    let diffC = D - C;
+    let did = diffT - diffC;
+    document.getElementById('diffTreat').textContent = diffT.toFixed(1);
+    document.getElementById('diffControl').textContent = diffC.toFixed(1);
+    document.getElementById('didResult').textContent = did.toFixed(1);
+    document.getElementById('didExplanation').innerHTML =
+        'Treatment group เปลี่ยนแปลง ' + diffT.toFixed(1) + ' แต่ control เปลี่ยนแปลง ' + diffC.toFixed(1) +
+        ' ดังนั้น treatment effect = ' + diffT.toFixed(1) + ' - ' + diffC.toFixed(1) + ' = <strong>' + did.toFixed(1) + '</strong>';
+}
+
+// ============================================================
+// INTERACTIVE 1: DID Visualizer
+// ============================================================
+function drawDIDCanvas() {
+    let c = document.getElementById('didCanvas');
+    if (!c) return;
+    let ctx = c.getContext('2d');
+    let W = c.width, H = c.height;
+    ctx.clearRect(0, 0, W, H);
+
+    let gap = parseFloat(document.getElementById('sliderGap').value);
+    let trend = parseFloat(document.getElementById('sliderTrend').value);
+    let effect = parseFloat(document.getElementById('sliderEffect').value);
+
+    // Update display values
+    document.getElementById('valGap').textContent = gap.toFixed(1);
+    document.getElementById('valTrend').textContent = trend.toFixed(1);
+    document.getElementById('valEffect').textContent = effect.toFixed(1);
+    document.getElementById('didEstimate').textContent = effect.toFixed(1);
+
+    // Margins
+    let ml = 50, mr = 30, mt = 20, mb = 40;
+    let pw = W - ml - mr, ph = H - mt - mb;
+
+    // Scale: Y from -2 to 14
+    let yMin = -2, yMax = 14;
+    function toX(t) { return ml + (t === 0 ? pw * 0.25 : pw * 0.75); }
+    function toY(v) { return mt + ph - (v - yMin) / (yMax - yMin) * ph; }
+
+    // Data points
+    let ctrl0 = 4;
+    let ctrl1 = ctrl0 + trend;
+    let treat0 = ctrl0 + gap;
+    let treat1 = treat0 + trend + effect;
+    let counterfactual = treat0 + trend;
+
+    // Grid
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.5;
+    for (let v = 0; v <= 12; v += 2) {
+        ctx.beginPath(); ctx.moveTo(ml, toY(v)); ctx.lineTo(W - mr, toY(v)); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = '#718096';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, H - mb); ctx.lineTo(W - mr, H - mb); ctx.stroke();
+
+    // Y-axis labels
+    ctx.fillStyle = '#718096'; ctx.font = '11px Sarabun'; ctx.textAlign = 'right';
+    for (let v = 0; v <= 12; v += 2) {
+        ctx.fillText(v, ml - 5, toY(v) + 4);
+    }
+
+    // X-axis labels
+    ctx.textAlign = 'center';
+    ctx.fillText('t = 0 (ก่อน)', toX(0), H - mb + 20);
+    ctx.fillText('t = 1 (หลัง)', toX(1), H - mb + 20);
+
+    // Treatment effect area (shaded)
+    if (Math.abs(effect) > 0.01) {
+        ctx.fillStyle = 'rgba(212, 83, 74, 0.15)';
+        ctx.beginPath();
+        ctx.moveTo(toX(1) - 3, toY(counterfactual));
+        ctx.lineTo(toX(1) + 3, toY(counterfactual));
+        ctx.lineTo(toX(1) + 3, toY(treat1));
+        ctx.lineTo(toX(1) - 3, toY(treat1));
+        ctx.closePath();
+        ctx.fill();
+
+        // Arrow for effect
+        ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(toX(1) + 15, toY(counterfactual)); ctx.lineTo(toX(1) + 15, toY(treat1)); ctx.stroke();
+        ctx.fillStyle = '#d4534a'; ctx.font = 'bold 12px Fira Code'; ctx.textAlign = 'left';
+        ctx.fillText('δ=' + effect.toFixed(1), toX(1) + 20, toY((counterfactual + treat1) / 2) + 4);
+    }
+
+    // Counterfactual (dashed)
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = '#a0aec0'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(toX(0), toY(treat0)); ctx.lineTo(toX(1), toY(counterfactual)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Control line
+    ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(toX(0), toY(ctrl0)); ctx.lineTo(toX(1), toY(ctrl1)); ctx.stroke();
+
+    // Treatment line
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(toX(0), toY(treat0)); ctx.lineTo(toX(1), toY(treat1)); ctx.stroke();
+
+    // Dots
+    function dot(x, y, color, r) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r || 6, 0, Math.PI * 2); ctx.fill();
+    }
+    dot(toX(0), toY(ctrl0), '#4a90d9');
+    dot(toX(1), toY(ctrl1), '#4a90d9');
+    dot(toX(0), toY(treat0), '#d4534a');
+    dot(toX(1), toY(treat1), '#d4534a');
+    dot(toX(1), toY(counterfactual), '#a0aec0', 5);
+
+    // Legend
+    ctx.font = '12px Sarabun'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#d4534a'; ctx.fillRect(W - mr - 150, mt + 5, 14, 3);
+    ctx.fillText('Treatment', W - mr - 132, mt + 12);
+    ctx.fillStyle = '#4a90d9'; ctx.fillRect(W - mr - 150, mt + 22, 14, 3);
+    ctx.fillText('Control', W - mr - 132, mt + 29);
+    ctx.fillStyle = '#a0aec0'; ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = '#a0aec0'; ctx.beginPath(); ctx.moveTo(W - mr - 150, mt + 39); ctx.lineTo(W - mr - 136, mt + 39); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#a0aec0'; ctx.fillText('Counterfactual', W - mr - 132, mt + 43);
+}
+
+// Slider listeners for DID visualizer
+['sliderGap', 'sliderTrend', 'sliderEffect'].forEach(id => {
+    let el = document.getElementById(id);
+    if (el) el.addEventListener('input', drawDIDCanvas);
+});
+
+// ============================================================
+// INTERACTIVE 2: Common Trends Violation
+// ============================================================
+function drawViolation() {
+    let c = document.getElementById('violationCanvas');
+    if (!c) return;
+    let ctx = c.getContext('2d');
+    let W = c.width, H = c.height;
+    ctx.clearRect(0, 0, W, H);
+
+    let treatSlope = parseFloat(document.getElementById('sliderTreatSlope').value);
+    let ctrlSlope = parseFloat(document.getElementById('sliderCtrlSlope').value);
+    let trueEffect = parseFloat(document.getElementById('sliderTrueEffect').value);
+
+    document.getElementById('valTreatSlope').textContent = treatSlope.toFixed(1);
+    document.getElementById('valCtrlSlope').textContent = ctrlSlope.toFixed(1);
+    document.getElementById('valTrueEffect').textContent = trueEffect.toFixed(1);
+
+    let didEst = treatSlope + trueEffect - ctrlSlope;
+    let bias = didEst - trueEffect;
+    document.getElementById('violDID').textContent = didEst.toFixed(1);
+    document.getElementById('violTrue').textContent = trueEffect.toFixed(1);
+    document.getElementById('violBias').textContent = bias.toFixed(1);
+    document.getElementById('violBias').style.color = Math.abs(bias) < 0.01 ? 'var(--accent3)' : 'var(--accent)';
+
+    let ml = 50, mr = 20, mt = 20, mb = 40;
+    let pw = W - ml - mr, ph = H - mt - mb;
+    let yMin = -1, yMax = 14;
+    function toX(t) { return ml + (t === 0 ? pw * 0.25 : pw * 0.75); }
+    function toY(v) { return mt + ph - (v - yMin) / (yMax - yMin) * ph; }
+
+    // Grid
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+    for (let v = 0; v <= 12; v += 2) {
+        ctx.beginPath(); ctx.moveTo(ml, toY(v)); ctx.lineTo(W - mr, toY(v)); ctx.stroke();
+    }
+    ctx.strokeStyle = '#718096'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, H - mb); ctx.lineTo(W - mr, H - mb); ctx.stroke();
+
+    ctx.fillStyle = '#718096'; ctx.font = '11px Sarabun'; ctx.textAlign = 'right';
+    for (let v = 0; v <= 12; v += 2) ctx.fillText(v, ml - 5, toY(v) + 4);
+    ctx.textAlign = 'center';
+    ctx.fillText('t = 0', toX(0), H - mb + 20);
+    ctx.fillText('t = 1', toX(1), H - mb + 20);
+
+    let ctrl0 = 3, treat0 = 5;
+    let ctrl1 = ctrl0 + ctrlSlope;
+    let treat1 = treat0 + treatSlope + trueEffect;
+    let counterfactual = treat0 + treatSlope; // true counterfactual (actual trend without treatment)
+
+    // Parallel trends assumption line (dashed)
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = '#a0aec0'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(toX(0), toY(treat0)); ctx.lineTo(toX(1), toY(treat0 + ctrlSlope)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // True counterfactual (dotted)
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = '#e8a838'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(toX(0), toY(treat0)); ctx.lineTo(toX(1), toY(counterfactual)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Control line
+    ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(toX(0), toY(ctrl0)); ctx.lineTo(toX(1), toY(ctrl1)); ctx.stroke();
+
+    // Treatment line
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(toX(0), toY(treat0)); ctx.lineTo(toX(1), toY(treat1)); ctx.stroke();
+
+    // Dots
+    function dot(x, y, color) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+    }
+    dot(toX(0), toY(ctrl0), '#4a90d9');
+    dot(toX(1), toY(ctrl1), '#4a90d9');
+    dot(toX(0), toY(treat0), '#d4534a');
+    dot(toX(1), toY(treat1), '#d4534a');
+
+    // Labels
+    ctx.font = '11px Sarabun'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#4a90d9'; ctx.fillText('Control', toX(1) + 10, toY(ctrl1));
+    ctx.fillStyle = '#d4534a'; ctx.fillText('Treatment', toX(1) + 10, toY(treat1));
+    ctx.fillStyle = '#a0aec0'; ctx.fillText('DID assumes', toX(1) + 10, toY(treat0 + ctrlSlope));
+    ctx.fillStyle = '#e8a838'; ctx.fillText('True CF', toX(1) + 10, toY(counterfactual));
+
+    // Bias indicator
+    if (Math.abs(bias) > 0.01) {
+        ctx.fillStyle = 'rgba(212,83,74,0.1)';
+        ctx.fillRect(toX(1) - 8, Math.min(toY(treat0 + ctrlSlope), toY(counterfactual)),
+            16, Math.abs(toY(treat0 + ctrlSlope) - toY(counterfactual)));
+        ctx.fillStyle = '#d4534a'; ctx.font = 'bold 11px Fira Code'; ctx.textAlign = 'right';
+        ctx.fillText('Bias=' + bias.toFixed(1), toX(1) - 12, toY((treat0 + ctrlSlope + counterfactual) / 2) + 4);
+    }
+}
+
+['sliderTreatSlope', 'sliderCtrlSlope', 'sliderTrueEffect'].forEach(id => {
+    let el = document.getElementById(id);
+    if (el) el.addEventListener('input', drawViolation);
+});
+
+// ============================================================
+// INTERACTIVE 3: Event Study Plot
+// ============================================================
+let eventCoefs = [0, 0, 0, 0, 0, 0, 0, 0, 0]; // k = -4 to +4, index 4 is k=0
+let eventDragging = -1;
+
+function drawEventStudy() {
+    let c = document.getElementById('eventCanvas');
+    if (!c) return;
+    let ctx = c.getContext('2d');
+    let W = c.width, H = c.height;
+    ctx.clearRect(0, 0, W, H);
+
+    let ml = 60, mr = 30, mt = 25, mb = 45;
+    let pw = W - ml - mr, ph = H - mt - mb;
+    let nPeriods = 9; // -4 to +4
+    let yMin = -3, yMax = 5;
+
+    function toX(k) { return ml + (k + 4) / (nPeriods - 1) * pw; }
+    function toY(v) { return mt + ph - (v - yMin) / (yMax - yMin) * ph; }
+    function fromY(py) { return yMin + (mt + ph - py) / ph * (yMax - yMin); }
+
+    // Grid
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+    for (let v = yMin; v <= yMax; v++) {
+        ctx.beginPath(); ctx.moveTo(ml, toY(v)); ctx.lineTo(W - mr, toY(v)); ctx.stroke();
+    }
+
+    // Zero line
+    ctx.strokeStyle = '#718096'; ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(ml, toY(0)); ctx.lineTo(W - mr, toY(0)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Treatment line (vertical at k=-1)
+    ctx.strokeStyle = 'rgba(212,83,74,0.3)'; ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(toX(-0.5), mt); ctx.lineTo(toX(-0.5), H - mb); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#d4534a'; ctx.font = '10px Sarabun'; ctx.textAlign = 'center';
+    ctx.fillText('Treatment', toX(-0.5), mt - 5);
+
+    // Axes
+    ctx.strokeStyle = '#718096'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, H - mb); ctx.lineTo(W - mr, H - mb); ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = '#718096'; ctx.font = '11px Sarabun'; ctx.textAlign = 'right';
+    for (let v = yMin; v <= yMax; v++) ctx.fillText(v, ml - 5, toY(v) + 4);
+
+    ctx.textAlign = 'center';
+    for (let k = -4; k <= 4; k++) {
+        ctx.fillStyle = k === -1 ? '#d4534a' : '#718096';
+        ctx.font = k === -1 ? 'bold 11px Sarabun' : '11px Sarabun';
+        ctx.fillText('k=' + k, toX(k), H - mb + 18);
+    }
+
+    // Reference period marker (k = -1 always 0)
+    eventCoefs[3] = 0; // k=-1 is index 3
+
+    // Confidence bands (fake: +/- 0.8)
+    ctx.fillStyle = 'rgba(74, 144, 217, 0.1)';
+    ctx.beginPath();
+    ctx.moveTo(toX(-4), toY(eventCoefs[0] + 0.8));
+    for (let i = 0; i < nPeriods; i++) {
+        ctx.lineTo(toX(i - 4), toY(eventCoefs[i] + 0.8));
+    }
+    for (let i = nPeriods - 1; i >= 0; i--) {
+        ctx.lineTo(toX(i - 4), toY(eventCoefs[i] - 0.8));
+    }
+    ctx.closePath(); ctx.fill();
+
+    // Line
+    ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < nPeriods; i++) {
+        if (i === 0) ctx.moveTo(toX(i - 4), toY(eventCoefs[i]));
+        else ctx.lineTo(toX(i - 4), toY(eventCoefs[i]));
+    }
+    ctx.stroke();
+
+    // CI whiskers
+    for (let i = 0; i < nPeriods; i++) {
+        let x = toX(i - 4), y = toY(eventCoefs[i]);
+        ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(x, toY(eventCoefs[i] - 0.8)); ctx.lineTo(x, toY(eventCoefs[i] + 0.8)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x - 4, toY(eventCoefs[i] - 0.8)); ctx.lineTo(x + 4, toY(eventCoefs[i] - 0.8)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x - 4, toY(eventCoefs[i] + 0.8)); ctx.lineTo(x + 4, toY(eventCoefs[i] + 0.8)); ctx.stroke();
+    }
+
+    // Dots
+    for (let i = 0; i < nPeriods; i++) {
+        let x = toX(i - 4), y = toY(eventCoefs[i]);
+        ctx.fillStyle = i === 3 ? '#d4534a' : '#4a90d9';
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    // Pre/post labels
+    ctx.font = '10px Sarabun'; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(74,144,217,0.5)';
+    ctx.fillText('Pre-treatment', toX(-2.5), mt + 12);
+    ctx.fillStyle = 'rgba(212,83,74,0.5)';
+    ctx.fillText('Post-treatment', toX(2), mt + 12);
+
+    // Y axis label
+    ctx.save(); ctx.translate(15, mt + ph / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillStyle = '#718096'; ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+    ctx.fillText('Coefficient (δ_k)', 0, 0); ctx.restore();
+}
+
+function setEventPattern(type) {
+    if (type === 'good') {
+        eventCoefs = [0.1, -0.1, 0.05, 0, 1.5, 2.0, 2.2, 2.1, 2.3];
+    } else if (type === 'bad') {
+        eventCoefs = [-1.5, -1.0, -0.5, 0, 1.5, 2.0, 2.5, 3.0, 3.5];
+    } else if (type === 'dynamic') {
+        eventCoefs = [0.05, -0.1, 0.08, 0, 0.5, 1.2, 2.0, 2.8, 3.5];
+    } else {
+        eventCoefs = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+    drawEventStudy();
+}
+
+// Dragging for event study
+(function() {
+    let c = document.getElementById('eventCanvas');
+    if (!c) return;
+    let ml = 60, mr = 30, mt = 25, mb = 45;
+    let pw = c.width - ml - mr, ph = c.height - mt - mb;
+    let yMin = -3, yMax = 5;
+    function toX(k) { return ml + (k + 4) / 8 * pw; }
+    function fromY(py) { return yMin + (mt + ph - py) / ph * (yMax - yMin); }
+
+    function getIdx(mx, my) {
+        for (let i = 0; i < 9; i++) {
+            if (i === 3) continue; // k=-1 is fixed
+            let x = toX(i - 4);
+            if (Math.abs(mx - x) < 15) return i;
+        }
+        return -1;
+    }
+
+    c.addEventListener('mousedown', function(e) {
+        let rect = c.getBoundingClientRect();
+        let mx = (e.clientX - rect.left) * (c.width / rect.width);
+        let my = (e.clientY - rect.top) * (c.height / rect.height);
+        eventDragging = getIdx(mx, my);
+    });
+    c.addEventListener('mousemove', function(e) {
+        if (eventDragging < 0) return;
+        let rect = c.getBoundingClientRect();
+        let my = (e.clientY - rect.top) * (c.height / rect.height);
+        let val = fromY(my);
+        val = Math.max(yMin + 0.5, Math.min(yMax - 0.5, val));
+        eventCoefs[eventDragging] = Math.round(val * 10) / 10;
+        drawEventStudy();
+    });
+    c.addEventListener('mouseup', function() { eventDragging = -1; });
+    c.addEventListener('mouseleave', function() { eventDragging = -1; });
+})();
+
+// ============================================================
+// INTERACTIVE 4: Autor (2003) Dual-Axis
+// ============================================================
+function drawAutor() {
+    let c = document.getElementById('autorCanvas');
+    if (!c) return;
+    let ctx = c.getContext('2d');
+    let W = c.width, H = c.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Simulated data based on Autor (2003) patterns
+    let years = [79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95];
+    // THS relative growth (stylized)
+    let thsGrowth = [-0.15,-0.12,-0.10,-0.08,-0.02,0.02,0.05,0.10,0.14,0.18,0.22,0.20,0.16,0.22,0.28,0.35,0.42];
+    // Cumulative states with any exception
+    let numStates = [5,7,9,11,14,17,20,23,26,29,31,33,35,37,39,40,42];
+
+    let ml = 55, mr = 55, mt = 20, mb = 45;
+    let pw = W - ml - mr, ph = H - mt - mb;
+
+    // Scales
+    let thsMin = -0.2, thsMax = 0.5;
+    let stMin = 0, stMax = 50;
+
+    function toX(i) { return ml + i / (years.length - 1) * pw; }
+    function toYL(v) { return mt + ph - (v - thsMin) / (thsMax - thsMin) * ph; }
+    function toYR(v) { return mt + ph - (v - stMin) / (stMax - stMin) * ph; }
+
+    // Grid
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.5;
+    for (let v = -0.1; v <= 0.5; v += 0.1) {
+        ctx.beginPath(); ctx.moveTo(ml, toYL(v)); ctx.lineTo(W - mr, toYL(v)); ctx.stroke();
+    }
+
+    // Zero line
+    ctx.strokeStyle = '#a0aec0'; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(ml, toYL(0)); ctx.lineTo(W - mr, toYL(0)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Axes
+    ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, H - mb); ctx.stroke();
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(W - mr, mt); ctx.lineTo(W - mr, H - mb); ctx.stroke();
+    ctx.strokeStyle = '#718096'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ml, H - mb); ctx.lineTo(W - mr, H - mb); ctx.stroke();
+
+    // Left Y-axis labels (THS)
+    ctx.fillStyle = '#4a90d9'; ctx.font = '10px Sarabun'; ctx.textAlign = 'right';
+    for (let v = -0.1; v <= 0.5; v += 0.1) {
+        ctx.fillText(v.toFixed(1), ml - 5, toYL(v) + 4);
+    }
+    ctx.save(); ctx.translate(12, mt + ph / 2); ctx.rotate(-Math.PI / 2);
+    ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+    ctx.fillText('Relative THS Growth', 0, 0); ctx.restore();
+
+    // Right Y-axis labels (States)
+    ctx.fillStyle = '#d4534a'; ctx.textAlign = 'left';
+    for (let v = 0; v <= 50; v += 10) {
+        ctx.fillText(v, W - mr + 5, toYR(v) + 4);
+    }
+    ctx.save(); ctx.translate(W - 8, mt + ph / 2); ctx.rotate(Math.PI / 2);
+    ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+    ctx.fillText('States with Exceptions', 0, 0); ctx.restore();
+
+    // X-axis labels
+    ctx.fillStyle = '#718096'; ctx.font = '10px Sarabun'; ctx.textAlign = 'center';
+    for (let i = 0; i < years.length; i += 2) {
+        ctx.fillText("'" + years[i], toX(i), H - mb + 18);
+    }
+
+    // THS line
+    ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < years.length; i++) {
+        if (i === 0) ctx.moveTo(toX(i), toYL(thsGrowth[i]));
+        else ctx.lineTo(toX(i), toYL(thsGrowth[i]));
+    }
+    ctx.stroke();
+    for (let i = 0; i < years.length; i++) {
+        ctx.fillStyle = '#4a90d9'; ctx.beginPath();
+        ctx.arc(toX(i), toYL(thsGrowth[i]), 3, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // States line
+    ctx.strokeStyle = '#d4534a'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < years.length; i++) {
+        if (i === 0) ctx.moveTo(toX(i), toYR(numStates[i]));
+        else ctx.lineTo(toX(i), toYR(numStates[i]));
+    }
+    ctx.stroke();
+    for (let i = 0; i < years.length; i++) {
+        ctx.fillStyle = '#d4534a'; ctx.beginPath();
+        ctx.arc(toX(i), toYR(numStates[i]), 3, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Legend
+    ctx.font = '12px Sarabun'; ctx.textAlign = 'left';
+    let lx = ml + 20, ly = mt + 10;
+    ctx.fillStyle = '#4a90d9'; ctx.fillRect(lx, ly, 18, 3); ctx.fillText('THS Growth', lx + 22, ly + 5);
+    ctx.fillStyle = '#d4534a'; ctx.fillRect(lx, ly + 18, 18, 3); ctx.fillText('States w/ Exceptions', lx + 22, ly + 23);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+let initialized = false;
+function initAll() {
+    if (initialized) return;
+    initialized = true;
+    renderKaTeX();
+    drawDIDCanvas();
+    calcDID();
+    drawViolation();
+    drawEventStudy();
+    drawAutor();
+}
+
+Reveal.on('ready', initAll);
+Reveal.on('slidechanged', () => {
+    requestAnimationFrame(() => {
+        let slide = Reveal.getCurrentSlide();
+        if (slide.querySelector('#didCanvas')) drawDIDCanvas();
+        if (slide.querySelector('#violationCanvas')) drawViolation();
+        if (slide.querySelector('#eventCanvas')) drawEventStudy();
+        if (slide.querySelector('#autorCanvas')) drawAutor();
+    });
+});
+</script>
+
+</body>
+</html>

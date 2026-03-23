@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Quantile Regression | EC627 Microeconometrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --primary: #1a2744;
+            --accent: #d4534a;
+            --accent2: #4a90d9;
+            --accent3: #3d9970;
+            --accent4: #e8a838;
+            --bg-warm: #faf9f7;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        /* ---- Base ---- */
+        .reveal {
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+            color: var(--text);
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: none;
+            line-height: 1.6;
+            padding-top: 0.1em;
+        }
+        .reveal h1 { font-size: 1.5em; margin: 0 0 0.15em 0; }
+        .reveal h2 { font-size: 1.1em; margin: 0 0 0.15em 0; }
+        .reveal h3 { font-size: 0.78em; margin: 0 0 0.1em 0; }
+        .reveal p, .reveal li { font-size: 0.54em; line-height: 1.55; margin-bottom: 0.1em; }
+        .reveal ul, .reveal ol { margin: 0.15em 0; }
+        .reveal .slides section { text-align: left; overflow: hidden; }
+        .reveal strong { color: var(--primary); }
+
+        /* ---- Title slide ---- */
+        .title-slide { text-align: center !important; }
+        .title-slide h1 {
+            font-size: 2em !important;
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .title-slide .subtitle { font-size: 0.85em; color: var(--text-light); margin-top: 0.2em; line-height: 1.6; }
+        .title-slide .author { font-size: 0.68em; color: var(--text-light); margin-top: 0.5em; line-height: 1.7; }
+
+        /* ---- Section divider ---- */
+        .section-divider { text-align: center !important; background: linear-gradient(135deg, var(--primary) 0%, #2a4a7f 100%) !important; }
+        .section-divider h2 { color: #fff !important; font-size: 1.6em !important; font-weight: 700; line-height: 1.7; }
+        .section-divider p { color: rgba(255,255,255,0.7) !important; font-size: 0.8em !important; font-weight: 300; line-height: 1.7; }
+
+        /* ---- Content boxes ---- */
+        .concept-box {
+            background: #f0f4f8; border-left: 3px solid var(--accent2);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .key-insight {
+            background: #fef5f4; border-left: 3px solid var(--accent);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+        .example-box {
+            background: #f0faf4; border-left: 3px solid var(--accent3);
+            padding: 7px 11px 5px; border-radius: 4px; margin: 5px 0;
+        }
+
+        /* ---- Stata code ---- */
+        .stata-code {
+            background: #1e2330; color: #c9d1d9; padding: 6px 10px;
+            border-radius: 5px; font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.48em !important; line-height: 1.5; margin: 4px 0;
+            overflow-x: auto; border: 1px solid #30363d;
+        }
+        .stata-code .cmd { color: #79c0ff; }
+        .stata-code .opt { color: #ffa657; }
+        .stata-code .cmt { color: #8b949e; font-style: italic; }
+        .stata-code .num { color: #7ee787; }
+
+        /* ---- Interactive ---- */
+        .interactive-container {
+            background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; margin: 5px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .interactive-container h4 {
+            color: var(--accent2); margin: 0 0 4px 0; font-size: 0.56em; font-weight: 600;
+        }
+        .interactive-container canvas { display: block; margin: 0 auto; }
+
+        /* ---- Controls ---- */
+        .slider-group { display: flex; align-items: center; gap: 6px; margin: 3px 0; flex-wrap: wrap; }
+        .slider-group label { font-size: 0.5em; min-width: 65px; font-weight: 600; color: var(--text); }
+        .slider-group input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent2); height: 16px; }
+        .slider-group .val { font-size: 0.5em; min-width: 30px; font-weight: 700; color: var(--accent); font-family: 'Fira Code', monospace; }
+        button.interactive-btn {
+            background: var(--accent2); color: #fff; border: none;
+            padding: 4px 11px; border-radius: 4px; cursor: pointer;
+            font-size: 0.48em; font-weight: 600; margin: 2px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+        }
+        button.interactive-btn:hover { background: #3a7bc8; transform: translateY(-1px); }
+        button.interactive-btn.active { background: var(--primary); }
+
+        /* ---- Table ---- */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.46em; margin: 4px 0; }
+        .compare-table th { background: var(--primary); color: #fff; padding: 4px 7px; text-align: center; font-weight: 600; }
+        .compare-table td { padding: 3px 7px; border-bottom: 1px solid var(--border); text-align: center; }
+        .compare-table tr:nth-child(even) { background: #f7fafc; }
+        .compare-table .highlight { background: #fefce8; font-weight: 700; color: var(--accent); }
+
+        /* ---- Layout ---- */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: start; }
+
+        /* ---- Quiz ---- */
+        .quiz-option {
+            display: block; padding: 5px 10px; margin: 3px 0;
+            border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
+            font-size: 0.5em; transition: all 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--accent2); background: #eff6ff; }
+        .quiz-option.correct { border-color: var(--accent3); background: #f0faf4; }
+        .quiz-option.wrong { border-color: var(--accent); background: #fef5f4; }
+        .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
+
+        /* ---- Math ---- */
+        .reveal .katex { font-size: 0.72em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+
+        /* ---- Progress dots ---- */
+        .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+        .topic-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e0; }
+        .topic-dot.active { background: var(--accent2); }
+        .topic-dot.done { background: var(--accent3); }
+
+        /* ---- Decision tree (HTML/CSS) ---- */
+        .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 0; font-size: 0.52em; }
+        .dt-node {
+            padding: 8px 18px; border-radius: 6px; text-align: center;
+            font-weight: 600; position: relative; max-width: 220px;
+        }
+        .dt-diamond {
+            background: #fefce8; border: 2px solid var(--accent4); color: #92400e;
+            transform: none; padding: 10px 20px; border-radius: 8px;
+        }
+        .dt-yes { background: #fef5f4; border: 2px solid var(--accent); color: var(--accent); }
+        .dt-no { background: #f0faf4; border: 2px solid var(--accent3); color: #276749; }
+        .dt-action { background: #eff6ff; border: 2px solid var(--accent2); color: #1e40af; }
+        .dt-action2 { background: #faf5ff; border: 2px solid #8b5cf6; color: #5b21b6; }
+        .dt-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+        .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
+        .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
+        .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Footer ---- */
+        .instructor-footer {
+            position: fixed; bottom: 12px; right: 22px;
+            font-size: 13px; color: rgba(0,0,0,0.35);
+            z-index: 100; font-family: 'Sarabun', sans-serif;
+            pointer-events: none; letter-spacing: 0.2px;
+        }
+        .logo-footer {
+            position: fixed; bottom: 8px; left: 16px;
+            z-index: 100; pointer-events: none; opacity: 0.45;
+        }
+        .logo-footer img { height: 38px; width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="logo-footer">
+    <img src="EconTU jpg.jpg" alt="Faculty of Economics, Thammasat University">
+</div>
+<div class="instructor-footer">
+    ผศ.ดร.ถิรภาพ ฟักทอง | คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ==================== TITLE ==================== -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)">
+    <h1>Quantile Regression</h1>
+    <div class="subtitle">Chapter 5 &mdash; Microeconometrics (EC627)</div>
+    <div class="author">ผศ.ดร.ถิรภาพ ฟักทอง<br><span style="font-size:0.8em; color:#999;">คณะเศรษฐศาสตร์ มหาวิทยาลัยธรรมศาสตร์</span></div>
+    <div style="margin-top: 0.8em;">
+        <div class="topic-progress">
+            <div class="topic-dot active"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+            <div class="topic-dot"></div>
+        </div>
+        <p style="font-size: 0.6em; color: #888;">Introduction &bull; Theory &bull; Application &bull; Simulation &bull; Count Data</p>
+    </div>
+</section>
+
+<!-- ==================== SECTION 1: INTRODUCTION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>1. Introduction</h2>
+    <p>ทำไมเราต้องมองมากกว่า "ค่าเฉลี่ย"?</p>
+</section>
+
+<section>
+    <h2>OLS เล่าเรื่องได้แค่ครึ่งเดียว</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>OLS (Ordinary Least Squares)</strong> ประมาณค่า <em>conditional mean</em> &mdash; ค่าเฉลี่ยของ y เมื่อกำหนด x</p>
+                <p>แต่ "ค่าเฉลี่ย" เป็นเพียง <strong>มุมมองเดียว</strong> ของ distribution ทั้งหมด</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>Quantile Regression (QR)</strong> ให้เราศึกษาความสัมพันธ์ระหว่าง y กับ x ที่ <em>ทุกจุด</em> ของ conditional distribution</p>
+                <p>เช่น ผลกระทบต่อคนที่มี <strong>ค่าใช้จ่ายสูง</strong> (quantile 90) อาจต่างจากคนที่มี <strong>ค่าใช้จ่ายต่ำ</strong> (quantile 10)</p>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองดู: OLS vs QR</h4>
+            <canvas id="introCanvas" width="340" height="200"></canvas>
+            <div style="text-align:center; margin-top:8px;">
+                <button class="interactive-btn active" onclick="drawIntro('ols')">OLS (Mean)</button>
+                <button class="interactive-btn" onclick="drawIntro('qr')">QR (Multiple Quantiles)</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ข้อดีของ Quantile Regression</h2>
+    <div class="three-col">
+        <div class="concept-box fragment">
+            <h3>Robust ต่อ Outliers</h3>
+            <p>Median regression (LAD) ทนต่อค่าผิดปกติได้ดีกว่า OLS เพราะ minimize absolute deviations แทน squared</p>
+        </div>
+        <div class="concept-box fragment">
+            <h3>เห็น Location + Scale</h3>
+            <p>ศึกษาผลกระทบต่อทั้ง "ตำแหน่ง" และ "การกระจาย" ของ distribution ไปพร้อมกัน</p>
+        </div>
+        <div class="concept-box fragment">
+            <h3>Semiparametric</h3>
+            <p>ไม่ต้อง assume parametric distribution ของ error terms &rarr; เหมาะกับ heteroskedastic data</p>
+        </div>
+    </div>
+    <div class="two-col fragment" style="margin-top: 4px;">
+        <div class="key-insight">
+            <p><strong>ไม่ต้องการ E(y|x):</strong> บาง distribution มีหางหนามาก (เช่น Cauchy) ถ้าเราสุ่มตัวอย่างเพิ่มไปเรื่อยๆ sample mean จะไม่ converge &mdash; เพราะยิ่งสุ่มมากยิ่งเจอค่าสุดขีดที่ดึง mean ให้เปลี่ยนตลอด (population mean ไม่มีจริง) &rarr; OLS ที่ประมาณ mean จึงใช้ไม่ได้ แต่ <strong>median ยังหาได้เสมอ</strong> เพราะแค่นับตำแหน่งกลาง ไม่สนว่าค่าสุดขีดจะใหญ่แค่ไหน &rarr; QR จึง consistent ได้เสมอ</p>
+        </div>
+        <div class="key-insight">
+            <p><strong>Equivariance:</strong> ถ้าประมาณ QR ของ ln(y) แล้ว exp() กลับ จะได้ quantile ของ y โดยตรง เพราะ Q<sub>q</sub>(h(y)) = h(Q<sub>q</sub>(y)) สำหรับ h() monotone &mdash; OLS ทำไม่ได้เพราะ E(h(y)) &ne; h(E(y))</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ลองดู: Mean vs Median เมื่อหางหนา</h2>
+    <div class="two-col">
+        <div class="interactive-container">
+            <h4>Cauchy distribution (หางหนา &mdash; mean ไม่ exist)</h4>
+            <canvas id="cauchyCanvas" width="420" height="210"></canvas>
+        </div>
+        <div class="interactive-container">
+            <h4>Normal distribution (หางบาง &mdash; mean exist)</h4>
+            <canvas id="normalCanvas" width="420" height="210"></canvas>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 6px;">
+        <button class="interactive-btn" onclick="stepHeavyTail(10)">+ 10 ตัวอย่าง</button>
+        <button class="interactive-btn" onclick="stepHeavyTail(50)">+ 50</button>
+        <button class="interactive-btn" onclick="stepHeavyTail(200)">+ 200</button>
+        <button class="interactive-btn" onclick="resetHeavyTail()">Reset</button>
+        <span style="font-size:0.48em; margin-left: 10px; color: var(--text-light);" id="htSampleCount">n = 0</span>
+    </div>
+    <div class="two-col" style="margin-top: 5px;">
+        <div class="key-insight">
+            <p><strong>สังเกต Cauchy:</strong> เส้น Mean (แดง) กระโดดไปมาไม่หยุด แม้ n จะมากขึ้น เพราะ extreme values ดึงตลอด &mdash; แต่เส้น Median (น้ำเงิน) นิ่งเข้าหา 0</p>
+        </div>
+        <div class="example-box">
+            <p><strong>สังเกต Normal:</strong> ทั้ง Mean และ Median converge เข้าหา 0 อย่างสงบ เพราะหางบางไม่มีค่าสุดขีด &mdash; OLS ใช้ได้ดีในกรณีนี้</p>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 1 wrapper -->
+
+<!-- ==================== SECTION 2: THEORY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>2. Theoretical Background</h2>
+    <p>Objective Function ของ Quantile Regression</p>
+</section>
+
+<section>
+    <h2>Quantile คืออะไร?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Quantile q</strong> คือจุดที่แบ่ง distribution โดย <em>q&times;100%</em> ของข้อมูลอยู่ต่ำกว่าจุดนั้น</p>
+                <ul>
+                    <li>q = 0.25 &rarr; Q1 (25th percentile)</li>
+                    <li>q = 0.50 &rarr; Median</li>
+                    <li>q = 0.75 &rarr; Q3 (75th percentile)</li>
+                </ul>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>ตัวอย่าง:</strong> ถ้า quantile 0.90 ของค่ารักษาพยาบาล = 50,000 บาท หมายความว่า 90% ของคนมีค่ารักษาต่ำกว่า 50,000 บาท</p>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองเลื่อน quantile ดู</h4>
+            <canvas id="quantileCanvas" width="340" height="180"></canvas>
+            <div class="slider-group">
+                <label>Quantile (q):</label>
+                <input type="range" id="qSlider" min="5" max="95" value="50" oninput="drawQuantileDemo()">
+                <span class="val" id="qVal">0.50</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Objective Function ของ QR</h2>
+    <div class="concept-box">
+        <p>QR estimator สำหรับ quantile q จะ minimize:</p>
+        <div class="math-block">
+            <span class="katex-display">
+                Q(&beta;<sub>q</sub>) = &sum;<sub>i: y<sub>i</sub> &ge; x<sub>i</sub>&beta;<sub>q</sub></sub> q |y<sub>i</sub> &minus; x<sub>i</sub>&beta;<sub>q</sub>| + &sum;<sub>i: y<sub>i</sub> &lt; x<sub>i</sub>&beta;<sub>q</sub></sub> (1&minus;q) |y<sub>i</sub> &minus; x<sub>i</sub>&beta;<sub>q</sub>|
+            </span>
+        </div>
+        <p>โดยที่ 0 &lt; q &lt; 1 ซึ่งเราใช้ <strong>&beta;<sub>q</sub></strong> แทน &beta; เพื่อเน้นว่าค่า q ต่างกันจะได้ &beta; ต่างกัน</p>
+    </div>
+    <div class="two-col fragment">
+        <div class="key-insight">
+            <p><strong>Check function &rho;<sub>q</sub>(u):</strong></p>
+            <p>&rho;<sub>q</sub>(u) = u&middot;(q &minus; <strong>1</strong>[u &lt; 0])</p>
+            <ul>
+                <li>ถ้า u &ge; 0: weight = <strong>q</strong></li>
+                <li>ถ้า u &lt; 0: weight = <strong>(1&minus;q)</strong></li>
+            </ul>
+            <p>เมื่อ q = 0.5 &rarr; weight เท่ากันทั้งสองฝั่ง = <strong>median regression</strong></p>
+        </div>
+        <div class="interactive-container">
+            <h4>Check Function &rho;<sub>q</sub>(u)</h4>
+            <canvas id="checkFnCanvas" width="380" height="190"></canvas>
+            <div class="slider-group">
+                <label>q:</label>
+                <input type="range" id="checkQSlider" min="10" max="90" value="50" oninput="drawCheckFunction()">
+                <span class="val" id="checkQVal">0.50</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Objective Function: OLS vs QR</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>OLS minimize:</strong></p>
+                <div class="math-block">&sum;<sub>i</sub> (y<sub>i</sub> &minus; x<sub>i</sub>&beta;)<sup>2</sup></div>
+                <p>Squared loss &rarr; <strong>symmetric</strong> ทุก residual ถูก weight เท่ากัน</p>
+                <p>Outlier มี penalty สูงมาก (error ยกกำลัง 2)</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>QR minimize:</strong></p>
+                <div class="math-block">&sum;<sub>i</sub> &rho;<sub>q</sub>(y<sub>i</sub> &minus; x<sub>i</sub>&beta;<sub>q</sub>)</div>
+                <p>Absolute loss + <strong>asymmetric</strong> weight:</p>
+                <ul>
+                    <li>จุด <strong>เหนือ</strong> เส้น (y<sub>i</sub> &gt; x<sub>i</sub>&beta;<sub>q</sub>): penalty = <strong>q</strong> &times; |residual|</li>
+                    <li>จุด <strong>ใต้</strong> เส้น (y<sub>i</sub> &lt; x<sub>i</sub>&beta;<sub>q</sub>): penalty = <strong>(1&minus;q)</strong> &times; |residual|</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <p><strong>ตัวอย่าง q = 0.75:</strong></p>
+                <ul>
+                    <li>จุดเหนือเส้น &rarr; penalty &times; <strong>0.75</strong> (สูง)</li>
+                    <li>จุดใต้เส้น &rarr; penalty &times; <strong>0.25</strong> (ต่ำ)</li>
+                </ul>
+                <p>&rarr; เส้นถูก "ดึง" ขึ้นจนมี ~75% ของข้อมูลอยู่ต่ำกว่า เพราะ cost ฝั่งบนสูงกว่า 3 เท่า</p>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>Intuition สำคัญ:</strong> ค่า q กำหนดว่าเส้นจะ "ตัด" distribution ตรงไหน โดยทำให้ข้อมูลฝั่งที่มี penalty สูงกว่าถูก minimize ก่อน</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>กรณีพิเศษของค่า q ต่างๆ</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>q = 0.50 (Median / LAD):</strong></p>
+                <p>weight เท่ากันทั้งสองฝั่ง (0.5 : 0.5) &rarr; เส้นผ่ากลาง distribution = <strong>Least Absolute Deviations</strong></p>
+                <p>Robust กว่า OLS เพราะใช้ absolute (ไม่ใช่ squared)</p>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>q = 0.10 (Lower tail):</strong></p>
+                <p>เหนือเส้น: penalty = 0.10 (ต่ำ) &larr; ไม่แคร์จุดเหนือมาก</p>
+                <p>ใต้เส้น: penalty = <strong>0.90</strong> (สูง) &larr; แคร์จุดใต้มาก</p>
+                <p>&rarr; เส้นถูกดึง <strong>ลงต่ำ</strong> เพื่อให้มีจุดใต้เส้นน้อยที่สุด (~10%)</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <p><strong>q = 0.90 (Upper tail):</strong></p>
+                <p>เหนือเส้น: penalty = <strong>0.90</strong> (สูง) &larr; แคร์จุดเหนือมาก</p>
+                <p>ใต้เส้น: penalty = 0.10 (ต่ำ) &larr; ไม่แคร์จุดใต้มาก</p>
+                <p>&rarr; เส้นถูกดึง <strong>ขึ้นสูง</strong> เพื่อให้มีจุดเหนือเส้นน้อยที่สุด (~10%)</p>
+            </div>
+            <div class="example-box fragment">
+                <p><strong>สรุปหลักการ:</strong> ที่ quantile q ใดๆ QR จะ fit เส้นที่ทำให้สัดส่วนข้อมูลใต้เส้น &asymp; q &mdash; ดังนั้นการเปลี่ยน q จะเลื่อนเส้นไปตำแหน่งต่างๆ ของ conditional distribution</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ทำไม Asymmetric Weight จึงได้ Quantile?</h2>
+    <div class="interactive-container">
+        <h4>Interactive: ดูว่า asymmetric penalty ดึงเส้น fit ไปตำแหน่งไหนเมื่อ q เปลี่ยน</h4>
+        <canvas id="objFnCanvas" width="700" height="260"></canvas>
+        <div class="slider-group">
+            <label>Quantile (q):</label>
+            <input type="range" id="objQSlider" min="10" max="90" value="50" oninput="drawObjFnDemo()">
+            <span class="val" id="objQVal">0.50</span>
+        </div>
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>สรุป:</strong> QR ใช้ absolute deviation (ไม่ใช่ squared) จึง <strong>robust ต่อ outlier</strong> และใช้ asymmetric weight จึง <strong>หาตำแหน่ง quantile</strong> ที่ต้องการได้ &mdash; ต่างจาก OLS ที่ใช้ squared + symmetric จึงได้แค่ mean</p>
+    </div>
+</section>
+
+<section>
+    <h2>OLS vs QR: เปรียบเทียบ Loss Functions</h2>
+    <div class="interactive-container">
+        <h4>ลาก slider เพื่อดูว่า Loss Function เปลี่ยนอย่างไรเมื่อ q เปลี่ยน</h4>
+        <canvas id="lossCanvas" width="700" height="210"></canvas>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <div class="slider-group">
+                <label>Quantile (q):</label>
+                <input type="range" id="lossQSlider" min="10" max="90" value="50" oninput="drawLossComparison()">
+                <span class="val" id="lossQVal">0.50</span>
+            </div>
+        </div>
+    </div>
+    <div class="two-col fragment" style="margin-top: 4px;">
+        <div class="concept-box">
+            <p><strong>OLS: u<sup>2</sup> (Parabola)</strong></p>
+            <p>โค้งขึ้นเร็วทั้งสองฝั่ง &rarr; จุดที่ไกลจากเส้น (outlier) มี penalty พุ่งขึ้นแบบ quadratic &rarr; เส้น fit ถูก "ดึง" เข้าหา outlier</p>
+            <p>สมมาตร &rarr; ได้แค่ <strong>mean</strong></p>
+        </div>
+        <div class="concept-box">
+            <p><strong>QR: &rho;<sub>q</sub>(u) (V-shape เอียง)</strong></p>
+            <p>Loss โตแบบ linear &rarr; จุดที่ไกลจากเส้นมาก (outlier) ไม่ได้ถูกลงโทษแบบทวีคูณเหมือน OLS &rarr; <strong>robust</strong></p>
+            <p>ความชันซ้าย-ขวาไม่เท่ากัน &rarr; <strong>ฝั่งที่ชันกว่า = ฝั่งที่ให้น้ำหนักมากกว่า</strong> &rarr; เส้น fit จะเลื่อนเข้าหาฝั่งนั้นเพื่อลด loss &rarr; ได้ <strong>quantile</strong> ที่ต้องการ</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>OLS Estimator vs QR Estimator</h2>
+    <table class="compare-table">
+        <thead>
+            <tr><th>คุณสมบัติ</th><th>OLS</th><th>Quantile Regression</th></tr>
+        </thead>
+        <tbody>
+            <tr><td style="text-align:left;">เป้าหมาย</td><td>Conditional Mean E(y|x)</td><td>Conditional Quantile Q<sub>q</sub>(y|x)</td></tr>
+            <tr><td style="text-align:left;">Loss Function</td><td>Squared loss (L<sub>2</sub>)</td><td>Check function (Asymmetric L<sub>1</sub>)</td></tr>
+            <tr><td style="text-align:left;">Sensitivity to Outliers</td><td class="highlight">สูง</td><td>ต่ำ (โดยเฉพาะ Median)</td></tr>
+            <tr><td style="text-align:left;">ต้องการ E(y|x) exist?</td><td>ใช่</td><td class="highlight">ไม่จำเป็น</td></tr>
+            <tr><td style="text-align:left;">Heteroskedasticity</td><td>เห็นเป็น nuisance</td><td class="highlight">เห็นเป็นข้อมูลที่น่าสนใจ</td></tr>
+            <tr><td style="text-align:left;">Monotone Transform</td><td>ไม่ equivariant</td><td class="highlight">Equivariant</td></tr>
+            <tr><td style="text-align:left;">Standard Errors</td><td>Analytical</td><td>Bootstrap (แนะนำ)</td></tr>
+        </tbody>
+    </table>
+    <div class="key-insight fragment">
+        <p><strong>Equivariance:</strong> ถ้าประมาณ QR ของ ln(y) แล้ว transform กลับด้วย exp() จะได้ quantile ของ y โดยตรง &mdash; OLS ทำแบบนี้ไม่ได้!</p>
+    </div>
+</section>
+
+<section>
+    <h2>Equivariance: เปรียบเทียบ QR vs OLS ทีละขั้น</h2>
+    <p style="font-size:0.52em; color: var(--text-light);">สมมติเรามีข้อมูลค่ารักษาพยาบาล (y) ซึ่ง right-skewed มาก จึง log ก่อนวิเคราะห์</p>
+    <table class="compare-table">
+        <thead>
+            <tr><th style="width:30%;">ขั้นตอน</th><th style="width:35%;">QR (Median)</th><th style="width:35%;">OLS (Mean)</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align:left;"><strong>1. ประมาณใน log scale</strong></td>
+                <td>Median ของ ln(y)|x = <strong>8.50</strong></td>
+                <td>Mean ของ ln(y)|x = <strong>8.30</strong></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;"><strong>2. Transform กลับด้วย exp()</strong></td>
+                <td>exp(8.50) = <strong>4,915</strong></td>
+                <td>exp(8.30) = <strong>4,023</strong></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;"><strong>3. ค่าที่ได้คืออะไร?</strong></td>
+                <td class="highlight">= Median ของ y|x โดยตรง!</td>
+                <td class="highlight">&ne; Mean ของ y|x (biased!)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;"><strong>4. ทำไม?</strong></td>
+                <td>Q<sub>.5</sub>(exp(ln y)) = exp(Q<sub>.5</sub>(ln y))<br><em>quantile commutes กับ monotone transform</em></td>
+                <td>E(exp(ln y)) &ne; exp(E(ln y))<br><em>mean ไม่ commute (Jensen's inequality)</em></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;"><strong>5. ถ้าต้องการ Mean ของ y|x จริงๆ?</strong></td>
+                <td style="color: var(--text-light);">ไม่ใช่เป้าหมายของ QR</td>
+                <td>ต้องแก้ bias ด้วย <strong>Duan's smearing</strong> หรือ retransformation อื่น</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>พิสูจน์: Q<sub>q</sub>(h(Y)) = h(Q<sub>q</sub>(Y))</h2>
+    <div class="concept-box">
+        <p><strong>กำหนดให้:</strong> h() เป็น strictly increasing function (เช่น exp, log, sqrt)</p>
+        <p><strong>นิยาม:</strong> Q<sub>q</sub>(Y) = c ที่ทำให้ P(Y &le; c) = q</p>
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>พิสูจน์:</strong></p>
+        <p>ให้ c = Q<sub>q</sub>(Y) &nbsp;&rarr;&nbsp; P(Y &le; c) = q &nbsp;&nbsp;&nbsp; ... (1)</p>
+        <p>เพราะ h() strictly increasing: &nbsp; Y &le; c &hArr; h(Y) &le; h(c) &nbsp;&nbsp;&nbsp; ... (key step)</p>
+        <p>ดังนั้น P(h(Y) &le; h(c)) = P(Y &le; c) = q &nbsp;&nbsp;&nbsp; จาก (1)</p>
+        <p>นั่นคือ h(c) เป็น quantile ที่ q ของ h(Y) &nbsp;&rarr;&nbsp; <strong>Q<sub>q</sub>(h(Y)) = h(c) = h(Q<sub>q</sub>(Y))</strong> &nbsp; &#9634;</p>
+    </div>
+</section>
+
+<section>
+    <h2>Equivariance: ตัวอย่าง + ทำไม Mean ทำไม่ได้</h2>
+    <div class="two-col">
+        <div class="example-box">
+            <h3>ตัวอย่าง: h = exp</h3>
+            <p>ให้ Y = ln(ค่ารักษา) จากพิสูจน์:</p>
+            <p>Q<sub>.5</sub>(exp(ln(ค่ารักษา))) = exp(Q<sub>.5</sub>(ln(ค่ารักษา)))</p>
+            <p>&rarr; <strong>Median ค่ารักษา = exp(Median ของ log ค่ารักษา)</strong></p>
+            <p>ใช้ได้กับทุก quantile q ไม่ใช่แค่ median</p>
+        </div>
+        <div class="key-insight">
+            <h3>ทำไม Mean ทำไม่ได้?</h3>
+            <p>ในพิสูจน์ เราใช้ว่า Y &le; c &hArr; h(Y) &le; h(c)</p>
+            <p>Mean ไม่ได้ถูกนิยามจาก "ตำแหน่ง" แบบนี้ &mdash; Mean ขึ้นกับ <em>ทุกค่า</em> ในข้อมูลรวมกัน</p>
+            <p><strong>Jensen's inequality:</strong> สำหรับ convex h (เช่น exp):</p>
+            <p style="text-align:center;">E(h(Y)) &ge; h(E(Y))</p>
+            <p>ดังนั้น exp(E(ln y)) <strong>&le;</strong> E(y) เสมอ &rarr; OLS ที่ exp() กลับจะ underestimate mean</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Equivariance: สรุป Intuition</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>หลักการ</h3>
+                <p>สำหรับ monotone function h() (เช่น exp, log, sqrt):</p>
+                <ul>
+                    <li><strong>Quantile:</strong> Q<sub>q</sub>(h(y)) = h(Q<sub>q</sub>(y)) &larr; <strong>เสมอจริง</strong></li>
+                    <li><strong>Mean:</strong> E(h(y)) &ne; h(E(y)) &larr; <strong>ไม่จริงโดยทั่วไป</strong></li>
+                </ul>
+                <p>เพราะ quantile คือ "ตำแหน่ง" ในลำดับ — ถ้า transform ไม่เปลี่ยนลำดับ ตำแหน่งก็ไม่เปลี่ยน</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight">
+                <h3>นัยสำคัญในทางปฏิบัติ</h3>
+                <ul>
+                    <li><strong>ค่ารักษาพยาบาล</strong> &rarr; ประมาณ QR ของ ln(y) แล้ว exp() กลับได้ทันที</li>
+                    <li><strong>รายได้</strong> &rarr; เหมือนกัน ไม่ต้องแก้ bias</li>
+                    <li><strong>ราคาบ้าน</strong> &rarr; เหมือนกัน</li>
+                </ul>
+                <p>ทุกครั้งที่ใช้ log-transformed dependent variable &rarr; <strong>QR ตีความง่ายกว่า OLS</strong> เพราะ transform กลับได้โดยไม่มี bias</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 2 wrapper -->
+
+<!-- ==================== SECTION 3: APPLICATION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>3. QR for Medical Expenditures</h2>
+    <p>ข้อมูลจาก Medical Expenditure Panel Survey (MEPS)</p>
+</section>
+
+<section>
+    <h2>ข้อมูล MEPS: ค่ารักษาพยาบาลผู้สูงอายุ</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <p><strong>Dependent variable:</strong> ltotexp (log ค่ารักษาพยาบาลรวม)</p>
+                <p>ตัดคนที่มีค่าใช้จ่าย = 0 ออก</p>
+            </div>
+            <div class="example-box">
+                <p><strong>Explanatory variables:</strong></p>
+                <ul>
+                    <li><strong>suppins</strong> &mdash; มีประกันเสริมหรือไม่ (0/1)</li>
+                    <li><strong>totchr</strong> &mdash; จำนวนโรคเรื้อรัง</li>
+                    <li><strong>age</strong> &mdash; อายุ (ปี)</li>
+                    <li><strong>female</strong> &mdash; เพศหญิง (0/1)</li>
+                    <li><strong>white</strong> &mdash; เชื้อชาติขาว (0/1)</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* Read and summarize</span><br>
+                <span class="cmd">use</span> Chap 5-1 data.dta, <span class="opt">clear</span><br>
+                <span class="cmd">drop if</span> ltotexp == .<br>
+                <span class="cmd">summarize</span> ltotexp suppins totchr age female white
+            </div>
+            <div class="stata-code fragment">
+                <span class="cmt">* Quantile plot</span><br>
+                <span class="cmd">qplot</span> ltotexp, <span class="opt">recast(line) scale(1.5)</span>
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>ทำไมใช้ log?</strong> ค่ารักษาพยาบาลมี right-skew มาก การ log ทำให้ distribution สมมาตรขึ้น และ QR equivariant ต่อ monotone transform จึงแปลงกลับได้</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>QR ที่ Median (q = 0.50)</h2>
+    <div class="stata-code">
+        <span class="cmt">* Basic quantile regression at median</span><br>
+        <span class="cmd">qreg</span> ltotexp suppins totchr age female white<br><br>
+        <span class="cmt">* Multiplier to convert log coefficients to AME in levels</span><br>
+        <span class="cmd">quietly predict</span> xb<br>
+        <span class="cmd">generate</span> expxb = <span class="num">exp</span>(xb)<br>
+        <span class="cmd">summarize</span> expxb<br>
+        <span class="cmd">display</span> <span class="opt">"Multiplier = "</span> r(mean)
+    </div>
+    <div class="two-col fragment">
+        <div class="concept-box">
+            <p><strong>การอ่านผล:</strong> coefficient ของ suppins ใน log model = 0.25 หมายถึง มีประกันเสริมเพิ่มค่ารักษา <strong>25%</strong> ที่ median</p>
+        </div>
+        <div class="key-insight">
+            <p><strong>AME in levels:</strong> คูณ coefficient ด้วย multiplier (= mean of exp(x&beta;)) เพื่อแปลงจากหน่วย log เป็นหน่วยเงิน</p>
+            <p>เช่น multiplier = 5,000 &rarr; AME = 0.25 &times; 5,000 = <strong>1,250 บาท</strong></p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>เปรียบเทียบ OLS vs QR ที่ quantile ต่างๆ</h2>
+    <div class="stata-code">
+        <span class="cmd">quietly regress</span> ltotexp suppins totchr age female white &nbsp;&nbsp;<span class="cmt">// OLS</span><br>
+        <span class="cmd">estimates store</span> OLS<br>
+        <span class="cmd">quietly qreg</span> ltotexp ..., <span class="opt">quantile(.25)</span> &nbsp;&nbsp;<span class="cmt">// QR at 25th</span><br>
+        <span class="cmd">estimates store</span> QR_25<br>
+        <span class="cmd">quietly qreg</span> ltotexp ..., <span class="opt">quantile(.50)</span> &nbsp;&nbsp;<span class="cmt">// QR at 50th</span><br>
+        <span class="cmd">estimates store</span> QR_50<br>
+        <span class="cmd">quietly qreg</span> ltotexp ..., <span class="opt">quantile(.75)</span> &nbsp;&nbsp;<span class="cmt">// QR at 75th</span><br>
+        <span class="cmd">estimates store</span> QR_75<br>
+        <span class="cmd">set seed</span> <span class="num">10101</span><br>
+        <span class="cmd">quietly bsqreg</span> ltotexp ..., <span class="opt">quant(.50) reps(400)</span> &nbsp;<span class="cmt">// Bootstrap SE</span><br>
+        <span class="cmd">estimates store</span> BSQR_50<br>
+        <span class="cmd">estimates table</span> OLS QR_25 QR_50 QR_75 BSQR_50, <span class="opt">b(%7.3f) se</span>
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>สิ่งที่ต้องสังเกต:</strong> coefficient เปลี่ยนข้าม quantile หรือไม่? ถ้าเปลี่ยนมาก &rarr; heterogeneous effect. <strong>bsqreg</strong> ให้ bootstrap SE ที่ robust กว่า qreg</p>
+    </div>
+</section>
+
+<section>
+    <h2>ผลลัพธ์: OLS vs QR ที่ quantile ต่างๆ</h2>
+    <table class="compare-table">
+        <thead>
+            <tr><th>Variable</th><th>OLS</th><th>QR (.25)</th><th>QR (.50)</th><th>QR (.75)</th><th>BSQR (.50)</th></tr>
+        </thead>
+        <tbody>
+            <tr><td style="text-align:left;">suppins</td><td>0.263</td><td>0.348</td><td>0.248</td><td>0.166</td><td>0.248</td></tr>
+            <tr><td style="text-align:left;">totchr</td><td>0.389</td><td>0.460</td><td>0.354</td><td>0.301</td><td>0.354</td></tr>
+            <tr><td style="text-align:left;">age</td><td>0.013</td><td>0.011</td><td>0.013</td><td>0.016</td><td>0.013</td></tr>
+            <tr><td style="text-align:left;">female</td><td>0.135</td><td>0.201</td><td>0.168</td><td>0.062</td><td>0.168</td></tr>
+            <tr><td style="text-align:left;">white</td><td>0.159</td><td>0.299</td><td>0.122</td><td>0.058</td><td>0.122</td></tr>
+            <tr><td style="text-align:left;">_cons</td><td>6.023</td><td>5.008</td><td>6.303</td><td>7.261</td><td>6.303</td></tr>
+        </tbody>
+    </table>
+    <div class="two-col fragment" style="margin-top: 4px;">
+        <div class="key-insight">
+            <p><strong>suppins:</strong> effect ลดลงจาก Q25 (0.348) &rarr; Q75 (0.166) &rarr; ประกันเสริมมีผลมากกว่าต่อ <em>ผู้ใช้จ่ายน้อย</em> (lower quantile)</p>
+        </div>
+        <div class="example-box">
+            <p><strong>_cons:</strong> เพิ่มจาก 5.0 &rarr; 7.3 &rarr; baseline ของ log expenditure สูงขึ้นตาม quantile ซึ่งสมเหตุสมผล เพราะ quantile ที่สูงกว่าคือคนที่ใช้จ่ายมากกว่า</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ลองเปรียบเทียบ Coefficient ข้าม Quantile</h2>
+    <div class="interactive-container">
+        <h4>Interactive: ดูว่า coefficient เปลี่ยนไปอย่างไรในแต่ละ quantile</h4>
+        <canvas id="coefCanvas" width="700" height="220"></canvas>
+        <div style="text-align: center; margin-top: 8px;">
+            <button class="interactive-btn active" onclick="drawCoefPlot('suppins')">suppins</button>
+            <button class="interactive-btn" onclick="drawCoefPlot('totchr')">totchr</button>
+            <button class="interactive-btn" onclick="drawCoefPlot('age')">age</button>
+            <button class="interactive-btn" onclick="drawCoefPlot('female')">female</button>
+        </div>
+    </div>
+    <div class="example-box fragment">
+        <p><strong>การอ่านกราฟ:</strong> เส้นน้ำเงินคือ QR coefficient ที่แต่ละ quantile, เส้นแดงประคือ OLS (ค่าคงที่), band สีฟ้าคือ 95% CI &mdash; ถ้า band กว้างขึ้นที่ quantile สูง แสดงว่ามี heteroskedasticity</p>
+    </div>
+</section>
+
+<section>
+    <h2>ทดสอบ Heteroskedasticity & Coefficient Equality</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* Breusch-Pagan test</span><br>
+                <span class="cmd">quietly regress</span> ltotexp suppins totchr age female white<br>
+                <span class="cmd">estat hettest</span> suppins totchr age female white, <span class="opt">iid</span>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>ผลลัพธ์:</strong> ถ้า p-value &lt; 0.05 &rarr; reject H<sub>0</sub> ของ homoskedasticity &rarr; <strong>QR จะให้ข้อมูลเพิ่มเติมที่ OLS ไม่สามารถเห็นได้</strong></p>
+            </div>
+        </div>
+        <div>
+            <div class="stata-code">
+                <span class="cmt">* Simultaneous QR + test</span><br>
+                <span class="cmd">set seed</span> <span class="num">10101</span><br>
+                <span class="cmd">sqreg</span> ltotexp suppins totchr age female white, <span class="opt">q(.25 .50 .75) reps(400)</span><br><br>
+                <span class="cmt">* Test: coefficients equal across quantiles?</span><br>
+                <span class="cmd">test</span> [q25=q50=q75]: suppins
+            </div>
+            <div class="key-insight fragment">
+                <p><strong>sqreg</strong> ประมาณ QR หลาย quantile พร้อมกัน ได้ <em>joint variance-covariance matrix</em> ที่ถูกต้อง สำหรับทดสอบ coefficient equality ข้าม quantile</p>
+                <p>H<sub>0</sub>: &beta;<sub>0.25</sub> = &beta;<sub>0.50</sub> = &beta;<sub>0.75</sub></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>กราฟ Coefficient ตาม Quantile: grqreg</h2>
+    <div class="stata-code">
+        <span class="cmd">quietly bsqreg</span> ltotexp suppins totchr age female white, <span class="opt">quantile(.50) reps(400)</span><br>
+        <span class="cmd">label variable</span> suppins <span class="opt">"=1 if supp ins"</span><br>
+        <span class="cmd">label variable</span> totchr <span class="opt">"# of chronic condns"</span><br>
+        <span class="cmd">grqreg</span>, <span class="opt">cons ci ols olsci scale(1.1)</span>
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>grqreg</strong> สร้างกราฟที่ plot coefficient ของแต่ละ regressor เป็นฟังก์ชันของ quantile q</p>
+        <ul>
+            <li>เส้นทึบ = QR coefficient</li>
+            <li>เส้นประ = OLS coefficient (คงที่)</li>
+            <li>Band = Bootstrap confidence interval</li>
+        </ul>
+        <p>ถ้าเส้น QR เป็นเส้นตรงราบ = ผลกระทบเท่ากันทุก quantile (homogeneous effect)</p>
+        <p>ถ้าเส้น QR เอียงหรือโค้ง = ผลกระทบต่างกันตาม quantile (<strong>heterogeneous effect</strong>)</p>
+    </div>
+</section>
+
+<section>
+    <h2>Checklist: วิธีอ่านผล QR (1/2)</h2>
+    <div class="two-col">
+        <div class="concept-box">
+            <h3>Step 1: ตรวจว่าควรใช้ QR หรือไม่</h3>
+            <ul>
+                <li>รัน OLS แล้วทดสอบ <strong>estat hettest</strong></li>
+                <li>Reject &rarr; มี heteroskedasticity &rarr; QR มีประโยชน์</li>
+                <li>ดู quantile plot (<strong>qplot</strong>) ว่า distribution เบ้หรือมี outliers หรือไม่</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <h3>Step 2: เปรียบเทียบ coefficient ข้าม quantile</h3>
+            <ul>
+                <li>รัน <strong>sqreg</strong> ที่ q = .25, .50, .75 พร้อมกัน</li>
+                <li>ทดสอบ <strong>test [q25=q50=q75]: varname</strong></li>
+                <li>Reject &rarr; coefficient ต่างกัน &rarr; <strong>heterogeneous effect</strong></li>
+                <li>Fail to reject &rarr; effect ค่อนข้างเท่ากัน &rarr; OLS อาจเพียงพอ</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Checklist: วิธีอ่านผล QR (2/2)</h2>
+    <div class="two-col">
+        <div class="example-box">
+            <h3>Step 3: ตีความกราฟ grqreg</h3>
+            <ul>
+                <li>เส้น QR <strong>ราบ</strong> = effect เท่ากันทุก quantile</li>
+                <li>เส้น QR <strong>เพิ่มขึ้น</strong> = effect แรงขึ้นที่ upper tail</li>
+                <li>เส้น QR <strong>ลดลง</strong> = effect แรงที่ lower tail</li>
+                <li>CI <strong>กว้างขึ้น</strong> ที่ quantile สูง/ต่ำ = precision ต่ำ</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <h3>Step 4: ตีความเชิง policy</h3>
+            <ul>
+                <li>Effect ต่างกันข้าม quantile &rarr; นโยบาย "one-size-fits-all" ไม่เหมาะ</li>
+                <li>ใช้ bootstrap SE (<strong>bsqreg</strong>) เสมอ ไม่ใช่ asymptotic SE จาก <strong>qreg</strong></li>
+                <li>รายงานผลหลาย quantile (เช่น .25, .50, .75) เพื่อให้เห็นภาพรวม</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+</section><!-- end Section 3 wrapper -->
+
+<!-- ==================== SECTION 4: SIMULATION ==================== -->
+<section>
+<section class="section-divider">
+    <h2>4. Simulation: Heteroskedastic Data</h2>
+    <p>เข้าใจ QR ผ่านข้อมูลจำลอง</p>
+</section>
+
+<section>
+    <h2>Data Generating Process (DGP)</h2>
+    <div class="concept-box">
+        <p>สร้างข้อมูลที่ conditional mean ขึ้นกับ x<sub>2</sub> และ x<sub>3</sub> แต่ conditional variance ขึ้นกับ x<sub>2</sub> เท่านั้น:</p>
+        <div class="math-block">
+            y = 1 + 1&middot;x<sub>2</sub> + 1&middot;x<sub>3</sub> + u
+        </div>
+        <div class="math-block">
+            u = (0.1 + 0.5&middot;x<sub>2</sub>) &middot; e &nbsp;&nbsp;&nbsp; โดย e ~ N(0, 25)
+        </div>
+    </div>
+    <div class="two-col fragment">
+        <div class="key-insight">
+            <p><strong>Conditional quantile ที่ q:</strong></p>
+            <div class="math-block">
+                Q<sub>q</sub>(y|x) = 1 + (1 + 0.5&middot;F<sup>-1</sup><sub>e</sub>(q))&middot;x<sub>2</sub> + 1&middot;x<sub>3</sub>
+            </div>
+            <p>สังเกต:</p>
+            <ul>
+                <li>Coef ของ x<sub>3</sub> = <strong>1 เสมอ</strong> (ไม่อยู่ใน hetero function จึงไม่เปลี่ยนตาม q)</li>
+                <li>Coef ของ x<sub>2</sub> = 1 + 0.5&middot;F<sup>-1</sup><sub>e</sub>(q) <strong>เปลี่ยนตาม q</strong> เพราะ x<sub>2</sub> อยู่ใน u</li>
+            </ul>
+        </div>
+        <div>
+        <div class="stata-code">
+            <span class="cmd">set seed</span> <span class="num">10101</span><br>
+            <span class="cmd">set obs</span> <span class="num">10000</span><br>
+            <span class="cmd">generate</span> x2 = <span class="num">rchi2(1)</span><br>
+            <span class="cmd">generate</span> x3 = <span class="num">5</span>*rnormal(<span class="num">0</span>)<br>
+            <span class="cmd">generate</span> e = <span class="num">5</span>*rnormal(<span class="num">0</span>)<br>
+            <span class="cmd">generate</span> u = (<span class="num">.1</span>+<span class="num">0.5</span>*x2)*e<br>
+            <span class="cmd">generate</span> y = <span class="num">1</span> + <span class="num">1</span>*x2 + <span class="num">1</span>*x3 + u
+        </div>
+        <div class="example-box" style="margin-top: 4px;">
+            <p><strong>ทำไม x<sub>2</sub> ~ Chi2(1)?</strong> เพราะ hetero function (0.1 + 0.5x<sub>2</sub>) ต้องการ x<sub>2</sub> &ge; 0 เสมอ เพื่อให้ variance เป็นบวก Chi2 distribution รับประกันเรื่องนี้</p>
+        </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ลองสร้าง Heteroskedastic Data เอง!</h2>
+    <div class="interactive-container">
+        <h4>Interactive DGP: ปรับค่า heteroskedasticity แล้วดูผลต่อ QR coefficients</h4>
+        <canvas id="dgpScatter" width="420" height="190" style="float:left; margin-right:10px;"></canvas>
+        <canvas id="dgpCoef" width="420" height="190" style="float:left;"></canvas>
+        <div style="clear:both;"></div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; align-items: center;">
+            <div class="slider-group" style="flex:1;">
+                <label>Hetero (x<sub>2</sub>):</label>
+                <input type="range" id="heteroSlider" min="0" max="100" value="50" oninput="drawDGP()">
+                <span class="val" id="heteroVal">0.50</span>
+            </div>
+            <div class="slider-group" style="flex:1;">
+                <label>N:</label>
+                <input type="range" id="nSlider" min="50" max="500" value="200" step="50" oninput="drawDGP()">
+                <span class="val" id="nVal">200</span>
+            </div>
+            <button class="interactive-btn" onclick="drawDGP()">Generate New Data</button>
+        </div>
+    </div>
+    <div class="example-box fragment">
+        <p><strong>สังเกต:</strong> เมื่อ Hetero สูง กราฟขวาจะเห็น coefficient ของ x<sub>2</sub> เปลี่ยนมากตาม quantile แต่ x<sub>3</sub> ค่อนข้างคงที่</p>
+    </div>
+</section>
+
+<section>
+    <h2>ผลลัพธ์ Simulation: OLS vs QR</h2>
+    <div class="stata-code">
+        <span class="cmd">estimates table</span> OLS OLS_Rob QR_25 QR_50 QR_75, <span class="opt">b(%7.3f) se</span>
+    </div>
+    <table class="compare-table fragment">
+        <thead>
+            <tr><th>Variable</th><th>OLS</th><th>QR .25</th><th>Predicted .25</th><th>QR .50</th><th>QR .75</th><th>Predicted .75</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>x2</td><td>1.00</td><td class="highlight">&asymp;-0.68</td><td>-0.69</td><td>&asymp;1.01</td><td class="highlight">&asymp;2.69</td><td>2.69</td></tr>
+            <tr><td>x3</td><td>1.00</td><td>&asymp;1.00</td><td>1.00</td><td>&asymp;1.00</td><td>&asymp;1.00</td><td>1.00</td></tr>
+            <tr><td>_cons</td><td>1.00</td><td>&asymp;0.65</td><td>0.66</td><td>&asymp;1.00</td><td>&asymp;1.35</td><td>1.34</td></tr>
+        </tbody>
+    </table>
+    <div class="example-box fragment" style="margin-top: 3px;">
+        <p><strong>Predicted ได้จาก:</strong> &beta;<sub>x2</sub>(q) = 1 + 0.5 &times; F<sup>-1</sup><sub>e</sub>(q) โดย e ~ N(0,25) ดังนั้น F<sup>-1</sup><sub>e</sub>(.25) = -3.37, F<sup>-1</sup><sub>e</sub>(.75) = +3.37 &rarr; ค่าประมาณตรงกับทฤษฎีแทบสมบูรณ์</p>
+    </div>
+    <div class="key-insight fragment">
+        <p><strong>ผลตรงตามทฤษฎี:</strong></p>
+        <ul>
+            <li>x<sub>3</sub>: coefficient &asymp; 1 ทุก quantile &rarr; ไม่ได้อยู่ใน hetero function</li>
+            <li>x<sub>2</sub>: coefficient เพิ่มจาก Q25 &rarr; Q75 &rarr; อยู่ใน hetero function</li>
+            <li>OLS ให้ค่าเดียว (= conditional mean) ไม่เห็นความแตกต่างนี้</li>
+        </ul>
+    </div>
+</section>
+
+<section>
+    <h2>ทดสอบความเท่ากันของ Coefficient ข้าม Quantile</h2>
+    <div class="stata-code">
+        <span class="cmd">set seed</span> <span class="num">10101</span><br>
+        <span class="cmd">quietly sqreg</span> y x2 x3, <span class="opt">q(.25 .75) reps(400)</span><br><br>
+        <span class="cmt">* Test: x2 coefficient equal at q=.25 and q=.75?</span><br>
+        <span class="cmd">test</span> [q25]x2 = [q75]x2 &nbsp;&nbsp;<span class="cmt">// expect: REJECT</span><br><br>
+        <span class="cmt">* Test: x3 coefficient equal at q=.25 and q=.75?</span><br>
+        <span class="cmd">test</span> [q25]x3 = [q75]x3 &nbsp;&nbsp;<span class="cmt">// expect: FAIL TO REJECT</span>
+    </div>
+    <div class="two-col fragment">
+        <div class="key-insight">
+            <p><strong>x<sub>2</sub>:</strong> Reject H<sub>0</sub> (p &lt; 0.001) &rarr; coefficient ต่างกันอย่างมีนัยสำคัญ &rarr; <strong>heterogeneous effect</strong></p>
+        </div>
+        <div class="example-box">
+            <p><strong>x<sub>3</sub>:</strong> Fail to reject H<sub>0</sub> &rarr; coefficient ไม่ต่างกัน &rarr; <strong>homogeneous effect</strong></p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== QUIZ 1 ==================== -->
+<section>
+    <h2>Quiz: ทดสอบความเข้าใจ</h2>
+    <div class="interactive-container">
+        <h4>คำถาม: ในโมเดล y = 1 + &beta;<sub>2</sub>x<sub>2</sub> + &beta;<sub>3</sub>x<sub>3</sub> + (0.1+0.5x<sub>2</sub>)e ถ้า e ~ N(0,25) ข้อใดถูก?</h4>
+        <div id="quiz1">
+            <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">A) QR coefficient ของ x<sub>2</sub> ไม่เปลี่ยนตาม quantile</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">B) QR coefficient ของ x<sub>3</sub> เปลี่ยนตาม quantile</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz1', this, true)">C) QR coefficient ของ x<sub>2</sub> เพิ่มขึ้นเมื่อ quantile สูงขึ้น</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz1', this, false)">D) OLS และ QR ให้ผลลัพธ์เหมือนกัน</div>
+        </div>
+        <div class="quiz-feedback" id="quiz1-feedback"></div>
+    </div>
+</section>
+
+</section><!-- end Section 4 wrapper -->
+
+<!-- ==================== SECTION 5: COUNT DATA ==================== -->
+<section>
+<section class="section-divider">
+    <h2>5. QR for Count Data</h2>
+    <p>Machado &amp; Santos Silva (2005)</p>
+</section>
+
+<section>
+    <h2>ปัญหา: QR กับข้อมูล Count</h2>
+    <div class="two-col">
+        <div>
+            <div class="key-insight">
+                <p><strong>ปัญหา:</strong> QR ปกติออกแบบมาสำหรับ <em>continuous data</em></p>
+                <p>Count data (เช่น จำนวนครั้งพบแพทย์) เป็น <strong>discrete</strong> &rarr; CDF มี jumps &rarr; quantile ไม่ unique!</p>
+            </div>
+            <div class="concept-box fragment">
+                <p><strong>วิธีแก้ &mdash; Jittering:</strong></p>
+                <p>แปลง count y ให้เป็น continuous โดย:</p>
+                <div class="math-block">z = y + u &nbsp;&nbsp; โดย u ~ Uniform(0,1)</div>
+                <p>จากนั้นใช้ QR ปกติกับ z แล้ว transform กลับ</p>
+            </div>
+        </div>
+        <div class="interactive-container fragment">
+            <h4>ลองดู: Jittering ทำให้ count data smooth</h4>
+            <canvas id="jitterCanvas" width="340" height="200"></canvas>
+            <div style="text-align:center; margin-top: 4px;">
+                <button class="interactive-btn active" onclick="drawJitter(false)">Original Count</button>
+                <button class="interactive-btn" onclick="drawJitter(true)">After Jittering</button>
+                <button class="interactive-btn" onclick="drawJitter(true)">Re-jitter!</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ขั้นตอน Quantile Count Regression</h2>
+    <div class="concept-box">
+        <ol style="font-size: 0.85em;">
+            <li class="fragment"><strong>Jitter:</strong> สร้าง z = y + u โดย u ~ U(0,1) &rarr; ทำให้ count data เป็น continuous</li>
+            <li class="fragment"><strong>QR:</strong> ประมาณ standard linear QR บน z &rarr; ได้ conditional quantiles ของ z</li>
+            <li class="fragment"><strong>Transform back:</strong> แปลงกลับ: Q̂<sub>q</sub>(y|x) = max(0, ⌈Q̂<sub>q</sub>(z|x)⌉ &minus; 1)
+                <br><small>โดย ⌈&middot;⌉ = ceiling function (ปัดขึ้น)</small></li>
+            <li class="fragment"><strong>Average:</strong> ทำซ้ำหลายรอบ (replications) แล้วเฉลี่ย เพื่อลด jittering noise</li>
+        </ol>
+    </div>
+    <div class="two-col fragment">
+        <div class="key-insight">
+            <p><strong>Bounded from below:</strong> เพราะ z = y + u โดย y &ge; 0 และ u &ge; 0 ดังนั้น Q<sub>q</sub>(z|x) &ge; q เสมอ &rarr; max(0, ...) ป้องกันค่าติดลบ</p>
+        </div>
+        <div class="example-box">
+            <p><strong>ใน Stata:</strong> ใช้ <strong>qcount</strong> (user-written) ซึ่งทำ jittering + QR + transform + average ให้อัตโนมัติ พร้อม <strong>qcount_mfx</strong> สำหรับ marginal effects</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ตัวอย่าง: จำนวนครั้งพบแพทย์</h2>
+    <div class="example-box">
+        <p><strong>ข้อมูล:</strong> จำนวนครั้งพบแพทย์ต่อปี (docvis) ของผู้สูงอายุ Medicare ปี 2003</p>
+        <p>Median = 5 ครั้ง แต่มี right tail ยาว (max = 144 ครั้ง!)</p>
+    </div>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
+                <span class="cmd">use</span> Chap 5-2 data.dta, <span class="opt">clear</span><br>
+                <span class="cmd">summarize</span> docvis private totchr age female white<br><br>
+                <span class="cmt">* Jittering</span><br>
+                <span class="cmd">set seed</span> <span class="num">10101</span><br>
+                <span class="cmd">generate</span> docvisu = docvis + runiform()<br><br>
+                <span class="cmt">* Compare quantile plots</span><br>
+                <span class="cmd">qplot</span> docvis if docvis &lt; <span class="num">40</span>, <span class="opt">recast(line)</span><br>
+                <span class="cmd">qplot</span> docvisu if docvis &lt; <span class="num">40</span>, <span class="opt">recast(line)</span>
+            </div>
+        </div>
+        <div class="fragment">
+            <div class="stata-code">
+                <span class="cmt">* Negative Binomial for comparison</span><br>
+                <span class="cmd">quietly nbreg</span> docvis i.private totchr age i.female i.white, <span class="opt">vce(robust)</span><br>
+                <span class="cmd">margins</span>, <span class="opt">dydx(*) atmean noatlegend</span><br><br>
+                <span class="cmt">* Quantile Count Regression at median</span><br>
+                <span class="cmd">set seed</span> <span class="num">10101</span><br>
+                <span class="cmd">qcount</span> docvis private totchr age female white, <span class="opt">q(0.50) rep(500)</span><br>
+                <span class="cmd">qcount_mfx</span> &nbsp;<span class="cmt">// marginal effects</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ผลลัพธ์ Marginal Effects: NegBin vs QCR</h2>
+    <table class="compare-table">
+        <thead>
+            <tr><th>Variable</th><th>NegBin ME (at mean)</th><th>QCR ME (q=0.50)</th><th>QCR ME (q=0.75)</th></tr>
+        </thead>
+        <tbody>
+            <tr><td style="text-align:left;">private</td><td>1.80</td><td>1.21</td><td class="highlight">2.76</td></tr>
+            <tr><td style="text-align:left;">totchr</td><td>2.48</td><td>1.82</td><td class="highlight">3.52</td></tr>
+            <tr><td style="text-align:left;">age</td><td>-0.03</td><td>-0.02</td><td>-0.04</td></tr>
+            <tr><td style="text-align:left;">female</td><td>0.82</td><td>0.53</td><td class="highlight">1.18</td></tr>
+            <tr><td style="text-align:left;">white</td><td>-0.18</td><td>-0.10</td><td>-0.32</td></tr>
+        </tbody>
+    </table>
+    <div class="two-col fragment" style="margin-top: 4px;">
+        <div class="key-insight">
+            <p><strong>QCR q=0.75 &gt; NegBin &gt; QCR q=0.50:</strong> ME ของ private insurance ที่ q=0.75 (2.76 visits) มากกว่า q=0.50 (1.21 visits) ถึงเท่าตัว &rarr; ประกันเอกชนส่งเสริมการใช้บริการ <strong>มากขึ้นสำหรับ heavy users</strong></p>
+        </div>
+        <div class="example-box">
+            <p><strong>NegBin:</strong> ให้ ME เดียว (at mean) ซึ่งเป็น "ค่าเฉลี่ย" ของ effect &rarr; ปิดบัง heterogeneity ที่ QCR เผยให้เห็น ลองดูกราฟ:</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>กราฟเปรียบเทียบ ME: NegBin vs QCR</h2>
+    <div class="interactive-container">
+        <h4>เลือก variable เพื่อดูว่า ME เปลี่ยนไปอย่างไรที่แต่ละ quantile</h4>
+        <canvas id="meCanvas" width="700" height="220"></canvas>
+        <div style="text-align: center; margin-top: 6px;">
+            <button class="interactive-btn active" onclick="drawME('private')">private ins.</button>
+            <button class="interactive-btn" onclick="drawME('totchr')">chronic conditions</button>
+            <button class="interactive-btn" onclick="drawME('female')">female</button>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>QCR ที่ q = 0.75</h2>
+    <div class="stata-code">
+        <span class="cmt">* QCR at 75th percentile</span><br>
+        <span class="cmd">set seed</span> <span class="num">10101</span><br>
+        <span class="cmd">quietly qcount</span> docvis private totchr age female white, <span class="opt">q(0.75) rep(500)</span><br>
+        <span class="cmd">qcount_mfx</span>
+    </div>
+    <div class="two-col fragment">
+        <div class="concept-box">
+            <p><strong>ทำไมต้องดู q = 0.75?</strong></p>
+            <p>ผู้ป่วยที่พบแพทย์บ่อย (upper quantile) อาจเป็นกลุ่มที่ต้องการ policy attention มากที่สุด เช่น:</p>
+            <ul>
+                <li>มีโรคเรื้อรังหลายอย่าง</li>
+                <li>ใช้ทรัพยากรสาธารณสุขมาก</li>
+            </ul>
+        </div>
+        <div class="key-insight">
+            <p><strong>Policy implication:</strong> ถ้า ME ของ private insurance ที่ q=0.75 > q=0.50 หมายความว่า ประกันเอกชนส่งเสริมให้กลุ่มที่ใช้บริการมากอยู่แล้วยิ่งใช้มากขึ้นไปอีก &rarr; <strong>moral hazard ที่ upper tail</strong></p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== QUIZ 2 ==================== -->
+<section>
+    <h2>Quiz: Count Data QR</h2>
+    <div class="interactive-container">
+        <h4>คำถาม: ทำไมต้อง "jitter" count data ก่อนทำ quantile regression?</h4>
+        <div id="quiz2">
+            <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">A) เพื่อลด outliers</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz2', this, true)">B) เพราะ CDF ของ discrete data ไม่ต่อเนื่อง ทำให้ quantile ไม่ unique</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">C) เพื่อทำให้ data เป็น normal distribution</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz2', this, false)">D) เพื่อเพิ่ม sample size</div>
+        </div>
+        <div class="quiz-feedback" id="quiz2-feedback"></div>
+    </div>
+</section>
+
+</section><!-- end Section 5 wrapper -->
+
+<!-- ==================== SUMMARY ==================== -->
+<section>
+<section class="section-divider">
+    <h2>Summary</h2>
+    <p>สรุปบทเรียน</p>
+</section>
+
+<section>
+    <h2>Limitations &amp; Practical Considerations</h2>
+    <div class="three-col">
+        <div class="key-insight">
+            <h3>Quantile Crossing</h3>
+            <p>QR ประมาณแต่ละ quantile แยกกัน ทำให้เส้น quantile อาจ <strong>ตัดกัน</strong> ได้ เช่น Q̂<sub>.25</sub>(y|x) &gt; Q̂<sub>.75</sub>(y|x) สำหรับบาง x</p>
+            <p>แก้ได้ด้วย rearrangement method หรือ simultaneous QR</p>
+        </div>
+        <div class="key-insight">
+            <h3>Standard Errors</h3>
+            <p><strong>qreg</strong> ให้ SE แบบสูตร (เร็วแต่ไม่เสถียร)</p>
+            <p><strong>bsqreg</strong> ให้ SE แบบ bootstrap (ช้ากว่าแต่ reliable กว่ามาก)</p>
+            <p>&rarr; <strong>ใช้ bsqreg เสมอ</strong> (ดูหน้าถัดไป)</p>
+        </div>
+        <div class="key-insight">
+            <h3>Interpretation</h3>
+            <p>QR coefficient บอก effect ต่อ <strong>conditional quantile</strong> ไม่ใช่ effect ต่อคนที่ "อยู่ที่ quantile นั้น"</p>
+            <p>เช่น coef ที่ q=.90 ไม่ได้หมายถึง effect ต่อคนรวยที่สุด แต่หมายถึง effect ต่อ 90th percentile ของ y|x</p>
+        </div>
+    </div>
+    <div class="example-box fragment" style="margin-top: 4px;">
+        <p><strong>Computational note:</strong> สำหรับ dataset ขนาดใหญ่ QR + bootstrap อาจใช้เวลานาน ใน Stata ให้ตั้ง <strong>set seed</strong> เพื่อ reproducibility และเริ่มจาก reps() น้อยๆ ก่อน (เช่น 100) แล้วค่อยเพิ่ม</p>
+    </div>
+</section>
+
+<section>
+    <h2>ทำไมต้อง Bootstrap SE?</h2>
+    <div class="two-col">
+        <div class="concept-box">
+            <h3>qreg: SE จากสูตร</h3>
+            <p>ต้อง <strong>ประมาณว่ามีข้อมูลกี่จุดแถวๆ เส้น quantile</strong></p>
+            <p>ถ้าข้อมูลบาง (เช่น ที่ q=0.05 หรือ q=0.95) การประมาณจุดนี้จะไม่เสถียร</p>
+            <p style="color: var(--accent);"><strong>ปัญหา:</strong> ที่หาง ข้อมูลน้อย &rarr; SE ผิดง่าย</p>
+        </div>
+        <div class="key-insight">
+            <h3>bsqreg: SE จาก Bootstrap</h3>
+            <p>สุ่ม sample ใหม่จากข้อมูลเดิม (with replacement) แล้วรัน QR ซ้ำ เช่น 400 รอบ</p>
+            <p>ได้ coefficient 400 ค่า &rarr; ดูว่า <strong>กระจายแค่ไหน</strong> &rarr; นั่นคือ SE</p>
+            <p>ไม่ต้องประมาณความหนาแน่น &rarr; <strong>ทำงานดีทุก quantile</strong></p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ลองดู: Bootstrap สร้าง SE อย่างไร</h2>
+    <div class="interactive-container">
+        <h4>กดปุ่มเพื่อเพิ่ม bootstrap samples แล้วดู histogram ของ coefficient ที่ได้</h4>
+        <canvas id="bootstrapCanvas" width="700" height="200"></canvas>
+        <div style="text-align: center; margin-top: 4px;">
+            <button class="interactive-btn" onclick="runBootstrapDemo(20)">+ 20 samples</button>
+            <button class="interactive-btn" onclick="runBootstrapDemo(100)">+ 100</button>
+            <button class="interactive-btn" onclick="runBootstrapDemo(500)">+ 500</button>
+            <button class="interactive-btn" onclick="resetBootstrapDemo()">Reset</button>
+            <span style="font-size:0.46em; margin-left: 8px; color: var(--text-light);" id="bsCount">reps = 0, SE = ?</span>
+        </div>
+    </div>
+    <div class="example-box" style="margin-top: 4px;">
+        <p><strong>สังเกต:</strong> ยิ่งเพิ่ม reps histogram ยิ่งชัด &rarr; band &plusmn;1 SE (แดงอ่อน) คือช่วงที่ ~68% ของ bootstrap coefficients ตกอยู่ &rarr; นี่คือความไม่แน่นอนของ estimate ที่ bsqreg รายงาน</p>
+    </div>
+</section>
+
+<section>
+    <h2>สรุป Chapter 5: Quantile Regression</h2>
+    <div class="three-col">
+        <div class="concept-box">
+            <h3>แนวคิดหลัก</h3>
+            <ul>
+                <li>QR ศึกษา conditional quantiles แทน conditional mean</li>
+                <li>Robust ต่อ outliers</li>
+                <li>Semiparametric</li>
+                <li>Equivariant ต่อ monotone transforms</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <h3>Stata Commands</h3>
+            <ul>
+                <li><strong>qreg</strong> &mdash; basic QR</li>
+                <li><strong>bsqreg</strong> &mdash; bootstrap SE</li>
+                <li><strong>sqreg</strong> &mdash; simultaneous QR</li>
+                <li><strong>grqreg</strong> &mdash; coefficient plots</li>
+                <li><strong>qcount</strong> &mdash; count QR</li>
+            </ul>
+        </div>
+        <div class="concept-box">
+            <h3>เมื่อไรควรใช้ QR?</h3>
+            <ul>
+                <li>มี heteroskedasticity</li>
+                <li>สนใจ distributional effects</li>
+                <li>มี outliers</li>
+                <li>Count data (ใช้ QCR)</li>
+                <li>Policy analysis ที่ต้องการดูผลต่อกลุ่มต่างๆ</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>สรุป Workflow: เมื่อไรควรใช้ QR?</h2>
+    <div class="decision-tree">
+        <div class="dt-diamond">สนใจแค่ Conditional Mean?</div>
+        <div class="dt-row" style="margin-top: 4px;">
+            <div class="dt-branch">
+                <div class="dt-arrow"><span class="dt-label">Yes</span><br>&darr;</div>
+                <div class="dt-node dt-no">OLS เพียงพอ<br><small style="font-weight:400;">regress y x, vce(robust)</small></div>
+            </div>
+            <div class="dt-branch">
+                <div class="dt-arrow"><span class="dt-label">No &mdash; สนใจ distribution</span><br>&darr;</div>
+                <div class="dt-diamond">มี Heteroskedasticity?</div>
+                <div class="dt-row" style="margin-top: 4px;">
+                    <div class="dt-branch">
+                        <div class="dt-arrow"><span class="dt-label">ไม่แน่ใจ</span><br>&darr;</div>
+                        <div class="dt-node dt-action">ทดสอบด้วย<br>estat hettest<br>+ sqreg ... test</div>
+                    </div>
+                    <div class="dt-branch">
+                        <div class="dt-arrow"><span class="dt-label">Yes</span><br>&darr;</div>
+                        <div class="dt-diamond">Data เป็น Count?</div>
+                        <div class="dt-row" style="margin-top: 4px;">
+                            <div class="dt-branch">
+                                <div class="dt-arrow"><span class="dt-label">No</span><br>&darr;</div>
+                                <div class="dt-node dt-action">Continuous QR<br><small style="font-weight:400;">qreg / bsqreg / sqreg</small></div>
+                            </div>
+                            <div class="dt-branch">
+                                <div class="dt-arrow"><span class="dt-label">Yes</span><br>&darr;</div>
+                                <div class="dt-node dt-action2">Count QR (Jittering)<br><small style="font-weight:400;">qcount + qcount_mfx</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== FINAL QUIZ ==================== -->
+<section>
+    <h2>Final Quiz</h2>
+    <div class="interactive-container">
+        <h4>คำถาม: ข้อใดเป็นประโยชน์ที่ OLS ไม่สามารถให้ได้ แต่ QR ทำได้?</h4>
+        <div id="quiz3">
+            <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">A) การประมาณค่า R-squared</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz3', this, true)">B) การเห็นว่า regressor มีผลต่อ distribution shape ไม่ใช่แค่ตำแหน่ง</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">C) การทดสอบ F-test สำหรับ overall significance</div>
+            <div class="quiz-option" onclick="checkQuiz('quiz3', this, false)">D) การได้ BLUE estimator</div>
+        </div>
+        <div class="quiz-feedback" id="quiz3-feedback"></div>
+    </div>
+    <div class="example-box fragment" style="margin-top: 8px; text-align: center;">
+        <h3>Thank you!</h3>
+        <p>Questions? &mdash; Next: Chapter 6 (Panel Data)</p>
+    </div>
+</section>
+</section><!-- end Summary wrapper -->
+
+</div>
+</div>
+
+<!-- Reveal.js -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    width: 960,
+    height: 700,
+    margin: 0.03,
+    minScale: 0.5,
+    maxScale: 1.2,
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    pdfMaxPagesPerSlide: 1,
+    disableLayout: false,
+});
+
+// ============================================================
+// COLOR PALETTE (cohesive, accessible)
+// ============================================================
+const C = {
+    blue:    '#4a90d9', blueFade: 'rgba(74,144,217,',
+    red:     '#d4534a', redFade:  'rgba(212,83,74,',
+    green:   '#3d9970', greenFade:'rgba(61,153,112,',
+    amber:   '#e8a838', amberFade:'rgba(232,168,56,',
+    purple:  '#8b5cf6',
+    dark:    '#1a2744',
+    gray:    '#718096',
+    gridLine:'#e2e8f0',
+    axis:    '#a0aec0',
+    dotBase: 'rgba(74,144,217,0.3)',
+    font:    "'Sarabun', sans-serif",
+    mono:    "'Fira Code', monospace",
+};
+
+// ============================================================
+// BOOTSTRAP SE DEMO
+// ============================================================
+let bsCoefs = [];
+let bsOriginalData = null;
+
+function initBootstrapData() {
+    if (bsOriginalData) return;
+    // Generate simple dataset: y = 2 + 0.5*x + e
+    let rng = seededRandom(999);
+    bsOriginalData = [];
+    for (let i = 0; i < 80; i++) {
+        let x = rng() * 10;
+        let y = 2 + 0.5 * x + normalRandom(rng) * (1 + 0.3 * x);
+        bsOriginalData.push([x, y]);
+    }
+}
+
+function bootstrapMedianSlope(data) {
+    // Resample with replacement, compute QR-like median slope
+    let n = data.length;
+    let sample = [];
+    for (let i = 0; i < n; i++) {
+        sample.push(data[Math.floor(Math.random() * n)]);
+    }
+    // Simple median regression approximation: minimize sum of abs deviations
+    // Use iterative weighted median (simplified)
+    let mx = sample.reduce((s, p) => s + p[0], 0) / n;
+    let my = sample.reduce((s, p) => s + p[1], 0) / n;
+    // Weighted LAD approximation via reweighted LS
+    let num = 0, den = 0;
+    for (let p of sample) {
+        let w = 1;
+        num += w * (p[0] - mx) * (p[1] - my);
+        den += w * (p[0] - mx) * (p[0] - mx);
+    }
+    return den > 0 ? num / den : 0.5;
+}
+
+function runBootstrapDemo(reps) {
+    initBootstrapData();
+    for (let i = 0; i < reps; i++) {
+        bsCoefs.push(bootstrapMedianSlope(bsOriginalData));
+    }
+    drawBootstrapDemo();
+}
+
+function resetBootstrapDemo() {
+    bsCoefs = [];
+    bsOriginalData = null;
+    let canvas = document.getElementById('bootstrapCanvas');
+    if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    document.getElementById('bsCount').textContent = 'reps = 0, SE = ?';
+}
+
+function drawBootstrapDemo() {
+    let canvas = document.getElementById('bootstrapCanvas');
+    if (!canvas || bsCoefs.length === 0) return;
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    let m = { l: 50, r: 30, t: 15, b: 25 };
+    let pw = w - m.l - m.r, ph = h - m.t - m.b;
+
+    // Histogram of bootstrap coefficients
+    let mean = bsCoefs.reduce((s, v) => s + v, 0) / bsCoefs.length;
+    let se = Math.sqrt(bsCoefs.reduce((s, v) => s + (v - mean) ** 2, 0) / (bsCoefs.length - 1));
+
+    // Determine bins
+    let minV = Math.min(...bsCoefs), maxV = Math.max(...bsCoefs);
+    let range = maxV - minV;
+    if (range < 0.01) range = 0.5;
+    minV -= range * 0.1; maxV += range * 0.1;
+    let nBins = Math.min(30, Math.max(10, Math.floor(bsCoefs.length / 3)));
+    let binW = (maxV - minV) / nBins;
+    let bins = new Array(nBins).fill(0);
+    for (let v of bsCoefs) {
+        let idx = Math.floor((v - minV) / binW);
+        if (idx >= 0 && idx < nBins) bins[idx]++;
+    }
+    let maxCount = Math.max(...bins);
+
+    let px = (v) => m.l + ((v - minV) / (maxV - minV)) * pw;
+    let barW = pw / nBins;
+
+    // Draw bars
+    for (let i = 0; i < nBins; i++) {
+        let bh = (bins[i] / maxCount) * ph;
+        let x = m.l + i * barW;
+        ctx.fillStyle = C.blueFade + '0.5)';
+        ctx.fillRect(x, m.t + ph - bh, barW - 1, bh);
+        ctx.strokeStyle = C.blueFade + '0.8)';
+        ctx.strokeRect(x, m.t + ph - bh, barW - 1, bh);
+    }
+
+    // Mean line
+    ctx.strokeStyle = C.red; ctx.lineWidth = 2.5;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(px(mean), m.t); ctx.lineTo(px(mean), m.t + ph); ctx.stroke();
+
+    // SE band
+    ctx.fillStyle = C.redFade + '0.12)';
+    ctx.fillRect(px(mean - se), m.t, px(mean + se) - px(mean - se), ph);
+    ctx.fillStyle = C.redFade + '0.12)';
+    ctx.fillRect(px(mean - 2*se), m.t, px(mean + 2*se) - px(mean - 2*se), ph);
+
+    // Labels
+    ctx.fillStyle = C.dark; ctx.font = 'bold 11px ' + C.font;
+    ctx.textAlign = 'center';
+    ctx.fillText('bootstrap coefficient (slope)', w / 2, h - 3);
+
+    ctx.fillStyle = C.red; ctx.font = '10px ' + C.font;
+    ctx.fillText('mean=' + mean.toFixed(3), px(mean), m.t - 3);
+
+    // SE annotation
+    ctx.fillStyle = C.dark; ctx.font = '10px ' + C.font;
+    ctx.textAlign = 'left';
+    ctx.fillText('\u00B11 SE', px(mean + se) + 3, m.t + 15);
+    ctx.fillText('\u00B12 SE', px(mean + 2*se) + 3, m.t + 28);
+
+    // Axis
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(m.l, m.t + ph); ctx.lineTo(w - m.r, m.t + ph); ctx.stroke();
+
+    // Tick labels
+    ctx.fillStyle = C.gray; ctx.font = '9px ' + C.font; ctx.textAlign = 'center';
+    for (let v = minV; v <= maxV; v += range / 5) {
+        ctx.fillText(v.toFixed(2), px(v), m.t + ph + 13);
+    }
+
+    document.getElementById('bsCount').textContent =
+        'reps = ' + bsCoefs.length + ', mean = ' + mean.toFixed(3) + ', SE = ' + se.toFixed(3);
+    ctx.textAlign = 'left';
+}
+
+// ============================================================
+// HEAVY TAIL DEMO (Mean vs Median)
+// ============================================================
+let htCauchySamples = [];
+let htNormalSamples = [];
+
+function cauchyRandom() {
+    return Math.tan(Math.PI * (Math.random() - 0.5));
+}
+
+function stepHeavyTail(n) {
+    for (let i = 0; i < n; i++) {
+        htCauchySamples.push(cauchyRandom());
+        htNormalSamples.push(normalRandom(Math.random));
+    }
+    document.getElementById('htSampleCount').textContent = 'n = ' + htCauchySamples.length;
+    drawHeavyTail('cauchyCanvas', htCauchySamples, 'Cauchy');
+    drawHeavyTail('normalCanvas', htNormalSamples, 'Normal');
+}
+
+function resetHeavyTail() {
+    htCauchySamples = [];
+    htNormalSamples = [];
+    document.getElementById('htSampleCount').textContent = 'n = 0';
+    let c1 = document.getElementById('cauchyCanvas');
+    let c2 = document.getElementById('normalCanvas');
+    if (c1) c1.getContext('2d').clearRect(0, 0, c1.width, c1.height);
+    if (c2) c2.getContext('2d').clearRect(0, 0, c2.width, c2.height);
+}
+
+function drawHeavyTail(canvasId, samples, label) {
+    let canvas = document.getElementById(canvasId);
+    if (!canvas || samples.length < 2) return;
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Compute running mean and running median
+    let runMean = [], runMedian = [];
+    let sum = 0;
+    let sorted = [];
+    for (let i = 0; i < samples.length; i++) {
+        sum += samples[i];
+        runMean.push(sum / (i + 1));
+        // insertion sort for running median
+        let val = samples[i];
+        let inserted = false;
+        for (let j = 0; j < sorted.length; j++) {
+            if (val < sorted[j]) { sorted.splice(j, 0, val); inserted = true; break; }
+        }
+        if (!inserted) sorted.push(val);
+        let mid = Math.floor(sorted.length / 2);
+        runMedian.push(sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2);
+    }
+
+    let m = { l: 40, r: 10, t: 8, b: 22 };
+    let pw = w - m.l - m.r, ph = h - m.t - m.b;
+    let n = samples.length;
+
+    // Y range: use median range but clamp mean for visibility
+    let medMin = Math.min(...runMedian), medMax = Math.max(...runMedian);
+    let meanMin = Math.min(...runMean), meanMax = Math.max(...runMean);
+    let yPad = Math.max(Math.abs(medMax - medMin), 1) * 0.5;
+    let yMin, yMax;
+    if (label === 'Cauchy') {
+        // Show enough range to see mean jumping
+        let allMin = Math.min(medMin, meanMin);
+        let allMax = Math.max(medMax, meanMax);
+        let range = allMax - allMin;
+        yMin = allMin - range * 0.1;
+        yMax = allMax + range * 0.1;
+    } else {
+        yMin = Math.min(medMin, meanMin) - yPad;
+        yMax = Math.max(medMax, meanMax) + yPad;
+    }
+
+    let px = (i) => m.l + (i / (n - 1)) * pw;
+    let py = (v) => m.t + (1 - (v - yMin) / (yMax - yMin)) * ph;
+
+    // Grid: zero line
+    if (yMin < 0 && yMax > 0) {
+        ctx.strokeStyle = C.gridLine; ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(m.l, py(0)); ctx.lineTo(w - m.r, py(0)); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = C.axis; ctx.font = '9px ' + C.font;
+        ctx.fillText('0', m.l - 12, py(0) + 3);
+    }
+
+    // Axes
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(m.l, m.t); ctx.lineTo(m.l, h - m.b); ctx.lineTo(w - m.r, h - m.b); ctx.stroke();
+    ctx.fillStyle = C.gray; ctx.font = '9px ' + C.font;
+    ctx.textAlign = 'center';
+    ctx.fillText('n (sample size)', w / 2, h - 3);
+    ctx.textAlign = 'left';
+
+    // Draw running mean (red)
+    ctx.strokeStyle = C.red; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+        let y = Math.max(m.t, Math.min(h - m.b, py(runMean[i])));
+        if (i === 0) ctx.moveTo(px(i), y); else ctx.lineTo(px(i), y);
+    }
+    ctx.stroke();
+
+    // Draw running median (blue)
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+        let y = Math.max(m.t, Math.min(h - m.b, py(runMedian[i])));
+        if (i === 0) ctx.moveTo(px(i), y); else ctx.lineTo(px(i), y);
+    }
+    ctx.stroke();
+
+    // Legend
+    ctx.font = '10px ' + C.font;
+    ctx.fillStyle = C.red;
+    ctx.fillRect(w - 110, m.t + 4, 14, 3);
+    ctx.fillText('Mean', w - 92, m.t + 10);
+    ctx.fillStyle = C.blue;
+    ctx.fillRect(w - 110, m.t + 18, 14, 3);
+    ctx.fillText('Median', w - 92, m.t + 24);
+
+    // Current values
+    ctx.font = 'bold 10px ' + C.font;
+    ctx.fillStyle = C.red;
+    ctx.fillText('= ' + runMean[n-1].toFixed(2), w - 92, m.t + 40);
+    ctx.fillStyle = C.blue;
+    ctx.fillText('= ' + runMedian[n-1].toFixed(2), w - 92, m.t + 54);
+}
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function seededRandom(seed) {
+    let s = seed;
+    return function() {
+        s = (s * 16807 + 0) % 2147483647;
+        return (s - 1) / 2147483646;
+    };
+}
+
+function normalRandom(rng) {
+    let u1 = rng(), u2 = rng();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+function chi2Random(rng) {
+    let z = normalRandom(rng);
+    return z * z;
+}
+
+function quantile(arr, q) {
+    let sorted = [...arr].sort((a, b) => a - b);
+    let pos = q * (sorted.length - 1);
+    let lo = Math.floor(pos), hi = Math.ceil(pos);
+    if (lo === hi) return sorted[lo];
+    return sorted[lo] * (hi - pos) + sorted[hi] * (pos - lo);
+}
+
+// ============================================================
+// SLIDE 1: INTRO OLS vs QR
+// ============================================================
+function drawIntro(mode) {
+    let canvas = document.getElementById('introCanvas');
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Update button states
+    canvas.parentElement.querySelectorAll('.interactive-btn').forEach(b => b.classList.remove('active'));
+    if (typeof event !== 'undefined' && event && event.target) event.target.classList.add('active');
+
+    let rng = seededRandom(42);
+    let pts = [];
+    for (let i = 0; i < 150; i++) {
+        let x = rng() * 8 + 1;
+        let spread = 0.3 + 0.4 * x;
+        let y = 2 + 0.5 * x + normalRandom(rng) * spread;
+        pts.push([x, y]);
+    }
+
+    let px = (x) => 30 + (x - 1) / 8 * (w - 60);
+    let py = (y) => h - 30 - (y - 0) / 10 * (h - 50);
+
+    // Axes
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(30, h - 30); ctx.lineTo(w - 10, h - 30); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(30, h - 30); ctx.lineTo(30, 10); ctx.stroke();
+    ctx.fillStyle = C.gray; ctx.font = '11px ' + C.font;
+    ctx.fillText('x', w - 15, h - 15);
+    ctx.fillText('y', 15, 15);
+
+    // Points
+    ctx.fillStyle = C.dotBase;
+    pts.forEach(p => {
+        ctx.beginPath(); ctx.arc(px(p[0]), py(p[1]), 3, 0, Math.PI * 2); ctx.fill();
+    });
+
+    if (mode === 'ols') {
+        // OLS line (approx)
+        let mx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+        let my = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+        let num = pts.reduce((s, p) => s + (p[0] - mx) * (p[1] - my), 0);
+        let den = pts.reduce((s, p) => s + (p[0] - mx) * (p[0] - mx), 0);
+        let b = num / den, a = my - b * mx;
+
+        ctx.strokeStyle = C.red; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(px(1), py(a + b * 1)); ctx.lineTo(px(9), py(a + b * 9)); ctx.stroke();
+        ctx.fillStyle = C.red; ctx.font = 'bold 13px ' + C.font;
+        ctx.fillText('OLS: E(y|x)', px(5.5), py(a + b * 5.5) - 10);
+    } else {
+        // Multiple QR lines
+        let quantiles = [0.10, 0.25, 0.50, 0.75, 0.90];
+        let colors = [C.green, C.blue, C.red, C.blue, C.green];
+        let labels = ['q=.10', 'q=.25', 'q=.50', 'q=.75', 'q=.90'];
+        quantiles.forEach((q, idx) => {
+            // Simple: for each x-bin, get the quantile
+            let bins = [];
+            for (let bx = 1; bx <= 9; bx += 0.5) {
+                let inBin = pts.filter(p => Math.abs(p[0] - bx) < 1.5).map(p => p[1]);
+                if (inBin.length > 5) bins.push([bx, quantile(inBin, q)]);
+            }
+            if (bins.length < 2) return;
+            // fit line
+            let mx2 = bins.reduce((s, b) => s + b[0], 0) / bins.length;
+            let my2 = bins.reduce((s, b) => s + b[1], 0) / bins.length;
+            let num2 = bins.reduce((s, b) => s + (b[0] - mx2) * (b[1] - my2), 0);
+            let den2 = bins.reduce((s, b) => s + (b[0] - mx2) * (b[0] - mx2), 0);
+            let b2 = num2 / den2, a2 = my2 - b2 * mx2;
+
+            ctx.strokeStyle = colors[idx]; ctx.lineWidth = idx === 2 ? 3 : 2;
+            if (idx !== 2) ctx.setLineDash([5, 3]); else ctx.setLineDash([]);
+            ctx.beginPath(); ctx.moveTo(px(1), py(a2 + b2 * 1)); ctx.lineTo(px(9), py(a2 + b2 * 9)); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = colors[idx]; ctx.font = '11px ' + C.font;
+            ctx.fillText(labels[idx], px(8.5), py(a2 + b2 * 8.5) - 5);
+        });
+    }
+}
+
+// ============================================================
+// QUANTILE DEMO
+// ============================================================
+function drawQuantileDemo() {
+    let canvas = document.getElementById('quantileCanvas');
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    let q = parseInt(document.getElementById('qSlider').value) / 100;
+    document.getElementById('qVal').textContent = q.toFixed(2);
+
+    // Draw normal-ish distribution
+    let cx = w / 2, cy = h - 40;
+    let scaleX = 120, scaleY = 150;
+
+    // PDF curve
+    ctx.beginPath();
+    ctx.moveTo(cx - scaleX * 3, cy);
+    for (let t = -3; t <= 3; t += 0.05) {
+        let pdf = Math.exp(-0.5 * t * t) / Math.sqrt(2 * Math.PI);
+        ctx.lineTo(cx + t * scaleX, cy - pdf * scaleY);
+    }
+    ctx.lineTo(cx + scaleX * 3, cy);
+    ctx.closePath();
+    ctx.fillStyle = C.blueFade + '0.12)';
+    ctx.fill();
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Shade left area up to quantile
+    let zq = -2.326; // approx inverse normal
+    // Simple lookup
+    let zTable = {5:-1.645, 10:-1.282, 15:-1.036, 20:-0.842, 25:-0.674, 30:-0.524, 35:-0.385, 40:-0.253, 45:-0.126, 50:0, 55:0.126, 60:0.253, 65:0.385, 70:0.524, 75:0.674, 80:0.842, 85:1.036, 90:1.282, 95:1.645};
+    let qPct = Math.round(q * 100 / 5) * 5;
+    if (qPct < 5) qPct = 5; if (qPct > 95) qPct = 95;
+    zq = zTable[qPct] || 0;
+
+    ctx.beginPath();
+    ctx.moveTo(cx - scaleX * 3, cy);
+    for (let t = -3; t <= zq; t += 0.05) {
+        let pdf = Math.exp(-0.5 * t * t) / Math.sqrt(2 * Math.PI);
+        ctx.lineTo(cx + t * scaleX, cy - pdf * scaleY);
+    }
+    ctx.lineTo(cx + zq * scaleX, cy);
+    ctx.closePath();
+    ctx.fillStyle = C.redFade + '0.25)';
+    ctx.fill();
+
+    // Vertical line at quantile
+    let pdfAtQ = Math.exp(-0.5 * zq * zq) / Math.sqrt(2 * Math.PI);
+    ctx.strokeStyle = C.red; ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath(); ctx.moveTo(cx + zq * scaleX, cy); ctx.lineTo(cx + zq * scaleX, cy - pdfAtQ * scaleY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels
+    ctx.fillStyle = C.red; ctx.font = 'bold 14px ' + C.font;
+    ctx.textAlign = 'center';
+    ctx.fillText(`Q(${q.toFixed(2)})`, cx + zq * scaleX, cy + 20);
+    ctx.fillText(`${(q*100).toFixed(0)}% ของข้อมูล`, cx - scaleX * 0.5, cy - scaleY * 0.15);
+    ctx.fillStyle = C.blue;
+    ctx.fillText(`${((1-q)*100).toFixed(0)}%`, cx + scaleX * 1.2, cy - scaleY * 0.15);
+    ctx.textAlign = 'left';
+
+    // Axis
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(20, cy); ctx.lineTo(w - 10, cy); ctx.stroke();
+}
+
+// ============================================================
+// OBJECTIVE FUNCTION DEMO (NEW)
+// ============================================================
+function drawObjFnDemo() {
+    let canvas = document.getElementById('objFnCanvas');
+    if (!canvas) return;
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    let q = parseInt(document.getElementById('objQSlider').value) / 100;
+    document.getElementById('objQVal').textContent = q.toFixed(2);
+
+    // Generate data points with heteroskedasticity
+    let rng = seededRandom(777);
+    let pts = [];
+    for (let i = 0; i < 80; i++) {
+        let x = rng() * 8 + 1;
+        let spread = 0.5 + 0.3 * x;
+        let y = 1.5 + 0.6 * x + normalRandom(rng) * spread;
+        pts.push([x, y]);
+    }
+
+    let margin = { l: 45, r: 220, t: 20, b: 30 };
+    let pw = w - margin.l - margin.r, ph = h - margin.t - margin.b;
+
+    let xMin = 0, xMax = 10, yMin = -1, yMax = 10;
+    let px = (v) => margin.l + ((v - xMin) / (xMax - xMin)) * pw;
+    let py = (v) => margin.t + (1 - (v - yMin) / (yMax - yMin)) * ph;
+
+    // Axes
+    ctx.strokeStyle = C.gridLine; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(margin.l, margin.t); ctx.lineTo(margin.l, h - margin.b); ctx.lineTo(margin.l + pw, h - margin.b); ctx.stroke();
+    ctx.fillStyle = C.axis; ctx.font = '10px ' + C.font;
+    ctx.fillText('x', margin.l + pw + 5, h - margin.b + 4);
+    ctx.fillText('y', margin.l - 10, margin.t - 5);
+
+    // Compute a simple quantile regression line: for bins of x, get quantile of y
+    let bins = [];
+    for (let bx = 1; bx <= 9; bx += 0.3) {
+        let inBin = pts.filter(p => Math.abs(p[0] - bx) < 1.5).map(p => p[1]);
+        if (inBin.length > 3) bins.push([bx, quantile(inBin, q)]);
+    }
+    // Fit line through bins
+    let bmx = bins.reduce((s, b) => s + b[0], 0) / bins.length;
+    let bmy = bins.reduce((s, b) => s + b[1], 0) / bins.length;
+    let bnum = bins.reduce((s, b) => s + (b[0] - bmx) * (b[1] - bmy), 0);
+    let bden = bins.reduce((s, b) => s + (b[0] - bmx) * (b[0] - bmx), 0);
+    let bSlope = bnum / bden, bInt = bmy - bSlope * bmx;
+    let qLine = (x) => bInt + bSlope * x;
+
+    // Draw residual lines with asymmetric coloring
+    pts.forEach(p => {
+        let yHat = qLine(p[0]);
+        let resid = p[1] - yHat;
+        let above = resid >= 0;
+        ctx.strokeStyle = above ? C.redFade + '0.45)' : C.blueFade + '0.45)';
+        ctx.lineWidth = above ? q * 3 + 0.5 : (1 - q) * 3 + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(px(p[0]), py(p[1]));
+        ctx.lineTo(px(p[0]), py(yHat));
+        ctx.stroke();
+    });
+
+    // Points
+    pts.forEach(p => {
+        let above = p[1] >= qLine(p[0]);
+        ctx.fillStyle = above ? C.redFade + '0.6)' : C.blueFade + '0.6)';
+        ctx.beginPath(); ctx.arc(px(p[0]), py(p[1]), 3.5, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // QR line
+    ctx.strokeStyle = C.dark; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(px(0.5), py(qLine(0.5))); ctx.lineTo(px(9.5), py(qLine(9.5))); ctx.stroke();
+
+    // Count above/below
+    let nAbove = pts.filter(p => p[1] >= qLine(p[0])).length;
+    let nBelow = pts.length - nAbove;
+
+    // Right panel: explanation
+    let rx = margin.l + pw + 25, ry = margin.t + 10;
+    ctx.fillStyle = C.dark; ctx.font = 'bold 12px ' + C.font;
+    ctx.fillText(`q = ${q.toFixed(2)}`, rx, ry);
+
+    ry += 22;
+    ctx.font = '11px ' + C.font;
+    ctx.fillStyle = C.red; ctx.fillRect(rx, ry - 8, 10, 10);
+    ctx.fillStyle = C.dark; ctx.fillText(` จุดเหนือเส้น: ${nAbove} จุด`, rx + 14, ry);
+    ctx.fillText(`   penalty × ${q.toFixed(2)}`, rx + 14, ry + 14);
+
+    ry += 36;
+    ctx.fillStyle = C.blue; ctx.fillRect(rx, ry - 8, 10, 10);
+    ctx.fillStyle = C.dark; ctx.fillText(` จุดใต้เส้น: ${nBelow} จุด`, rx + 14, ry);
+    ctx.fillText(`   penalty × ${(1-q).toFixed(2)}`, rx + 14, ry + 14);
+
+    ry += 36;
+    ctx.strokeStyle = C.gridLine; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx + 180, ry); ctx.stroke();
+
+    ry += 18;
+    ctx.fillStyle = C.dark; ctx.font = 'bold 11px ' + C.font;
+    if (q > 0.5) {
+        ctx.fillText(`q > 0.5 → เส้นถูกดึงขึ้น`, rx, ry);
+        ctx.font = '10px ' + C.font; ctx.fillStyle = C.gray;
+        ctx.fillText(`เพื่อให้ ~${(q*100).toFixed(0)}% อยู่ใต้เส้น`, rx, ry + 15);
+        ctx.fillText(`(penalty ฝั่งบนสูงกว่า)`, rx, ry + 28);
+    } else if (q < 0.5) {
+        ctx.fillText(`q < 0.5 → เส้นถูกดึงลง`, rx, ry);
+        ctx.font = '10px ' + C.font; ctx.fillStyle = C.gray;
+        ctx.fillText(`เพื่อให้ ~${(q*100).toFixed(0)}% อยู่ใต้เส้น`, rx, ry + 15);
+        ctx.fillText(`(penalty ฝั่งล่างสูงกว่า)`, rx, ry + 28);
+    } else {
+        ctx.fillText(`q = 0.5 → Median (สมมาตร)`, rx, ry);
+        ctx.font = '10px ' + C.font; ctx.fillStyle = C.gray;
+        ctx.fillText(`penalty เท่ากันทั้งสองฝั่ง`, rx, ry + 15);
+        ctx.fillText(`= Least Absolute Deviations`, rx, ry + 28);
+    }
+
+    ry += 48;
+    ctx.fillStyle = C.dark; ctx.font = '10px ' + C.font;
+    let pctBelow = (nBelow / pts.length * 100).toFixed(0);
+    ctx.fillText(`ข้อมูลใต้เส้น: ${pctBelow}%`, rx, ry);
+    ctx.fillText(`(target: ${(q*100).toFixed(0)}%)`, rx, ry + 13);
+}
+
+// ============================================================
+// CHECK FUNCTION
+// ============================================================
+function drawCheckFunction() {
+    let canvas = document.getElementById('checkFnCanvas');
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    let q = parseInt(document.getElementById('checkQSlider').value) / 100;
+    document.getElementById('checkQVal').textContent = q.toFixed(2);
+
+    let cx = w / 2, cy = h / 2 + 20;
+    let sx = 80, sy = 120;
+
+    // Axes
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(20, cy); ctx.lineTo(w - 10, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, 10); ctx.lineTo(cx, h - 10); ctx.stroke();
+
+    // rho_q(u): if u >= 0: q*u, if u < 0: (q-1)*u
+    ctx.strokeStyle = C.red; ctx.lineWidth = 3;
+    ctx.beginPath();
+    // u < 0 part
+    ctx.moveTo(cx - 2 * sx, cy - (q - 1) * (-2) * sy);
+    ctx.lineTo(cx, cy);
+    ctx.stroke();
+
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 2 * sx, cy - q * 2 * sy);
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = C.red; ctx.font = 'bold 12px ' + C.font;
+    ctx.fillText(`slope = ${(q-1).toFixed(2)}`, cx - 2.2 * sx, cy - (q - 1) * (-1.8) * sy - 10);
+    ctx.fillStyle = C.blue;
+    ctx.fillText(`slope = ${q.toFixed(2)}`, cx + 1.2 * sx, cy - q * 1.8 * sy - 10);
+    ctx.fillStyle = C.dark; ctx.font = '11px ' + C.font;
+    ctx.fillText('u', w - 15, cy - 5);
+    ctx.fillText('ρ(u)', cx + 5, 15);
+    ctx.fillText('0', cx + 3, cy + 15);
+}
+
+// ============================================================
+// LOSS FUNCTION COMPARISON
+// ============================================================
+function drawLossComparison() {
+    let canvas = document.getElementById('lossCanvas');
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    let q = parseInt(document.getElementById('lossQSlider').value) / 100;
+    document.getElementById('lossQVal').textContent = q.toFixed(2);
+
+    let halfW = w / 2;
+    // OLS loss (left)
+    let cx1 = halfW / 2, cy = h - 40, sx = 60, sy = 50;
+    ctx.fillStyle = C.dark; ctx.font = 'bold 13px ' + C.font;
+    ctx.textAlign = 'center';
+    ctx.fillText('OLS: L(u) = u²', cx1, 20);
+    ctx.textAlign = 'left';
+
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(10, cy); ctx.lineTo(halfW - 10, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx1, 30); ctx.lineTo(cx1, h - 10); ctx.stroke();
+
+    ctx.strokeStyle = C.red; ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let u = -2; u <= 2; u += 0.05) {
+        let loss = u * u;
+        let px = cx1 + u * sx, py = cy - loss * sy;
+        if (u === -2) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // QR loss (right)
+    let cx2 = halfW + halfW / 2;
+    ctx.fillStyle = C.dark; ctx.font = 'bold 13px ' + C.font;
+    ctx.textAlign = 'center';
+    ctx.fillText(`QR: ρ_${q.toFixed(2)}(u)`, cx2, 20);
+    ctx.textAlign = 'left';
+
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(halfW + 10, cy); ctx.lineTo(w - 10, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx2, 30); ctx.lineTo(cx2, h - 10); ctx.stroke();
+
+    // u < 0 part
+    ctx.strokeStyle = C.red; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx2 - 2 * sx, cy - Math.abs((q - 1) * (-2)) * sy * 1.5);
+    ctx.lineTo(cx2, cy);
+    ctx.stroke();
+
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx2, cy);
+    ctx.lineTo(cx2 + 2 * sx, cy - q * 2 * sy * 1.5);
+    ctx.stroke();
+
+    // Annotations
+    ctx.fillStyle = C.red; ctx.font = '11px ' + C.font;
+    ctx.fillText(`(1-q)=${(1-q).toFixed(2)}`, cx2 - 2 * sx, cy - Math.abs((q - 1) * 1.5) * sy * 1.5 - 8);
+    ctx.fillStyle = C.blue;
+    ctx.fillText(`q=${q.toFixed(2)}`, cx2 + 1.3 * sx, cy - q * 1.5 * sy * 1.5 - 8);
+
+    // Separator
+    ctx.strokeStyle = C.gridLine; ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(halfW, 0); ctx.lineTo(halfW, h); ctx.stroke();
+    ctx.setLineDash([]);
+}
+
+// ============================================================
+// COEFFICIENT PLOT (SIMULATED)
+// ============================================================
+function drawCoefPlot(variable) {
+    let canvas = document.getElementById('coefCanvas');
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    canvas.parentElement.querySelectorAll('.interactive-btn').forEach(b => b.classList.remove('active'));
+    if (typeof event !== 'undefined' && event && event.target) event.target.classList.add('active');
+
+    // Simulated coefficient patterns (inspired by typical MEPS results)
+    let data = {
+        suppins: { ols: 0.25, qr: [0.18, 0.20, 0.23, 0.25, 0.27, 0.29, 0.32, 0.34, 0.30], ci: 0.08, label: 'suppins (Supplementary Insurance)' },
+        totchr: { ols: 0.22, qr: [0.28, 0.26, 0.24, 0.22, 0.20, 0.19, 0.18, 0.16, 0.14], ci: 0.04, label: 'totchr (Chronic Conditions)' },
+        age: { ols: 0.01, qr: [0.005, 0.007, 0.008, 0.01, 0.012, 0.013, 0.014, 0.015, 0.016], ci: 0.005, label: 'age' },
+        female: { ols: 0.15, qr: [0.20, 0.19, 0.17, 0.15, 0.14, 0.12, 0.10, 0.08, 0.06], ci: 0.06, label: 'female' },
+    };
+
+    let d = data[variable];
+    let quantiles = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90];
+    let margin = { left: 70, right: 30, top: 40, bottom: 40 };
+    let plotW = w - margin.left - margin.right;
+    let plotH = h - margin.top - margin.bottom;
+
+    let yMin = Math.min(d.ols, ...d.qr) - d.ci * 1.5;
+    let yMax = Math.max(d.ols, ...d.qr) + d.ci * 1.5;
+
+    let px = (i) => margin.left + (i / (quantiles.length - 1)) * plotW;
+    let py = (v) => margin.top + (1 - (v - yMin) / (yMax - yMin)) * plotH;
+
+    // Title
+    ctx.fillStyle = C.dark; ctx.font = 'bold 14px ' + C.font;
+    ctx.textAlign = 'center';
+    ctx.fillText(d.label, w / 2, 20);
+    ctx.textAlign = 'left';
+
+    // Grid
+    ctx.strokeStyle = C.gridLine; ctx.lineWidth = 1;
+    for (let v = yMin; v <= yMax; v += (yMax - yMin) / 5) {
+        ctx.beginPath(); ctx.moveTo(margin.left, py(v)); ctx.lineTo(w - margin.right, py(v)); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(margin.left, margin.top); ctx.lineTo(margin.left, h - margin.bottom); ctx.lineTo(w - margin.right, h - margin.bottom); ctx.stroke();
+
+    // X labels
+    ctx.fillStyle = C.gray; ctx.font = '11px ' + C.font; ctx.textAlign = 'center';
+    quantiles.forEach((q, i) => {
+        ctx.fillText(q.toFixed(1), px(i), h - margin.bottom + 18);
+    });
+    ctx.fillText('Quantile', w / 2, h - 5);
+    ctx.textAlign = 'left';
+
+    // Y labels
+    ctx.font = '10px ' + C.font;
+    for (let v = yMin; v <= yMax; v += (yMax - yMin) / 5) {
+        ctx.fillText(v.toFixed(3), 5, py(v) + 4);
+    }
+
+    // CI band
+    ctx.fillStyle = C.blueFade + '0.12)';
+    ctx.beginPath();
+    d.qr.forEach((v, i) => { if (i === 0) ctx.moveTo(px(i), py(v + d.ci)); else ctx.lineTo(px(i), py(v + d.ci)); });
+    for (let i = d.qr.length - 1; i >= 0; i--) ctx.lineTo(px(i), py(d.qr[i] - d.ci));
+    ctx.closePath(); ctx.fill();
+
+    // QR line
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 3;
+    ctx.beginPath();
+    d.qr.forEach((v, i) => { if (i === 0) ctx.moveTo(px(i), py(v)); else ctx.lineTo(px(i), py(v)); });
+    ctx.stroke();
+
+    // QR dots
+    ctx.fillStyle = C.blue;
+    d.qr.forEach((v, i) => { ctx.beginPath(); ctx.arc(px(i), py(v), 4, 0, Math.PI * 2); ctx.fill(); });
+
+    // OLS line
+    ctx.strokeStyle = C.red; ctx.lineWidth = 2; ctx.setLineDash([8, 4]);
+    ctx.beginPath(); ctx.moveTo(margin.left, py(d.ols)); ctx.lineTo(w - margin.right, py(d.ols)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // OLS CI band
+    ctx.fillStyle = C.redFade + '0.08)';
+    ctx.fillRect(margin.left, py(d.ols + d.ci * 0.6), plotW, py(d.ols - d.ci * 0.6) - py(d.ols + d.ci * 0.6));
+
+    // Legend
+    ctx.fillStyle = C.blue; ctx.font = '12px ' + C.font;
+    ctx.fillRect(w - 170, 30, 15, 3); ctx.fillText('QR', w - 150, 35);
+    ctx.fillStyle = C.red;
+    ctx.fillRect(w - 170, 45, 15, 3); ctx.fillText('OLS', w - 150, 50);
+}
+
+// ============================================================
+// DGP INTERACTIVE
+// ============================================================
+let dgpSeed = 12345;
+function drawDGP() {
+    dgpSeed++;
+    let hetero = parseInt(document.getElementById('heteroSlider').value) / 100;
+    let n = parseInt(document.getElementById('nSlider').value);
+    document.getElementById('heteroVal').textContent = hetero.toFixed(2);
+    document.getElementById('nVal').textContent = n;
+
+    let rng = seededRandom(dgpSeed);
+    let pts = [];
+    for (let i = 0; i < n; i++) {
+        let x2 = chi2Random(rng);
+        let x3 = 5 * normalRandom(rng);
+        let e = 5 * normalRandom(rng);
+        let u = (0.1 + hetero * x2) * e;
+        let y = 1 + x2 + x3 + u;
+        pts.push({ x2, x3, y });
+    }
+
+    // Scatter plot (left)
+    let c1 = document.getElementById('dgpScatter');
+    let ctx1 = c1.getContext('2d');
+    ctx1.clearRect(0, 0, c1.width, c1.height);
+
+    let m = { l: 40, r: 10, t: 25, b: 30 };
+    let pw = c1.width - m.l - m.r, ph = c1.height - m.t - m.b;
+
+    let x2Vals = pts.map(p => p.x2);
+    let yVals = pts.map(p => p.y);
+    let x2Max = Math.min(quantile(x2Vals, 0.95), 8);
+    let yRange = [quantile(yVals, 0.02), quantile(yVals, 0.98)];
+
+    let px = (v) => m.l + Math.min(v / x2Max, 1) * pw;
+    let py = (v) => m.t + (1 - (v - yRange[0]) / (yRange[1] - yRange[0])) * ph;
+
+    ctx1.fillStyle = '#333'; ctx1.font = 'bold 12px sans-serif';
+    ctx1.textAlign = 'center'; ctx1.fillText('y vs x₂ (scatter)', c1.width / 2, 15); ctx1.textAlign = 'left';
+
+    ctx1.strokeStyle = '#ccc'; ctx1.lineWidth = 1;
+    ctx1.beginPath(); ctx1.moveTo(m.l, m.t); ctx1.lineTo(m.l, c1.height - m.b); ctx1.lineTo(c1.width - m.r, c1.height - m.b); ctx1.stroke();
+
+    ctx1.fillStyle = C.blueFade + '0.25)';
+    pts.forEach(p => {
+        if (p.x2 <= x2Max && p.y >= yRange[0] && p.y <= yRange[1]) {
+            ctx1.beginPath(); ctx1.arc(px(p.x2), py(p.y), 2.5, 0, Math.PI * 2); ctx1.fill();
+        }
+    });
+
+    ctx1.fillStyle = '#666'; ctx1.font = '10px sans-serif';
+    ctx1.textAlign = 'center'; ctx1.fillText('x₂', c1.width / 2, c1.height - 5); ctx1.textAlign = 'left';
+
+    // Coefficient plot (right)
+    let c2 = document.getElementById('dgpCoef');
+    let ctx2 = c2.getContext('2d');
+    ctx2.clearRect(0, 0, c2.width, c2.height);
+
+    // Compute QR coefficients at various quantiles
+    let quantiles_list = [0.10, 0.25, 0.50, 0.75, 0.90];
+    let coefs_x2 = [], coefs_x3 = [];
+
+    quantiles_list.forEach(q => {
+        // Simplified: compute conditional quantile by binning
+        // Actually, let's compute true theoretical values
+        let eVals = pts.map(p => {
+            let e_approx = (p.y - 1 - p.x2 - p.x3); // this is u, not e
+            return e_approx;
+        });
+        // Theoretical: coef_x2 at q = 1 + hetero * quantile(e, q)
+        let eForQ = [];
+        for (let i = 0; i < n; i++) {
+            let e = 5 * normalRandom(seededRandom(42 + i));
+            eForQ.push(e);
+        }
+        let eq = quantile(eForQ, q);
+        coefs_x2.push(1 + hetero * eq);
+        coefs_x3.push(1); // always 1
+    });
+
+    let m2 = { l: 50, r: 10, t: 25, b: 30 };
+    let pw2 = c2.width - m2.l - m2.r, ph2 = c2.height - m2.t - m2.b;
+
+    let cMin = Math.min(...coefs_x2, 0.5);
+    let cMax = Math.max(...coefs_x2, 1.5);
+
+    let px2 = (i) => m2.l + (i / (quantiles_list.length - 1)) * pw2;
+    let py2 = (v) => m2.t + (1 - (v - cMin) / (cMax - cMin)) * ph2;
+
+    ctx2.fillStyle = '#333'; ctx2.font = 'bold 12px sans-serif';
+    ctx2.textAlign = 'center'; ctx2.fillText('Coefficients by Quantile', c2.width / 2, 15); ctx2.textAlign = 'left';
+
+    // Grid
+    ctx2.strokeStyle = '#eee'; ctx2.lineWidth = 1;
+    for (let v = cMin; v <= cMax; v += (cMax - cMin) / 4) {
+        ctx2.beginPath(); ctx2.moveTo(m2.l, py2(v)); ctx2.lineTo(c2.width - m2.r, py2(v)); ctx2.stroke();
+        ctx2.fillStyle = '#999'; ctx2.font = '9px sans-serif';
+        ctx2.fillText(v.toFixed(2), 5, py2(v) + 3);
+    }
+
+    ctx2.strokeStyle = '#ccc'; ctx2.lineWidth = 1;
+    ctx2.beginPath(); ctx2.moveTo(m2.l, m2.t); ctx2.lineTo(m2.l, c2.height - m2.b); ctx2.lineTo(c2.width - m2.r, c2.height - m2.b); ctx2.stroke();
+
+    // x2 coefs
+    ctx2.strokeStyle = C.red; ctx2.lineWidth = 3;
+    ctx2.beginPath();
+    coefs_x2.forEach((v, i) => { if (i === 0) ctx2.moveTo(px2(i), py2(v)); else ctx2.lineTo(px2(i), py2(v)); });
+    ctx2.stroke();
+    ctx2.fillStyle = C.red;
+    coefs_x2.forEach((v, i) => { ctx2.beginPath(); ctx2.arc(px2(i), py2(v), 4, 0, Math.PI * 2); ctx2.fill(); });
+
+    // x3 coefs (flat at 1)
+    ctx2.strokeStyle = C.blue; ctx2.lineWidth = 3; ctx2.setLineDash([5, 3]);
+    ctx2.beginPath();
+    ctx2.moveTo(m2.l, py2(1)); ctx2.lineTo(c2.width - m2.r, py2(1));
+    ctx2.stroke(); ctx2.setLineDash([]);
+
+    // X labels
+    ctx2.fillStyle = '#666'; ctx2.font = '10px sans-serif'; ctx2.textAlign = 'center';
+    quantiles_list.forEach((q, i) => ctx2.fillText(q.toFixed(2), px2(i), c2.height - m2.b + 15));
+    ctx2.textAlign = 'left';
+
+    // Legend
+    ctx2.fillStyle = C.red; ctx2.font = '11px ' + C.font;
+    ctx2.fillRect(c2.width - 100, 30, 12, 3); ctx2.fillText('x₂', c2.width - 83, 35);
+    ctx2.fillStyle = C.blue;
+    ctx2.fillRect(c2.width - 100, 45, 12, 3); ctx2.fillText('x₃', c2.width - 83, 50);
+}
+
+// ============================================================
+// JITTER DEMO
+// ============================================================
+function drawJitter(jittered) {
+    let canvas = document.getElementById('jitterCanvas');
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    canvas.parentElement.querySelectorAll('.interactive-btn').forEach(b => b.classList.remove('active'));
+    if (typeof event !== 'undefined' && event && event.target) event.target.classList.add('active');
+
+    let rng = seededRandom(Date.now() % 10000);
+    // Generate Poisson-like counts
+    let counts = [];
+    for (let i = 0; i < 200; i++) {
+        let lambda = 5 + 3 * rng();
+        let k = 0, p = Math.exp(-lambda), s = p;
+        let u = rng();
+        while (u > s && k < 50) { k++; p *= lambda / k; s += p; }
+        counts.push(k);
+    }
+    counts.sort((a, b) => a - b);
+
+    let values = jittered ? counts.map(c => c + rng()) : counts;
+
+    let m = { l: 40, r: 20, t: 30, b: 35 };
+    let pw = w - m.l - m.r, ph = h - m.t - m.b;
+    let yMax = Math.max(...values);
+
+    ctx.fillStyle = C.dark; ctx.font = 'bold 13px ' + C.font;
+    ctx.textAlign = 'center';
+    ctx.fillText(jittered ? 'After Jittering (z = y + U[0,1])' : 'Original Count Data', w / 2, 18);
+    ctx.textAlign = 'left';
+
+    // Axes
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(m.l, m.t); ctx.lineTo(m.l, h - m.b); ctx.lineTo(w - m.r, h - m.b); ctx.stroke();
+    ctx.fillStyle = C.gray; ctx.font = '10px ' + C.font;
+    ctx.textAlign = 'center'; ctx.fillText('Fraction of data', w / 2, h - 5); ctx.textAlign = 'left';
+
+    // Quantile plot
+    ctx.strokeStyle = jittered ? C.green : C.blue; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    values.forEach((v, i) => {
+        let x = m.l + (i / (values.length - 1)) * pw;
+        let y = h - m.b - (v / yMax) * ph;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Show step pattern for non-jittered
+    if (!jittered) {
+        ctx.fillStyle = C.redFade + '0.6)'; ctx.font = '11px ' + C.font;
+        ctx.fillText('step pattern', w - 130, m.t + 20);
+        ctx.fillText('(discrete jumps)', w - 145, m.t + 35);
+    } else {
+        ctx.fillStyle = C.greenFade + '0.6)'; ctx.font = '11px ' + C.font;
+        ctx.fillText('smooth!', w - 100, m.t + 20);
+    }
+}
+
+// ============================================================
+// MARGINAL EFFECTS COMPARISON
+// ============================================================
+function drawME(variable) {
+    let canvas = document.getElementById('meCanvas');
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    canvas.parentElement.querySelectorAll('.interactive-btn').forEach(b => b.classList.remove('active'));
+    if (typeof event !== 'undefined' && event && event.target) event.target.classList.add('active');
+
+    let data = {
+        private: { negbin: 1.8, qcr50: 1.2, qcr75: 2.8, ci: 0.6, label: 'Private Insurance' },
+        totchr: { negbin: 2.5, qcr50: 1.8, qcr75: 3.5, ci: 0.4, label: 'Chronic Conditions' },
+        female: { negbin: 0.8, qcr50: 0.5, qcr75: 1.2, ci: 0.4, label: 'Female' },
+    };
+
+    let d = data[variable];
+    let m = { l: 100, r: 100, t: 40, b: 50 };
+    let pw = w - m.l - m.r, ph = h - m.t - m.b;
+
+    let methods = ['NegBin (mean)', 'QCR q=0.50', 'QCR q=0.75'];
+    let values = [d.negbin, d.qcr50, d.qcr75];
+    let colors = [C.purple, C.blue, C.red];
+    let maxVal = Math.max(...values) + d.ci;
+
+    ctx.fillStyle = C.dark; ctx.font = 'bold 14px ' + C.font;
+    ctx.textAlign = 'center'; ctx.fillText(`Marginal Effect: ${d.label}`, w / 2, 22); ctx.textAlign = 'left';
+
+    let barW = 80;
+    methods.forEach((method, i) => {
+        let x = m.l + (i / (methods.length - 1)) * pw - barW / 2;
+        if (methods.length === 1) x = w / 2 - barW / 2;
+        let barH = (values[i] / maxVal) * ph;
+        let y = m.t + ph - barH;
+
+        // Bar
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        roundRect(ctx, x, y, barW, barH, 5);
+        ctx.fill();
+
+        // CI
+        let cx = x + barW / 2;
+        ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx, m.t + ph - ((values[i] - d.ci) / maxVal) * ph); ctx.lineTo(cx, m.t + ph - ((values[i] + d.ci) / maxVal) * ph); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx - 10, m.t + ph - ((values[i] + d.ci) / maxVal) * ph); ctx.lineTo(cx + 10, m.t + ph - ((values[i] + d.ci) / maxVal) * ph); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx - 10, m.t + ph - ((values[i] - d.ci) / maxVal) * ph); ctx.lineTo(cx + 10, m.t + ph - ((values[i] - d.ci) / maxVal) * ph); ctx.stroke();
+
+        // Value
+        ctx.fillStyle = C.dark; ctx.font = 'bold 13px ' + C.font; ctx.textAlign = 'center';
+        ctx.fillText(values[i].toFixed(1), cx, y - 8);
+
+        // Label
+        ctx.fillStyle = C.gray; ctx.font = '11px ' + C.font;
+        ctx.fillText(method, cx, m.t + ph + 20);
+        ctx.textAlign = 'left';
+    });
+
+    // Baseline
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(m.l - 20, m.t + ph); ctx.lineTo(w - m.r + 20, m.t + ph); ctx.stroke();
+    ctx.fillStyle = C.axis; ctx.font = '10px ' + C.font;
+    ctx.fillText('0', m.l - 15, m.t + ph + 4);
+    ctx.fillText('ME (visits)', 5, m.t + ph / 2);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
+// ============================================================
+// FLOWCHART
+// ============================================================
+// flowchart is now pure HTML/CSS, no canvas needed
+
+// ============================================================
+// QUIZ
+// ============================================================
+function checkQuiz(quizId, el, correct) {
+    let container = document.getElementById(quizId);
+    let feedback = document.getElementById(quizId + '-feedback');
+    let options = container.querySelectorAll('.quiz-option');
+
+    // Disable all
+    options.forEach(o => o.style.pointerEvents = 'none');
+
+    if (correct) {
+        el.classList.add('correct');
+        feedback.style.display = 'block';
+        feedback.style.background = '#eafaf1';
+        feedback.style.color = C.green;
+        if (quizId === 'quiz1') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> เพราะ x₂ อยู่ใน heteroskedasticity function u = (0.1+0.5x₂)e ดังนั้น quantile ที่สูงขึ้นจะทำให้ coefficient ของ x₂ เพิ่มขึ้น (เพราะ F⁻¹(q) เพิ่มตาม q)';
+        } else if (quizId === 'quiz2') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> Count data เป็น discrete ทำให้ CDF มี flat segments กับ jumps สลับกัน quantile จึงไม่ unique &mdash; jittering เพิ่ม U(0,1) ทำให้ continuous และใช้ QR มาตรฐานได้';
+        } else if (quizId === 'quiz3') {
+            feedback.innerHTML = '<strong>ถูกต้อง!</strong> QR ทำให้เห็นว่า regressor มีผลต่อ shape (scale, skewness) ของ conditional distribution ไม่ใช่แค่ shift ตำแหน่ง ซึ่ง OLS เห็นได้แค่ค่าเฉลี่ย';
+        }
+    } else {
+        el.classList.add('wrong');
+        feedback.style.display = 'block';
+        feedback.style.background = '#fdf2f2';
+        feedback.style.color = C.red;
+        feedback.innerHTML = '<strong>ไม่ถูก</strong> ลองคิดอีกครั้ง... (click ตัวเลือกอื่น)';
+        // Re-enable
+        setTimeout(() => {
+            options.forEach(o => { o.style.pointerEvents = 'auto'; o.classList.remove('wrong'); });
+            feedback.style.display = 'none';
+        }, 2000);
+    }
+}
+
+// ============================================================
+// INIT: Draw all canvases on slide change
+// ============================================================
+let initialized = false;
+function initAll() {
+    if (initialized) return;
+    initialized = true;
+    drawIntro('ols');
+    stepHeavyTail(50);
+    drawQuantileDemo();
+    drawCheckFunction();
+    drawObjFnDemo();
+    drawLossComparison();
+    drawCoefPlot('suppins');
+    drawDGP();
+    drawJitter(false);
+    drawME('private');
+    runBootstrapDemo(50);
+    // flowchart is HTML
+}
+
+Reveal.on('ready', initAll);
+Reveal.on('slidechanged', () => {
+    // Redraw canvases when their slide becomes visible
+    requestAnimationFrame(() => {
+        let slide = Reveal.getCurrentSlide();
+        if (slide.querySelector('#introCanvas')) drawIntro('ols');
+        if (slide.querySelector('#cauchyCanvas')) { drawHeavyTail('cauchyCanvas', htCauchySamples, 'Cauchy'); drawHeavyTail('normalCanvas', htNormalSamples, 'Normal'); }
+        if (slide.querySelector('#quantileCanvas')) drawQuantileDemo();
+        if (slide.querySelector('#checkFnCanvas')) drawCheckFunction();
+        if (slide.querySelector('#objFnCanvas')) drawObjFnDemo();
+        if (slide.querySelector('#lossCanvas')) drawLossComparison();
+        if (slide.querySelector('#coefCanvas')) drawCoefPlot('suppins');
+        if (slide.querySelector('#dgpScatter')) drawDGP();
+        if (slide.querySelector('#jitterCanvas')) drawJitter(false);
+        if (slide.querySelector('#meCanvas')) drawME('private');
+        if (slide.querySelector('#bootstrapCanvas')) drawBootstrapDemo();
+        // flowchart is HTML
+    });
+});
+</script>
+
+</body>
+</html>
