@@ -3,3 +3,4 @@ scripts/generate_docx.py
 lectures/Code Only EE627_Lecture_Notes.docx
 lectures/Full EE627_Lecture_Notes.docx
 lectures/Full EE627_Lecture_Notes.pdf
+scripts/__pycache__/
