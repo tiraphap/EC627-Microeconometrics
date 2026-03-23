@@ -403,7 +403,7 @@
         <h4>สร้างตัวเลขสุ่มจาก Distribution ต่าง ๆ</h4>
         <div class="slider-group">
             <label>Sample Size:</label>
-            <input type="range" id="distN" min="100" max="10000" value="1000" step="100" oninput="document.getElementById('distNVal').textContent=this.value">
+            <input type="range" id="distN" min="100" max="10000" value="1000" step="100" oninput="document.getElementById('distNVal').textContent=this.value; drawDistDemo(currentDist, null);">
             <span class="val" id="distNVal">1000</span>
         </div>
         <div style="text-align:center; margin: 4px 0;">
@@ -1259,7 +1259,9 @@ function drawHistogram(ctx, data, w, h, options) {
 // ============================================================
 // 1. DISTRIBUTION DEMO
 // ============================================================
+let currentDist = 'uniform';
 function drawDistDemo(dist, btn) {
+    currentDist = dist;
     // Update active button
     if (btn) {
         btn.parentElement.querySelectorAll('.interactive-btn').forEach(b => b.classList.remove('active'));
