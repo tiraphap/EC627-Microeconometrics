@@ -39,7 +39,28 @@ All 8 chapters include interactive **reveal.js** presentations with:
 - Quizzes for self-assessment
 - Decision trees for method selection
 
-To view, open the `.html` files in `slides/` with any modern browser.
+### วิธีเปิด Slides (สำหรับนักศึกษา)
+
+**ขั้นตอนที่ 1: ดาวน์โหลดไฟล์**
+- เข้าไปที่โฟลเดอร์ [`slides/`](slides/) ใน GitHub
+- คลิกไฟล์บทที่ต้องการ เช่น `chap1_slides.html`
+- กดปุ่ม **Download raw file** (ไอคอนลูกศรลง ↓ มุมขวาบน)
+- ดาวน์โหลดไฟล์ `EconTU jpg.jpg` ด้วย (โลโก้ที่แสดงในสไลด์)
+- **วางทั้ง 2 ไฟล์ไว้ในโฟลเดอร์เดียวกัน**
+
+> หรือจะโคลนทั้ง repo: `git clone https://github.com/tiraphap/EC627-Microeconometrics.git`
+
+**ขั้นตอนที่ 2: เปิดในเว็บเบราว์เซอร์**
+- ดับเบิลคลิกไฟล์ `.html` ที่ดาวน์โหลดมา จะเปิดในเบราว์เซอร์โดยอัตโนมัติ
+- แนะนำ **Google Chrome** หรือ **Microsoft Edge**
+
+**ขั้นตอนที่ 3: การใช้งานสไลด์**
+- กด **ลูกศรขวา →** เปลี่ยนหัวข้อ (section)
+- กด **ลูกศรลง ↓** ดูสไลด์ย่อยในหัวข้อเดียวกัน
+- กด **Esc** ดูภาพรวมทุกสไลด์ (overview mode)
+- กด **F** เข้าโหมดเต็มจอ (fullscreen)
+- สไลด์ที่มี **ปุ่ม/slider** สามารถกดโต้ตอบได้เลย
+- สไลด์ **Quiz** กดเลือกคำตอบแล้วจะแสดงผลทันที
 
 | File | Chapter | Highlights |
 |------|---------|------------|
