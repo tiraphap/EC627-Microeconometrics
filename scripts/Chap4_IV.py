@@ -1,3 +1,6 @@
+# MIT License
+# Copyright (c) 2026 Tiraphap Fakthong
+# See LICENSE file for full license text.
 """
 =============================================================================
 EC627 Microeconometrics - Chapter 4

@@ -1,3 +1,6 @@
+* MIT License
+* Copyright (c) 2026 Tiraphap Fakthong
+* See LICENSE file for full license text.
 * Read data, define global x2list, and summarize data
 global x2list totchr age female blhisp linc 
 summarize ldrugexp hi_empunion $x2list

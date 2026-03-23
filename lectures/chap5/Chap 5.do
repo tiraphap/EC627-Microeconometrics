@@ -1,3 +1,6 @@
+* MIT License
+* Copyright (c) 2026 Tiraphap Fakthong
+* See LICENSE file for full license text.
 ********** QUANTILE REGRESSION FOR MEDICAL EXPENDITURES DATA
 
 * Read in log of medical expenditures data and summarize
