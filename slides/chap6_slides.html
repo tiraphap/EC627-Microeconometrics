@@ -289,32 +289,29 @@
     <div class="two-col">
         <div>
             <div class="concept-box">
-                <p><strong>Panel Study of Income Dynamics (PSID)</strong></p>
-                <p>595 คน &times; 7 ปี (1976&ndash;82) = 4,165 obs</p>
-                <p>Balanced panel (ทุกคนมีครบทุกปี)</p>
+                <p><strong>PSID:</strong> 595 คน &times; 7 ปี (1976&ndash;82) = 4,165 obs &mdash; Balanced panel</p>
                 <p>ตัวแปรตาม: <strong>lwage</strong> (log hourly wage)</p>
             </div>
             <div class="stata-code fragment">
 <span class="cmt">* ประกาศโครงสร้าง panel</span>
 <span class="cmd">xtset</span> id t
-
 <span class="cmt">* ดู within vs between variation</span>
 <span class="cmd">xtsum</span> id t lwage ed exp exp2 wks
             </div>
             <div class="key-insight fragment">
-                <p><strong>Within vs Between variation:</strong></p>
-                <ul>
-                    <li><strong>ed</strong> (education): within = 0, between &gt; 0 &rarr; ไม่เปลี่ยนตามเวลา (time-invariant)</li>
-                    <li><strong>exp</strong> (experience): within &gt; 0, between &gt; 0 &rarr; เปลี่ยนทั้งระหว่างคนและตามเวลา</li>
-                    <li><strong>lwage</strong>: within &ap; 0.23, between &ap; 0.39 &rarr; ความแตกต่างระหว่างคนมากกว่าภายในคน</li>
+                <p style="margin-bottom:0.15em;"><strong>Within vs Between variation:</strong></p>
+                <ul style="margin-top:0;">
+                    <li><strong>ed</strong>: within = 0 &rarr; time-invariant</li>
+                    <li><strong>exp</strong>: within &gt; 0, between &gt; 0 &rarr; เปลี่ยนทั้งระหว่างคนและตามเวลา</li>
+                    <li><strong>lwage</strong>: within &ap; 0.23, between &ap; 0.39 &rarr; ต่างระหว่างคนมากกว่าภายในคน</li>
                 </ul>
             </div>
         </div>
         <div>
             <div class="interactive-container fragment">
                 <h4>Panel Data Structure Explorer</h4>
-                <canvas id="dataExplorer" width="400" height="280"></canvas>
-                <div style="text-align:center; margin-top:4px;">
+                <canvas id="dataExplorer" width="400" height="250"></canvas>
+                <div style="text-align:center; margin-top:3px;">
                     <button class="interactive-btn active" onclick="showTransform('original')">Original</button>
                     <button class="interactive-btn" onclick="showTransform('within')">Within</button>
                     <button class="interactive-btn" onclick="showTransform('between')">Between</button>
