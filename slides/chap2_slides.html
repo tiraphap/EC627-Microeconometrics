@@ -371,32 +371,28 @@
         <span class="cmd">clear all</span><br>
         <span class="cmd">set seed</span> <span class="num">10101</span><br>
         <span class="cmd">set obs</span> <span class="num">10000</span><br>
-        <br>
         <span class="cmd">generate</span> x = <span class="cmd">runiform</span>() <span class="cmt">// Uniform(0,1)</span><br>
         <span class="cmd">generate</span> stnormal = <span class="cmd">rnormal</span>() <span class="cmt">// Standard Normal N(0,1)</span><br>
         <span class="cmd">generate</span> xt = <span class="cmd">rt</span>(<span class="num">10</span>) <span class="cmt">// Student-t with df=10</span><br>
         <span class="cmd">generate</span> xc = <span class="cmd">rchi2</span>(<span class="num">10</span>) <span class="cmt">// Chi-squared with df=10</span><br>
         <span class="cmd">generate</span> xp = <span class="cmd">rpoisson</span>(<span class="num">5</span>) <span class="cmt">// Poisson with mean=5</span><br>
-        <br>
-        <span class="cmt">* ตรวจสอบคุณสมบัติ</span><br>
         <span class="cmd">summarize</span> x stnormal xt xc xp<br>
         <span class="cmd">pwcorr</span> x stnormal xt xc xp <span class="cmt">// ตรวจสอบ autocorrelation</span>
     </div>
-    <div class="two-col fragment" style="margin-top: 5px;">
-        <div class="concept-box">
+    <div class="two-col fragment" style="margin-top: 4px;">
+        <div class="concept-box" style="padding: 5px 10px 3px;">
             <h3>คุณสมบัติที่คาดหวัง</h3>
-            <ul>
+            <ul style="margin: 0.1em 0;">
                 <li>Uniform: mean &asymp; 0.5, SD &asymp; 0.289</li>
                 <li>Normal: mean &asymp; 0, SD &asymp; 1</li>
                 <li>t(10): mean &asymp; 0, heavier tails กว่า normal</li>
-                <li>Chi-squared(10): mean &asymp; 10, skewed right</li>
+                <li>Chi-sq(10): mean &asymp; 10, skewed right</li>
                 <li>Poisson(5): mean &asymp; 5, discrete</li>
             </ul>
         </div>
-        <div class="key-insight">
+        <div class="key-insight" style="padding: 5px 10px 3px;">
             <h3>Autocorrelation Check</h3>
-            <p>ตัวเลขสุ่มที่ดีต้อง <strong>ไม่มี autocorrelation</strong> &mdash; ใช้ <code>pwcorr</code> หรือ <code>ac</code> ตรวจสอบ</p>
-            <p>ถ้าพบ correlation สูง แสดงว่า PRNG อาจมีปัญหา</p>
+            <p>ตัวเลขสุ่มที่ดีต้อง <strong>ไม่มี autocorrelation</strong> &mdash; ใช้ <code>pwcorr</code> หรือ <code>ac</code> ตรวจสอบ ถ้าพบ correlation สูง แสดงว่า PRNG อาจมีปัญหา</p>
         </div>
     </div>
 </section>
@@ -626,22 +622,17 @@
     <h2>DGP: OLS กับ Chi-squared Errors</h2>
     <div class="two-col">
         <div>
-            <div class="concept-box">
+            <div class="concept-box" style="padding: 5px 10px 3px;">
                 <h3>Data Generating Process</h3>
-                <div class="math-block">
+                <div class="math-block" style="margin: 3px 0;">
                     \(y_i = 1 + 2x_i + u_i\)
                 </div>
-                <p>โดยที่:</p>
-                <ul>
-                    <li>\(x_i \sim \chi^2(1)\)</li>
-                    <li>\(u_i = \chi^2(1) - 1\) (mean = 0, skewed)</li>
-                    <li><strong>True values:</strong> \(\beta_0 = 1, \beta_1 = 2\)</li>
-                </ul>
+                <p style="margin-bottom: 0;">โดยที่: \(x_i \sim \chi^2(1)\), &ensp;\(u_i = \chi^2(1) - 1\) (mean=0, skewed)</p>
+                <p><strong>True values:</strong> \(\beta_0 = 1, \beta_1 = 2\)</p>
             </div>
-            <div class="key-insight fragment">
+            <div class="key-insight fragment" style="padding: 5px 10px 3px;">
                 <h3>ทำไมใช้ Chi-squared Error?</h3>
-                <p>เพื่อทดสอบว่า OLS ยังทำงานดีไหมเมื่อ error <strong>ไม่เป็น Normal</strong> (skewed distribution)</p>
-                <p>CLT บอกว่า \(\hat{\beta}\) ยังควรจะ <strong>approximately normal</strong></p>
+                <p>ทดสอบว่า OLS ยังทำงานดีเมื่อ error <strong>ไม่เป็น Normal</strong> &mdash; CLT บอกว่า \(\hat{\beta}\) ยังควรจะ <strong>approximately normal</strong></p>
             </div>
         </div>
         <div>
@@ -659,14 +650,9 @@
                 &nbsp;&nbsp;<span class="cmd">return scalar</span> r2 = abs(return(t2)) > <span class="cmd">invttail</span>($numobs-<span class="num">2</span>,.<span class="num">025</span>)<br>
                 <span class="cmd">end</span>
             </div>
-            <div class="example-box fragment">
+            <div class="example-box fragment" style="padding: 5px 10px 3px;">
                 <h3>ตัวแปรที่เก็บ</h3>
-                <ul>
-                    <li><strong>b2:</strong> ค่าประมาณ \(\hat{\beta}_1\)</li>
-                    <li><strong>se2:</strong> standard error ของ \(\hat{\beta}_1\)</li>
-                    <li><strong>t2:</strong> t-statistic สำหรับ H<sub>0</sub>: &beta;<sub>1</sub> = 2</li>
-                    <li><strong>r2:</strong> reject indicator (1 ถ้าปฏิเสธ H<sub>0</sub>)</li>
-                </ul>
+                <p><strong>b2:</strong> \(\hat{\beta}_1\) &ensp;|&ensp; <strong>se2:</strong> SE ของ \(\hat{\beta}_1\) &ensp;|&ensp; <strong>t2:</strong> t-stat (H<sub>0</sub>: &beta;<sub>1</sub>=2) &ensp;|&ensp; <strong>r2:</strong> reject indicator</p>
             </div>
         </div>
     </div>
@@ -677,34 +663,23 @@
     <div class="stata-code">
         <span class="cmd">global</span> numobs = <span class="num">100</span><br>
         <span class="cmd">simulate</span> b2f=r(b2) se2f=r(se2) t2f=r(t2) reject2f=r(r2), <span class="opt">reps</span>(<span class="num">1000</span>): chi2data<br>
-        <br>
-        <span class="cmt">* ตรวจสอบ unbiasedness</span><br>
-        <span class="cmd">summarize</span> b2f <span class="cmt">// mean ควร ≈ 2</span><br>
-        <br>
-        <span class="cmt">* ตรวจสอบ SE accuracy</span><br>
-        <span class="cmd">summarize</span> se2f <span class="cmt">// mean ≈ SD of b2f</span><br>
-        <br>
-        <span class="cmt">* ตรวจสอบ test size</span><br>
-        <span class="cmd">summarize</span> reject2f <span class="cmt">// mean ควร ≈ 0.05</span><br>
-        <br>
-        <span class="cmt">* เปรียบเทียบ t-statistic กับ theoretical t distribution</span><br>
-        <span class="cmd">histogram</span> t2f, <span class="opt">normal</span>
+        <span class="cmd">summarize</span> b2f <span class="cmt">// ตรวจ unbiasedness: mean ควร ≈ 2</span><br>
+        <span class="cmd">summarize</span> se2f <span class="cmt">// ตรวจ SE accuracy: mean ≈ SD of b2f</span><br>
+        <span class="cmd">summarize</span> reject2f <span class="cmt">// ตรวจ test size: mean ควร ≈ 0.05</span><br>
+        <span class="cmd">histogram</span> t2f, <span class="opt">normal</span> <span class="cmt">// เปรียบเทียบ t-stat กับ theoretical dist</span>
     </div>
-    <div class="three-col fragment" style="margin-top: 5px;">
-        <div class="concept-box">
+    <div class="three-col fragment" style="margin-top: 4px;">
+        <div class="concept-box" style="padding: 5px 10px 3px;">
             <h3>Unbiasedness</h3>
-            <p>ถ้า mean ของ \(\hat{\beta}_1\) &asymp; 2</p>
-            <p>&rarr; OLS เป็น <strong>unbiased</strong></p>
+            <p>ถ้า mean ของ \(\hat{\beta}_1\) &asymp; 2 &rarr; OLS เป็น <strong>unbiased</strong></p>
         </div>
-        <div class="concept-box">
+        <div class="concept-box" style="padding: 5px 10px 3px;">
             <h3>SE Accuracy</h3>
-            <p>ถ้า mean(SE) &asymp; SD(\(\hat{\beta}_1\))</p>
-            <p>&rarr; SE formula <strong>ถูกต้อง</strong></p>
+            <p>ถ้า mean(SE) &asymp; SD(\(\hat{\beta}_1\)) &rarr; SE formula <strong>ถูกต้อง</strong></p>
         </div>
-        <div class="key-insight">
+        <div class="key-insight" style="padding: 5px 10px 3px;">
             <h3>Test Size</h3>
-            <p>ถ้า rejection rate &asymp; 5%</p>
-            <p>&rarr; t-test มี <strong>correct size</strong></p>
+            <p>ถ้า rejection rate &asymp; 5% &rarr; t-test มี <strong>correct size</strong></p>
         </div>
     </div>
 </section>

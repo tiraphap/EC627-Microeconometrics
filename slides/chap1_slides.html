@@ -1291,7 +1291,7 @@
 </section>
 
 <section>
-    <h2>สรุป: ขั้นตอนการวิเคราะห์ข้อมูลจุลภาค</h2>
+    <h2>สรุป: ขั้นตอนการวิเคราะห์ (1/2)</h2>
     <div class="decision-tree">
         <div class="dt-node dt-diamond">1. สำรวจข้อมูล (EDA)</div>
         <div class="dt-arrow">&darr;</div>
@@ -1317,7 +1317,12 @@
                 <div class="dt-node dt-action2">imtest</div>
             </div>
         </div>
-        <div class="dt-arrow">&darr;</div>
+    </div>
+</section>
+
+<section>
+    <h2>สรุป: ขั้นตอนการวิเคราะห์ (2/2)</h2>
+    <div class="decision-tree">
         <div class="dt-node dt-diamond">4. Prediction &amp; Retransformation</div>
         <div class="dt-arrow">&darr;</div>
         <div class="dt-row">
@@ -1334,6 +1339,13 @@
                 <div class="dt-label">u iid</div>
             </div>
         </div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-diamond">5. ใช้ Sampling Weights (ถ้าจำเป็น)</div>
+        <div class="dt-arrow">&darr;</div>
+        <div class="dt-node dt-action">regress y x [pw=weight], vce(robust)</div>
+    </div>
+    <div class="key-insight" style="margin-top: 10px;">
+        <p><strong>หลักการสำคัญ:</strong> ทุกขั้นตอนต้องคำนึงถึง robust standard errors และตรวจสอบ specification อย่างรอบคอบ</p>
     </div>
 </section>
 

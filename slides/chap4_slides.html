@@ -135,8 +135,10 @@
         .quiz-feedback { font-size: 0.5em; margin-top: 4px; padding: 5px 8px; border-radius: 4px; display: none; }
 
         /* ---- Math ---- */
-        .reveal .katex { font-size: 0.72em; }
-        .math-block { text-align: center; margin: 5px 0; font-size: 0.68em; }
+        .reveal .katex { font-size: 0.85em; }
+        .math-block { text-align: center; margin: 5px 0; font-size: 0.82em; }
+        .math-block .katex { font-size: 1em; }
+        .math-block.math-sm .katex { font-size: 0.88em; }
 
         /* ---- Progress dots ---- */
         .topic-progress { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
@@ -162,6 +164,10 @@
         .dt-arrow { color: var(--text-light); font-size: 1.4em; line-height: 1; text-align: center; padding: 2px 0; }
         .dt-label { font-size: 0.85em; color: var(--text-light); font-weight: 400; }
         .dt-branch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        /* ---- Reveal controls above interactive elements ---- */
+        .reveal .controls { z-index: 200 !important; }
+        .reveal .progress { z-index: 200 !important; }
 
         /* ---- Footer ---- */
         .instructor-footer {
@@ -371,7 +377,10 @@
     <div class="concept-box">
         <h3>Simple IV (Just-identified case)</h3>
         <div class="math-block">
-            <span class="katex">\hat{\beta}_{IV} = \frac{\text{Cov}(z, y)}{\text{Cov}(z, x)} = \frac{\sum (z_i - \bar{z})(y_i - \bar{y})}{\sum (z_i - \bar{z})(x_i - \bar{x})}</span>
+            <span class="katex">\hat{\beta}_{IV} = \frac{\text{Cov}(z,\, y)}{\text{Cov}(z,\, x)}</span>
+        </div>
+        <div class="math-block math-sm">
+            <span class="katex">= \frac{\sum (z_i - \bar{z})(y_i - \bar{y})}{\sum (z_i - \bar{z})(x_i - \bar{x})}</span>
         </div>
         <p>เมื่อมีตัวแปร endogenous 1 ตัว และ instrument 1 ตัว</p>
     </div>
@@ -386,8 +395,8 @@
         </div>
         <div class="key-insight">
             <h3>Variance ของ IV</h3>
-            <div class="math-block">
-                <span class="katex">\text{Var}(\hat{\beta}_{IV}) \approx \frac{\sigma^2}{n \cdot \text{Var}(x) \cdot R^2_{x,z}}</span>
+            <div class="math-block math-sm">
+                <span class="katex">\text{Var}(\hat{\beta}_{IV}) \approx \frac{\sigma^2}{n \,\text{Var}(x)\, R^2_{x,z}}</span>
             </div>
             <p>เมื่อ R<sup>2</sup><sub>x,z</sub> ต่ำ (weak instrument) &rarr; variance จะสูงมาก</p>
         </div>
