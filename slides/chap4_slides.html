@@ -227,7 +227,7 @@
             <div class="concept-box">
                 <p><strong>OLS Assumption:</strong> ตัวแปรอิสระ x ไม่สัมพันธ์กับ error term u</p>
                 <div class="math-block">
-                    <span class="katex">E[u | x] = 0 \implies \text{Cov}(x, u) = 0</span>
+                    <span data-tex="E[u | x] = 0 \implies \text{Cov}(x, u) = 0"></span>
                 </div>
             </div>
             <div class="key-insight fragment">
@@ -258,7 +258,7 @@
             <div class="concept-box">
                 <h3>Asymptotic Bias ของ OLS</h3>
                 <div class="math-block">
-                    <span class="katex">\text{plim}(\hat{\beta}_{OLS}) = \beta + \frac{\text{Cov}(x, u)}{\text{Var}(x)}</span>
+                    <span data-tex="\text{plim}(\hat{\beta}_{OLS}) = \beta + \frac{\text{Cov}(x, u)}{\text{Var}(x)}"></span>
                 </div>
                 <p>เมื่อ Cov(x, u) &ne; 0 ค่า OLS จะเบี่ยงเบนไม่ว่าจะเพิ่มขนาดตัวอย่างเท่าไร</p>
             </div>
@@ -347,7 +347,7 @@
                 <h3>Exclusion Restriction</h3>
                 <p>z ส่งผลต่อ y <strong>เฉพาะผ่าน x เท่านั้น</strong> ไม่มีผลตรง</p>
                 <div class="math-block">
-                    <span class="katex">z \rightarrow x \rightarrow y \quad (\text{แต่} \; z \not\rightarrow y \; \text{โดยตรง})</span>
+                    <span data-tex="z \rightarrow x \rightarrow y \quad (\text{แต่} \; z \not\rightarrow y \; \text{โดยตรง})"></span>
                 </div>
             </div>
         </div>
@@ -377,10 +377,10 @@
     <div class="concept-box">
         <h3>Simple IV (Just-identified case)</h3>
         <div class="math-block">
-            <span class="katex">\hat{\beta}_{IV} = \frac{\text{Cov}(z,\, y)}{\text{Cov}(z,\, x)}</span>
+            <span data-tex="\hat{\beta}_{IV} = \frac{\text{Cov}(z,\, y)}{\text{Cov}(z,\, x)}"></span>
         </div>
         <div class="math-block math-sm">
-            <span class="katex">= \frac{\sum (z_i - \bar{z})(y_i - \bar{y})}{\sum (z_i - \bar{z})(x_i - \bar{x})}</span>
+            <span data-tex="= \frac{\sum (z_i - \bar{z})(y_i - \bar{y})}{\sum (z_i - \bar{z})(x_i - \bar{x})}"></span>
         </div>
         <p>เมื่อมีตัวแปร endogenous 1 ตัว และ instrument 1 ตัว</p>
     </div>
@@ -396,7 +396,7 @@
         <div class="key-insight">
             <h3>Variance ของ IV</h3>
             <div class="math-block math-sm">
-                <span class="katex">\text{Var}(\hat{\beta}_{IV}) \approx \frac{\sigma^2}{n \,\text{Var}(x)\, R^2_{x,z}}</span>
+                <span data-tex="\text{Var}(\hat{\beta}_{IV}) \approx \frac{\sigma^2}{n \,\text{Var}(x)\, R^2_{x,z}}"></span>
             </div>
             <p>เมื่อ R<sup>2</sup><sub>x,z</sub> ต่ำ (weak instrument) &rarr; variance จะสูงมาก</p>
         </div>
@@ -411,7 +411,7 @@
                 <h3>ขั้นตอนที่ 1: First Stage</h3>
                 <p>Regress ตัวแปร endogenous x บน instruments z และ exogenous regressors</p>
                 <div class="math-block">
-                    <span class="katex">x_i = \pi_0 + \pi_1 z_{1i} + \pi_2 z_{2i} + \gamma' w_i + v_i</span>
+                    <span data-tex="x_i = \pi_0 + \pi_1 z_{1i} + \pi_2 z_{2i} + \gamma' w_i + v_i"></span>
                 </div>
                 <p>ได้ค่าพยากรณ์ <strong>x&#770;</strong> ที่ "สะอาด" จาก endogeneity</p>
             </div>
@@ -419,7 +419,7 @@
                 <h3>ขั้นตอนที่ 2: Second Stage</h3>
                 <p>Regress y บน <strong>x&#770;</strong> แทน x จริง</p>
                 <div class="math-block">
-                    <span class="katex">y_i = \beta_0 + \beta_1 \hat{x}_i + \delta' w_i + \epsilon_i</span>
+                    <span data-tex="y_i = \beta_0 + \beta_1 \hat{x}_i + \delta' w_i + \epsilon_i"></span>
                 </div>
                 <p>ค่า &beta;&#770;<sub>2SLS</sub> จะ consistent เมื่อ instruments ถูกต้อง</p>
             </div>
@@ -506,7 +506,7 @@
                 <h3>หลักการ GMM</h3>
                 <p>เมื่อ overidentified &rarr; มี moment conditions มากกว่าพารามิเตอร์</p>
                 <div class="math-block">
-                    <span class="katex">E[z_i \cdot u_i] = 0 \quad (\text{moment conditions})</span>
+                    <span data-tex="E[z_i \cdot u_i] = 0 \quad (\text{moment conditions})"></span>
                 </div>
                 <p>GMM หาค่า &beta; ที่ทำให้ sample moments ใกล้ศูนย์ที่สุด (weighted)</p>
             </div>
@@ -625,7 +625,7 @@
                 <h3>ทำไมต้องดู First Stage?</h3>
                 <p>ถ้า instruments ไม่สัมพันธ์กับ endogenous variable &rarr; IV จะไม่ทำงาน</p>
                 <div class="math-block">
-                    <span class="katex">x_i = \pi_0 + \pi_1 z_{1i} + \pi_2 z_{2i} + \gamma' w_i + v_i</span>
+                    <span data-tex="x_i = \pi_0 + \pi_1 z_{1i} + \pi_2 z_{2i} + \gamma' w_i + v_i"></span>
                 </div>
                 <p>ทดสอบ: H<sub>0</sub>: &pi;<sub>1</sub> = &pi;<sub>2</sub> = 0</p>
             </div>
@@ -664,10 +664,10 @@
                 <h3>คำถาม: x เป็น endogenous จริงหรือ?</h3>
                 <p>ถ้า x ไม่ endogenous &rarr; OLS ดีกว่า (efficient กว่า IV)</p>
                 <div class="math-block">
-                    <span class="katex">H_0: \text{Cov}(x, u) = 0 \quad (\text{exogenous})</span>
+                    <span data-tex="H_0: \text{Cov}(x, u) = 0 \quad (\text{exogenous})"></span>
                 </div>
                 <div class="math-block">
-                    <span class="katex">H_1: \text{Cov}(x, u) \neq 0 \quad (\text{endogenous})</span>
+                    <span data-tex="H_1: \text{Cov}(x, u) \neq 0 \quad (\text{endogenous})"></span>
                 </div>
             </div>
             <div class="key-insight fragment">
@@ -703,10 +703,10 @@
                 <h3>คำถาม: Instruments ทั้งหมด valid หรือไม่?</h3>
                 <p>ทดสอบได้เฉพาะเมื่อ <strong>overidentified</strong> (instruments &gt; endogenous)</p>
                 <div class="math-block">
-                    <span class="katex">H_0: \text{All instruments are valid}</span>
+                    <span data-tex="H_0: \text{All instruments are valid}"></span>
                 </div>
                 <div class="math-block">
-                    <span class="katex">J = n \cdot \hat{u}' Z (Z'Z)^{-1} Z' \hat{u} \sim \chi^2_{q-k}</span>
+                    <span data-tex="J = n \cdot \hat{u}' Z (Z'Z)^{-1} Z' \hat{u} \sim \chi^2_{q-k}"></span>
                 </div>
                 <p>q = จำนวน instruments, k = จำนวน endogenous</p>
             </div>
@@ -1731,14 +1731,14 @@ function checkQuiz(el, isCorrect) {
 // KATEX RENDERING
 // ============================================================
 function renderKatex() {
-    document.querySelectorAll('.katex').forEach(el => {
+    document.querySelectorAll('[data-tex]').forEach(el => {
         if (el.dataset.rendered) return;
-        const tex = el.textContent;
+        const tex = el.dataset.tex;
         const isDisplay = el.closest('.math-block') !== null;
         try {
             katex.render(tex, el, { throwOnError: false, displayMode: isDisplay });
             el.dataset.rendered = 'true';
-        } catch (e) { /* fallback: leave text as-is */ }
+        } catch (e) { /* fallback */ }
     });
 }
 
