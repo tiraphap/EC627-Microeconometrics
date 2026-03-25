@@ -992,11 +992,12 @@
                 <p>&rarr; ยิ่ง T น้อย bias ยิ่งมาก (T=3 bias ได้ถึง ~50%!)</p>
             </div>
             <div class="concept-box fragment" style="margin-top:6px;">
-                <h3>ทางออก</h3>
+                <h3>ทางออก: Sufficient Statistics</h3>
+                <p>Sufficient statistics = ตัวสถิติที่ <strong>"ดูดซับ" ข้อมูลทั้งหมดเกี่ยวกับ &alpha;<sub>i</sub></strong> ไว้ในตัวมันเอง &mdash; ถ้าเรา condition บนตัวสถิตินั้น &rarr; &alpha;<sub>i</sub> หายไปจาก likelihood &rarr; estimate &beta; ได้โดยไม่ต้องรู้ &alpha;<sub>i</sub> เลย</p>
                 <ul>
-                    <li><strong>Conditional logit</strong> (clogit) &mdash; มี sufficient statistics ที่กำจัด &alpha;<sub>i</sub> ออกได้</li>
-                    <li><strong>Poisson FE</strong> &mdash; ก็มี sufficient statistics เช่นกัน</li>
-                    <li><strong>RE หรือ PA</strong> &mdash; ไม่ต้อง estimate &alpha;<sub>i</sub> ทีละตัว</li>
+                    <li><strong>Conditional logit</strong> (clogit) &mdash; sufficient statistic คือ &Sigma;y<sub>it</sub> (ดูหน้าถัดไป)</li>
+                    <li><strong>Poisson FE</strong> &mdash; sufficient statistic คือ &Sigma;y<sub>it</sub> เช่นกัน</li>
+                    <li><strong>RE หรือ PA</strong> &mdash; ไม่ต้อง estimate &alpha;<sub>i</sub> ทีละตัว (หลีกเลี่ยงปัญหาไปเลย)</li>
                 </ul>
             </div>
         </div>
