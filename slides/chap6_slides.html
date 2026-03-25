@@ -1043,6 +1043,39 @@
 </section>
 
 <section>
+    <h2>Conditional Logit: ทำไม &alpha;<sub>i</sub> หายไป?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ตัวอย่าง: คนหนึ่ง T=3, ผลรวม y = 2</h3>
+                <p>สังเกต y = (1, 1, 0) &mdash; ไปพบแพทย์ปี 1&ndash;2 ไม่ไปปี 3</p>
+                <p>รูปแบบที่รวมได้ 2 มี 3 แบบ: <strong>(1,1,0) (1,0,1) (0,1,1)</strong></p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>Unconditional: มี &alpha;<sub>i</sub> ทุกที่</h3>
+                <p style="font-size:0.85em;">P(1,1,0) &prop; exp(<strong>&alpha;<sub>i</sub></strong>+x<sub>1</sub>&beta;) &middot; exp(<strong>&alpha;<sub>i</sub></strong>+x<sub>2</sub>&beta;) &middot; 1</p>
+                <p style="font-size:0.85em;">= exp(<strong>2&alpha;<sub>i</sub></strong>) &middot; exp(x<sub>1</sub>&beta; + x<sub>2</sub>&beta;)</p>
+                <p>&rarr; ต้องรู้ &alpha;<sub>i</sub> ถึงจะ estimate &beta; ได้</p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>Conditional on ผลรวม = 2: &alpha;<sub>i</sub> หารหายไป</h3>
+                <p style="font-size:0.8em;">P(1,1,0 | &Sigma;y=2) = P(1,1,0) / [P(1,1,0) + P(1,0,1) + P(0,1,1)]</p>
+                <p style="font-size:0.8em;">ตัวเศษ: exp(<strong>2&alpha;<sub>i</sub></strong>) &middot; exp(x<sub>1</sub>&beta;+x<sub>2</sub>&beta;)</p>
+                <p style="font-size:0.8em;">ตัวส่วน: exp(<strong>2&alpha;<sub>i</sub></strong>) &middot; [exp(x<sub>1</sub>&beta;+x<sub>2</sub>&beta;) + exp(x<sub>1</sub>&beta;+x<sub>3</sub>&beta;) + exp(x<sub>2</sub>&beta;+x<sub>3</sub>&beta;)]</p>
+                <p>&rarr; exp(2&alpha;<sub>i</sub>) <strong>หารกันหมด!</strong> เหลือแค่ &beta; กับ x</p>
+            </div>
+            <div class="concept-box fragment" style="margin-top:6px;">
+                <h3>ทำไม Probit ทำแบบนี้ไม่ได้?</h3>
+                <p>Logit ใช้ exp() ซึ่งเป็น <strong>exponential family</strong> &rarr; &alpha;<sub>i</sub> แยกออกมาเป็น factor แล้วหารกันหายได้</p>
+                <p>Probit ใช้ &Phi;() (normal CDF) ซึ่ง<strong>แยก &alpha;<sub>i</sub> ออกเป็น factor ไม่ได้</strong> &rarr; หารกันไม่หาย &rarr; ต้อง estimate &alpha;<sub>i</sub> ทุกตัว &rarr; incidental parameters problem</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
     <h2>ข้อมูล: Rand Health Insurance Experiment</h2>
     <div class="two-col">
         <div>
