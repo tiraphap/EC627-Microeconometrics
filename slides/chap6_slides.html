@@ -357,6 +357,43 @@
     </div>
 </section>
 
+<section>
+    <h2>สังเกต: ทำไม Within ถึงซ้อนกันที่ 0?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Original: แต่ละคนอยู่คนละตำแหน่ง</h3>
+                <p>ระยะห่างระหว่างกลุ่มสี = <strong>ความแตกต่างระหว่างบุคคล (&alpha;<sub>i</sub>)</strong></p>
+                <p>เช่น พรสวรรค์ แรงจูงใจ สิ่งที่วัดไม่ได้ &mdash; อาจสัมพันธ์กับ x &rarr; ทำให้ OLS bias</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>Within: ทุกคนถูกดึงมาซ้อนกัน</h3>
+                <p>หักค่าเฉลี่ยออก (y<sub>it</sub> &minus; y&#772;<sub>i</sub>) &rarr; <strong>&alpha;<sub>i</sub> หายไป</strong></p>
+                <p>เหลือแค่ <strong>variation ภายในคนคนเดียวข้ามเวลา</strong> &mdash; นี่คือสิ่งที่ FE ใช้ estimate &beta;</p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>FE ตอบคำถามว่า:</h3>
+                <p>"เมื่อ x ของ <strong>คนคนเดียว</strong> เปลี่ยนไปตามเวลา y เปลี่ยนเท่าไหร่?"</p>
+            </div>
+            <div class="fragment" style="margin-top:6px;">
+                <table class="compare-table">
+                    <tr><th></th><th>ข้อดี</th><th>ข้อเสีย</th></tr>
+                    <tr>
+                        <td><strong>FE</strong></td>
+                        <td>&alpha;<sub>i</sub> ถูกลบออก &rarr; <strong>ไม่มี OVB</strong> จาก time-invariant unobservables</td>
+                        <td>ตัวแปรที่ไม่เปลี่ยนตามเวลา (เพศ, การศึกษา) ก็ถูกลบ &rarr; <strong>estimate ไม่ได้</strong></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="example-box fragment" style="margin-top:6px;">
+                <p><strong>สังเกตเพิ่ม:</strong> กด <em>Between</em> &rarr; เหลือแค่ 5 จุด (ค่าเฉลี่ยของแต่ละคน) &mdash; นี่คือ variation ที่ <strong>BE estimator</strong> ใช้ แต่ BE ไม่กำจัด &alpha;<sub>i</sub> จึงอาจมี bias ได้</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 </section><!-- end Section 1 -->
 
 <!-- ==================== SECTION 2: POOLED & PA ==================== -->
