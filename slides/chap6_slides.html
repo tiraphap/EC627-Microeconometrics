@@ -318,12 +318,21 @@
         <div>
             <div class="interactive-container fragment">
                 <h4>Panel Data Structure Explorer</h4>
-                <canvas id="dataExplorer" width="400" height="250"></canvas>
+                <canvas id="dataExplorer" width="400" height="220"></canvas>
                 <div style="text-align:center; margin-top:3px;">
                     <button class="interactive-btn active" onclick="showTransform('original')">Original</button>
                     <button class="interactive-btn" onclick="showTransform('within')">Within</button>
                     <button class="interactive-btn" onclick="showTransform('between')">Between</button>
                     <button class="interactive-btn" onclick="showTransform('fd')">First-Diff</button>
+                </div>
+                <div style="font-size:0.38em; color:var(--text-light); margin-top:3px; line-height:1.4; text-align:left;">
+                    <strong>วิธีอ่าน:</strong> แต่ละสี = คนคนเดียว (i) ติดตามข้ามเวลา &bull;
+                    <strong>จุดกลม</strong> = ค่า (x,y) ในแต่ละปี &bull;
+                    <strong>เส้นประ</strong> = เชื่อมจุดของคนเดียวกันข้ามเวลา &bull;
+                    <strong>กากบาท +</strong> = ค่าเฉลี่ยของแต่ละคน (x̄ᵢ, ȳᵢ)<br>
+                    กด <em>Within</em> &rarr; หักค่าเฉลี่ยออก (จุดทุกคนรวมที่จุดศูนย์กลาง) &bull;
+                    กด <em>Between</em> &rarr; เหลือแค่ค่าเฉลี่ย 5 จุด &bull;
+                    กด <em>First-Diff</em> &rarr; ดูการเปลี่ยนแปลงระหว่างปี
                 </div>
             </div>
         </div>
