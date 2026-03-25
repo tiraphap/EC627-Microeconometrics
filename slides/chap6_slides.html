@@ -979,26 +979,46 @@
             </div>
             <div class="key-insight fragment">
                 <h3>แต่ FE มีปัญหาใหม่!</h3>
-                <p>Linear FE: within-transform กำจัด &alpha;<sub>i</sub> ออกได้สะอาด &rarr; <strong>ไม่มีปัญหา</strong></p>
-                <p>Nonlinear FE (logit, probit, tobit): กำจัด &alpha;<sub>i</sub> ไม่ได้ ต้อง estimate &alpha;<sub>i</sub> ทุกตัว (N ตัว!) พร้อมกับ &beta;</p>
+                <p>Linear FE: within-transform กำจัด &alpha;<sub>i</sub> ได้ &rarr; <strong>ไม่มีปัญหา</strong></p>
+                <p>Nonlinear FE: กำจัดไม่ได้ ต้อง estimate &alpha;<sub>i</sub> ทุกตัว (N ตัว!) พร้อม &beta;</p>
             </div>
         </div>
         <div>
             <div class="example-box fragment">
-                <h3>Incidental Parameters Problem คืออะไร?</h3>
-                <p>เมื่อ estimate FE logit/probit ต้อง estimate <strong>&alpha;<sub>1</sub>, &alpha;<sub>2</sub>, ..., &alpha;<sub>N</sub></strong> พร้อมกับ &beta;</p>
-                <p>ปัญหา: แต่ละ &alpha;<sub>i</sub> ถูก estimate จากแค่ <strong>T observations</strong> (เช่น T=5 ปี)</p>
-                <p>&rarr; &alpha;&#770;<sub>i</sub> ไม่ consistent (เพราะ T ไม่โต) &rarr; <strong>bias ของ &alpha;&#770;<sub>i</sub> ปนเปื้อนเข้าไปใน &beta;&#770;</strong> ด้วย</p>
-                <p>&rarr; ยิ่ง T น้อย bias ยิ่งมาก (T=3 bias ได้ถึง ~50%!)</p>
+                <h3>Incidental Parameters Problem</h3>
+                <p>แต่ละ &alpha;<sub>i</sub> ถูก estimate จากแค่ <strong>T obs</strong> &rarr; ไม่ consistent &rarr; <strong>bias ปนเปื้อนเข้า &beta;&#770;</strong></p>
+                <p>ยิ่ง T น้อย bias ยิ่งมาก (T=3 bias ~50%!)</p>
             </div>
-            <div class="concept-box fragment" style="margin-top:6px;">
-                <h3>ทางออก: Sufficient Statistics</h3>
-                <p>Sufficient statistics = ตัวสถิติที่ <strong>"ดูดซับ" ข้อมูลทั้งหมดเกี่ยวกับ &alpha;<sub>i</sub></strong> ไว้ในตัวมันเอง &mdash; ถ้าเรา condition บนตัวสถิตินั้น &rarr; &alpha;<sub>i</sub> หายไปจาก likelihood &rarr; estimate &beta; ได้โดยไม่ต้องรู้ &alpha;<sub>i</sub> เลย</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>ทางออก: Sufficient Statistics</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Sufficient statistics คืออะไร?</h3>
+                <p>ตัวสถิติที่ <strong>"ดูดซับ" ข้อมูลทั้งหมดเกี่ยวกับ &alpha;<sub>i</sub></strong> ไว้ในตัวมันเอง</p>
+                <p>ถ้าเรา condition บนตัวสถิตินั้น &rarr; <strong>&alpha;<sub>i</sub> หายไปจาก likelihood</strong> &rarr; estimate &beta; ได้โดยไม่ต้องรู้ &alpha;<sub>i</sub> เลย</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>ใครมี ใครไม่มี?</h3>
                 <ul>
-                    <li><strong>Conditional logit</strong> (clogit) &mdash; sufficient statistic คือ &Sigma;y<sub>it</sub> (ดูหน้าถัดไป)</li>
+                    <li><strong>Conditional logit</strong> &mdash; sufficient statistic คือ &Sigma;y<sub>it</sub> (ดูหน้าถัดไป)</li>
                     <li><strong>Poisson FE</strong> &mdash; sufficient statistic คือ &Sigma;y<sub>it</sub> เช่นกัน</li>
-                    <li><strong>RE หรือ PA</strong> &mdash; ไม่ต้อง estimate &alpha;<sub>i</sub> ทีละตัว (หลีกเลี่ยงปัญหาไปเลย)</li>
+                    <li><strong>Probit, Tobit</strong> &mdash; ไม่มี &rarr; FE ใช้ไม่ได้</li>
                 </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ทางเลือกอื่นที่หลีกเลี่ยงปัญหา</h3>
+                <ul>
+                    <li><strong>RE</strong> &mdash; สมมติ &alpha;<sub>i</sub> ~ distribution แล้ว integrate out</li>
+                    <li><strong>PA (GEE)</strong> &mdash; ไม่ model &alpha;<sub>i</sub> เลย ดูแค่ marginal effect</li>
+                </ul>
+                <p>ทั้งสองไม่ต้อง estimate &alpha;<sub>i</sub> ทีละตัว &rarr; ไม่มี incidental parameters problem</p>
             </div>
         </div>
     </div>
