@@ -678,25 +678,49 @@
 </section>
 
 <section>
-    <h2>Random Effects (RE) Estimator</h2>
+    <h2>Random Effects (RE) Estimator: แนวคิด</h2>
     <div class="two-col">
         <div>
             <div class="concept-box">
-                <p><strong>RE Model:</strong> สมมติ &alpha;<sub>i</sub> ~ iid(0, &sigma;<sup>2</sup><sub>&alpha;</sub>) และไม่สัมพันธ์กับ x<sub>it</sub></p>
-            </div>
-            <div class="math-block">
-                y<sub>it</sub> - &theta;ȳ<sub>i</sub> = (x<sub>it</sub> - &theta;x̄<sub>i</sub>)'&beta; + (1-&theta;)&alpha;<sub>i</sub> + (&epsilon;<sub>it</sub> - &theta;ε̄<sub>i</sub>)
+                <h3>RE คืออะไร?</h3>
+                <p>RE = <strong>จุดกึ่งกลางระหว่าง Pooled OLS กับ FE</strong></p>
+                <p>FE หักค่าเฉลี่ย <em>ทั้งหมด</em> (&theta;=1) &rarr; ทิ้ง between variation ไปหมด</p>
+                <p>Pooled OLS ไม่หักเลย (&theta;=0) &rarr; ไม่ควบคุม &alpha;<sub>i</sub></p>
+                <p>RE หักค่าเฉลี่ย <strong>บางส่วน</strong> (&theta; อยู่ระหว่าง 0 กับ 1) &rarr; ใช้ทั้ง within และ between variation อย่างมีประสิทธิภาพ</p>
             </div>
             <div class="key-insight fragment">
-                <p><strong>&theta; (theta)</strong> = 1 - &radic;(&sigma;<sup>2</sup><sub>&epsilon;</sub> / (T&sigma;<sup>2</sup><sub>&alpha;</sub> + &sigma;<sup>2</sup><sub>&epsilon;</sub>))</p>
-                <ul>
-                    <li>&theta; &rarr; 1: RE &rarr; FE (เมื่อ &sigma;<sup>2</sup><sub>&alpha;</sub> ใหญ่มาก)</li>
-                    <li>&theta; &rarr; 0: RE &rarr; OLS (เมื่อ &sigma;<sup>2</sup><sub>&alpha;</sub> &ap; 0)</li>
-                </ul>
+                <h3>สมมติฐานสำคัญ</h3>
+                <p>Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) = 0 &mdash; &alpha;<sub>i</sub> ต้อง<strong>ไม่สัมพันธ์</strong>กับ x</p>
+                <p>ถ้าสมมติฐานนี้จริง &rarr; RE <strong>efficient กว่า FE</strong> (SE เล็กกว่า) เพราะใช้ข้อมูลมากกว่า</p>
+                <p>ถ้าผิด &rarr; RE <strong>inconsistent</strong> (bias) &rarr; ต้องใช้ FE แทน</p>
             </div>
         </div>
         <div>
-            <div class="stata-code fragment">
+            <div class="example-box fragment">
+                <h3>Quasi-Demeaning: หัวใจของ RE</h3>
+                <div class="math-block" style="margin:6px 0; font-size:0.85em;">
+                    y<sub>it</sub> - &theta;ȳ<sub>i</sub> = (x<sub>it</sub> - &theta;x̄<sub>i</sub>)'&beta; + (1-&theta;)&alpha;<sub>i</sub> + (&epsilon;<sub>it</sub> - &theta;ε̄<sub>i</sub>)
+                </div>
+                <p><strong>&theta;</strong> = 1 &minus; &radic;(&sigma;<sup>2</sup><sub>&epsilon;</sub> / (T&sigma;<sup>2</sup><sub>&alpha;</sub> + &sigma;<sup>2</sup><sub>&epsilon;</sub>))</p>
+                <p>แทนที่จะหักค่าเฉลี่ยออกทั้งหมดเหมือน FE &rarr; RE หักออกแค่สัดส่วน &theta;</p>
+            </div>
+            <div class="concept-box fragment" style="margin-top:6px;">
+                <h3>&theta; บอกอะไร?</h3>
+                <table class="compare-table">
+                    <tr><th>&theta; เข้าใกล้</th><th>หมายความว่า</th><th>RE ใกล้เคียง</th></tr>
+                    <tr><td><strong>&theta; &rarr; 1</strong></td><td>&sigma;<sup>2</sup><sub>&alpha;</sub> ใหญ่มาก (&alpha;<sub>i</sub> สำคัญ)</td><td>FE</td></tr>
+                    <tr><td><strong>&theta; &rarr; 0</strong></td><td>&sigma;<sup>2</sup><sub>&alpha;</sub> &ap; 0 (แทบไม่มี individual effect)</td><td>Pooled OLS</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>RE ในทางปฏิบัติ: PSID</h2>
+    <div class="two-col">
+        <div>
+            <div class="stata-code">
 <span class="cmt">* RE estimator with theta reported</span>
 <span class="cmd">xtreg</span> lwage exp exp2 wks ed, <span class="opt">re vce(cluster id) theta</span>
 
@@ -708,10 +732,24 @@
                 <ul>
                     <li>&sigma;<sub>u</sub> = 0.327 (SD of &alpha;<sub>i</sub>)</li>
                     <li>&sigma;<sub>e</sub> = 0.231 (SD of &epsilon;<sub>it</sub>)</li>
-                    <li>&rho; = 0.668 &mdash; 67% ของ variance มาจาก &alpha;<sub>i</sub></li>
-                    <li>&theta; &ap; 0.80 &mdash; RE ใกล้ FE มาก (เพราะ &alpha;<sub>i</sub> สำคัญ)</li>
-                    <li>ed coefficient = 0.094 (มีนัยสำคัญ &mdash; RE ประมาณได้แต่ FE ไม่ได้)</li>
+                    <li>&rho; = 0.668 &mdash; <strong>67%</strong> ของ total variance มาจาก &alpha;<sub>i</sub></li>
+                    <li>&theta; &ap; 0.80 &mdash; RE ใกล้ FE มาก (เพราะ &alpha;<sub>i</sub> สำคัญมาก)</li>
                 </ul>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ข้อดีของ RE เหนือ FE</h3>
+                <ul>
+                    <li><strong>Estimate ตัวแปร time-invariant ได้</strong> เช่น ed (การศึกษา) &mdash; FE ทำไม่ได้เพราะถูกหักออกไปกับ &alpha;<sub>i</sub></li>
+                    <li>ed coefficient = 0.094 (มีนัยสำคัญ) &rarr; ปีการศึกษาเพิ่ม 1 ปี &rarr; ค่าจ้างสูงขึ้น ~9.4%</li>
+                    <li><strong>SE เล็กกว่า FE</strong> เพราะใช้ทั้ง within + between variation</li>
+                </ul>
+            </div>
+            <div class="example-box fragment" style="margin-top:6px;">
+                <h3>แต่ต้องระวัง!</h3>
+                <p>&theta; = 0.80 หมายความว่า RE หักค่าเฉลี่ยออก 80% &mdash; ใกล้ FE มาก แสดงว่า &alpha;<sub>i</sub> มีบทบาทสำคัญ</p>
+                <p>&rarr; ถ้า &alpha;<sub>i</sub> สัมพันธ์กับ x จริง RE จะ bias &rarr; <strong>ต้องทดสอบด้วย Hausman test</strong> (หน้าถัดไป)</p>
             </div>
         </div>
     </div>
