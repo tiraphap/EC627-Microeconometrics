@@ -684,15 +684,16 @@
             <div class="concept-box">
                 <h3>RE คืออะไร?</h3>
                 <p>RE = <strong>จุดกึ่งกลางระหว่าง Pooled OLS กับ FE</strong></p>
-                <p>FE หักค่าเฉลี่ย <em>ทั้งหมด</em> (&theta;=1) &rarr; ทิ้ง between variation ไปหมด</p>
-                <p>Pooled OLS ไม่หักเลย (&theta;=0) &rarr; ไม่ควบคุม &alpha;<sub>i</sub></p>
-                <p>RE หักค่าเฉลี่ย <strong>บางส่วน</strong> (&theta; อยู่ระหว่าง 0 กับ 1) &rarr; ใช้ทั้ง within และ between variation อย่างมีประสิทธิภาพ</p>
+                <p>FE หักค่าเฉลี่ยทั้งหมด (&theta;=1) &bull; OLS ไม่หักเลย (&theta;=0)</p>
+                <p>RE หักออก <strong>บางส่วน</strong> (&theta; ระหว่าง 0&ndash;1) &rarr; ใช้ทั้ง within + between variation</p>
             </div>
             <div class="key-insight fragment">
                 <h3>สมมติฐานสำคัญ</h3>
                 <p>Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) = 0 &mdash; &alpha;<sub>i</sub> ต้อง<strong>ไม่สัมพันธ์</strong>กับ x</p>
-                <p>ถ้าสมมติฐานนี้จริง &rarr; RE <strong>efficient กว่า FE</strong> (SE เล็กกว่า) เพราะใช้ข้อมูลมากกว่า</p>
-                <p>ถ้าผิด &rarr; RE <strong>inconsistent</strong> (bias) &rarr; ต้องใช้ FE แทน</p>
+                <table class="compare-table" style="margin-top:4px;">
+                    <tr><th>ถ้าจริง</th><th>ถ้าผิด</th></tr>
+                    <tr><td>RE <strong>efficient กว่า</strong> FE<br>(SE เล็กกว่า ใช้ข้อมูลมากกว่า)</td><td>RE <strong>inconsistent</strong> (bias)<br>&rarr; ต้องใช้ FE แทน</td></tr>
+                </table>
             </div>
         </div>
         <div>
