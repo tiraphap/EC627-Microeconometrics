@@ -1043,33 +1043,42 @@
 </section>
 
 <section>
-    <h2>Conditional Logit: ทำไม &alpha;<sub>i</sub> หายไป?</h2>
-    <div class="two-col">
-        <div>
-            <div class="concept-box">
-                <h3>ตัวอย่าง: คนหนึ่ง T=3, ผลรวม y = 2</h3>
-                <p>สังเกต y = (1, 1, 0) &mdash; ไปพบแพทย์ปี 1&ndash;2 ไม่ไปปี 3</p>
-                <p>รูปแบบที่รวมได้ 2 มี 3 แบบ: <strong>(1,1,0) (1,0,1) (0,1,1)</strong></p>
+    <h2 style="font-size:1.1em;">Conditional Logit: ทำไม &alpha;<sub>i</sub> หายไป?</h2>
+    <div style="font-size:0.48em; line-height:1.5;">
+        <div class="concept-box" style="margin-bottom:6px;">
+            <strong>ตัวอย่าง:</strong> คนหนึ่ง T=3 &bull; สังเกต y = (1, 1, 0) &bull; ผลรวม &Sigma;y = 2 &bull; รูปแบบที่รวมได้ 2 มี 3 แบบ: (1,1,0) &nbsp; (1,0,1) &nbsp; (0,1,1)
+        </div>
+        <div class="two-col">
+            <div>
+                <div class="key-insight">
+                    <h3 style="font-size:1.1em;">Unconditional: มี &alpha;<sub>i</sub> ทุกที่</h3>
+                    <div style="background:#f0f4f8; border-radius:6px; padding:6px 8px; font-family:'Fira Code',monospace; font-size:0.92em; line-height:1.7;">
+                        P(1,1,0) &prop; exp(&alpha;<sub>i</sub>+x<sub>1</sub>&beta;) &middot; exp(&alpha;<sub>i</sub>+x<sub>2</sub>&beta;) &middot; 1<br>
+                        &nbsp; = exp(<strong style="color:var(--accent);">2&alpha;<sub>i</sub></strong>) &middot; exp(x<sub>1</sub>&beta; + x<sub>2</sub>&beta;)
+                    </div>
+                    <p>&rarr; ต้องรู้ &alpha;<sub>i</sub> ถึงจะ estimate &beta; ได้</p>
+                </div>
             </div>
-            <div class="key-insight fragment">
-                <h3>Unconditional: มี &alpha;<sub>i</sub> ทุกที่</h3>
-                <p style="font-size:0.85em;">P(1,1,0) &prop; exp(<strong>&alpha;<sub>i</sub></strong>+x<sub>1</sub>&beta;) &middot; exp(<strong>&alpha;<sub>i</sub></strong>+x<sub>2</sub>&beta;) &middot; 1</p>
-                <p style="font-size:0.85em;">= exp(<strong>2&alpha;<sub>i</sub></strong>) &middot; exp(x<sub>1</sub>&beta; + x<sub>2</sub>&beta;)</p>
-                <p>&rarr; ต้องรู้ &alpha;<sub>i</sub> ถึงจะ estimate &beta; ได้</p>
+            <div>
+                <div class="example-box">
+                    <h3 style="font-size:1.1em;">Conditional on &Sigma;y=2: &alpha;<sub>i</sub> หารหายไป</h3>
+                    <div style="background:#f0f4f8; border-radius:6px; padding:6px 8px; font-family:'Fira Code',monospace; font-size:0.92em; line-height:1.7;">
+                        P(1,1,0 | &Sigma;y=2) = P(1,1,0) / [P(1,1,0)+P(1,0,1)+P(0,1,1)]<br>
+                        เศษ: <strong style="color:var(--accent);">e<sup>2&alpha;<sub>i</sub></sup></strong> &middot; e<sup>x<sub>1</sub>&beta;+x<sub>2</sub>&beta;</sup><br>
+                        ส่วน: <strong style="color:var(--accent);">e<sup>2&alpha;<sub>i</sub></sup></strong> &middot; [e<sup>x<sub>1</sub>&beta;+x<sub>2</sub>&beta;</sup> + e<sup>x<sub>1</sub>&beta;+x<sub>3</sub>&beta;</sup> + e<sup>x<sub>2</sub>&beta;+x<sub>3</sub>&beta;</sup>]
+                    </div>
+                    <p>&rarr; e<sup>2&alpha;<sub>i</sub></sup> <strong>หารกันหมด!</strong> เหลือแค่ &beta; กับ x</p>
+                </div>
             </div>
         </div>
-        <div>
-            <div class="example-box fragment">
-                <h3>Conditional on ผลรวม = 2: &alpha;<sub>i</sub> หารหายไป</h3>
-                <p style="font-size:0.8em;">P(1,1,0 | &Sigma;y=2) = P(1,1,0) / [P(1,1,0) + P(1,0,1) + P(0,1,1)]</p>
-                <p style="font-size:0.8em;">ตัวเศษ: exp(<strong>2&alpha;<sub>i</sub></strong>) &middot; exp(x<sub>1</sub>&beta;+x<sub>2</sub>&beta;)</p>
-                <p style="font-size:0.8em;">ตัวส่วน: exp(<strong>2&alpha;<sub>i</sub></strong>) &middot; [exp(x<sub>1</sub>&beta;+x<sub>2</sub>&beta;) + exp(x<sub>1</sub>&beta;+x<sub>3</sub>&beta;) + exp(x<sub>2</sub>&beta;+x<sub>3</sub>&beta;)]</p>
-                <p>&rarr; exp(2&alpha;<sub>i</sub>) <strong>หารกันหมด!</strong> เหลือแค่ &beta; กับ x</p>
+        <div class="two-col fragment" style="margin-top:6px;">
+            <div class="concept-box" style="margin:0;">
+                <h3 style="font-size:1.1em;">Logit: ทำได้ &check;</h3>
+                <p>exp() เป็น <strong>exponential family</strong> &rarr; &alpha;<sub>i</sub> แยกเป็น factor &rarr; หารกันหายได้</p>
             </div>
-            <div class="concept-box fragment" style="margin-top:6px;">
-                <h3>ทำไม Probit ทำแบบนี้ไม่ได้?</h3>
-                <p>Logit ใช้ exp() ซึ่งเป็น <strong>exponential family</strong> &rarr; &alpha;<sub>i</sub> แยกออกมาเป็น factor แล้วหารกันหายได้</p>
-                <p>Probit ใช้ &Phi;() (normal CDF) ซึ่ง<strong>แยก &alpha;<sub>i</sub> ออกเป็น factor ไม่ได้</strong> &rarr; หารกันไม่หาย &rarr; ต้อง estimate &alpha;<sub>i</sub> ทุกตัว &rarr; incidental parameters problem</p>
+            <div class="concept-box" style="margin:0; border-left:3px solid var(--accent);">
+                <h3 style="font-size:1.1em;">Probit: ทำไม่ได้ &cross;</h3>
+                <p>&Phi;() (normal CDF) แยก &alpha;<sub>i</sub> เป็น factor ไม่ได้ &rarr; หารกันไม่หาย &rarr; incidental parameters problem</p>
             </div>
         </div>
     </div>
