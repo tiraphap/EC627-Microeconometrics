@@ -572,35 +572,62 @@
 </section>
 
 <section>
-    <h2>First-Difference Estimator</h2>
+    <h2>First-Difference (FD) Estimator</h2>
     <div class="two-col">
         <div>
             <div class="concept-box">
-                <p><strong>First-Difference (FD):</strong> อีกวิธีกำจัด &alpha;<sub>i</sub> โดยหักค่าช่วงเวลาก่อนหน้า</p>
+                <h3>แนวคิด</h3>
+                <p>กำจัด &alpha;<sub>i</sub> โดย <strong>หักค่าช่วงเวลาก่อนหน้า</strong> แทนที่จะหักค่าเฉลี่ยเหมือน FE</p>
+                <div class="math-block" style="margin:6px 0;">
+                    &Delta;y<sub>it</sub> = &Delta;x'<sub>it</sub>&beta; + &Delta;&epsilon;<sub>it</sub>
+                </div>
+                <p>เนื่องจาก &alpha;<sub>i</sub> &minus; &alpha;<sub>i</sub> = 0 &rarr; &alpha;<sub>i</sub> หายไปเหมือนกับ FE</p>
             </div>
-            <div class="math-block">
-                &Delta;y<sub>it</sub> = &Delta;x'<sub>it</sub>&beta; + &Delta;&epsilon;<sub>it</sub>
-            </div>
-            <div class="key-insight fragment">
-                <p><strong>FD vs FE:</strong></p>
-                <ul>
-                    <li>ถ้า T = 2: FD = FE (ให้ผลเหมือนกันทุกประการ)</li>
-                    <li>ถ้า T &gt; 2: FE efficient กว่าถ้า &epsilon;<sub>it</sub> เป็น iid; FD efficient กว่าถ้า &epsilon;<sub>it</sub> เป็น random walk</li>
-                    <li>FD ต้องการ <strong>sequential exogeneity</strong> ที่อ่อนกว่า strict exogeneity ของ FE</li>
-                </ul>
-            </div>
-        </div>
-        <div>
             <div class="stata-code fragment">
 <span class="cmt">* First-differences estimator</span>
 <span class="cmd">sort</span> id t
 <span class="cmd">regress</span> D.(lwage exp exp2 wks ed), <span class="opt">vce(cluster id) noconstant</span>
-
-<span class="cmt">* D. = first-difference operator</span>
-<span class="cmt">* noconstant เพราะ D.ed = 0 เสมอ</span>
+<span class="cmt">* D. = first-difference operator ใน Stata</span>
             </div>
+        </div>
+        <div>
             <div class="example-box fragment">
                 <p><strong>ผลจาก PSID:</strong> FD ให้ coefficient ของ exp ใกล้เคียงกับ FE แต่ SE ต่างกันเล็กน้อย &mdash; เพราะ &epsilon;<sub>it</sub> อาจไม่ใช่ iid</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>FD vs FE: เลือกอันไหนดี?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>ถ้า T = 2: FD = FE ทุกประการ</h3>
+                <p>เมื่อมีแค่ 2 ช่วงเวลา การ "หักค่าเฉลี่ย" (FE) กับ "หักช่วงก่อนหน้า" (FD) ให้ผลเหมือนกัน</p>
+                <p>เพราะค่าเฉลี่ยของ 2 ค่า = จุดกึ่งกลาง &rarr; within deviation &prop; first difference</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>ถ้า T &gt; 2: ขึ้นกับ error structure</h3>
+                <table class="compare-table">
+                    <tr><th>&epsilon;<sub>it</sub> เป็นแบบ</th><th>ใครดีกว่า?</th><th>ทำไม?</th></tr>
+                    <tr><td><strong>iid</strong> (ไม่สัมพันธ์กัน)</td><td>FE</td><td>FE ใช้ข้อมูลทุกช่วงเวลาอย่างมีประสิทธิภาพ &mdash; ในขณะที่ &Delta;&epsilon;<sub>it</sub> จะ autocorrelated (MA(1)) ทำให้ FD สูญเสีย efficiency</td></tr>
+                    <tr><td><strong>Random walk</strong> (&epsilon;<sub>it</sub> = &epsilon;<sub>i,t-1</sub> + v<sub>it</sub>)</td><td>FD</td><td>&Delta;&epsilon;<sub>it</sub> = v<sub>it</sub> ซึ่งเป็น iid &rarr; FD ให้ error ที่สะอาด ในขณะที่ FE within-residual ยังสัมพันธ์กัน</td></tr>
+                </table>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>Sequential vs Strict Exogeneity</h3>
+                <table class="compare-table">
+                    <tr><th></th><th>FE</th><th>FD</th></tr>
+                    <tr><td><strong>สมมติฐาน</strong></td><td>Strict exogeneity: E(&epsilon;<sub>it</sub>|x<sub>i1</sub>,...,x<sub>iT</sub>,&alpha;<sub>i</sub>) = 0</td><td>Sequential: E(&Delta;&epsilon;<sub>it</sub>|x<sub>it</sub>,x<sub>i,t-1</sub>,...) = 0</td></tr>
+                    <tr><td><strong>ความหมาย</strong></td><td>&epsilon;<sub>it</sub> ต้องไม่สัมพันธ์กับ x <strong>ทุก</strong> ช่วงเวลา (อดีต ปัจจุบัน อนาคต)</td><td>&epsilon;<sub>it</sub> ไม่สัมพันธ์กับ x <strong>ปัจจุบันและอดีต</strong> (อนาคตไม่ต้อง)</td></tr>
+                    <tr><td><strong>ตัวอย่างที่ FE พัง</strong></td><td colspan="2">ค่าจ้างอนาคตส่งผลต่อการตัดสินใจลงทุนการศึกษาวันนี้ &rarr; x<sub>it</sub> สัมพันธ์กับ &epsilon;<sub>i,t+1</sub> &rarr; FE inconsistent แต่ FD ยังใช้ได้</td></tr>
+                </table>
+            </div>
+            <div class="key-insight fragment" style="margin-top:6px;">
+                <p><strong>Rule of thumb:</strong> ถ้าสงสัยว่า error มี serial correlation สูง &rarr; ลอง FD &bull; ถ้า error เป็น iid &rarr; FE efficient กว่า &bull; ถ้า T = 2 &rarr; ไม่ต้องเลือก ผลเหมือนกัน</p>
             </div>
         </div>
     </div>
