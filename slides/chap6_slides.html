@@ -412,34 +412,39 @@
     <div class="two-col">
         <div>
             <div class="concept-box">
-                <p><strong>PA estimator</strong> = Pooled FGLS ที่ model within-person correlation structure</p>
-                <p>ระบุ working correlation matrix (เช่น AR(2), exchangeable) แล้วใช้ GEE</p>
-                <p>ตอบคำถาม: "ค่าเฉลี่ยของ y เปลี่ยนอย่างไรเมื่อ x เปลี่ยน <em>across the population</em>?"</p>
+                <h3>PA คืออะไร?</h3>
+                <p>PA estimator ตอบคำถาม: <strong>"ถ้า x เปลี่ยน 1 หน่วย ค่าเฉลี่ยของ y <em>ใน population</em> เปลี่ยนเท่าไหร่?"</strong></p>
+                <p>ต่างจาก FE/RE ที่ตอบว่า "y ของ <em>คนคนเดียว</em> เปลี่ยนเท่าไหร่" &mdash; PA มองภาพรวมทั้ง population โดยเฉลี่ย &alpha;<sub>i</sub> ออกไป</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>GEE คืออะไร?</h3>
+                <p><strong>Generalized Estimating Equations</strong> &mdash; วิธี estimate PA coefficients</p>
+                <ul>
+                    <li>ไม่ต้อง specify distribution ของ &alpha;<sub>i</sub> (ต่างจาก RE ที่ assume &alpha;<sub>i</sub> ~ Normal)</li>
+                    <li>แค่ระบุ <strong>working correlation matrix</strong> &mdash; บอกว่า error ของคนเดียวกันข้ามเวลามีความสัมพันธ์กันแบบไหน</li>
+                    <li>แม้ระบุ correlation ผิด &rarr; coefficients ยัง consistent &rarr; ใช้ <strong>robust SE</strong> แก้</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>Working Correlation Structures</h3>
+                <table class="compare-table">
+                    <tr><th>ชื่อ</th><th>สมมติฐาน</th><th>เมื่อไหร่ใช้</th></tr>
+                    <tr><td><strong>Independent</strong></td><td>Corr = 0 ทุกคู่</td><td>เหมือน Pooled OLS</td></tr>
+                    <tr><td><strong>Exchangeable</strong></td><td>Corr คงที่ทุกคู่ปี</td><td>คล้าย RE</td></tr>
+                    <tr><td><strong>AR(k)</strong></td><td>Corr ลดตามระยะห่างเวลา</td><td>เมื่อ obs ใกล้กันคล้ายกัน</td></tr>
+                    <tr><td><strong>Unstructured</strong></td><td>Corr อิสระทุกคู่</td><td>T น้อย, ไม่มี prior</td></tr>
+                </table>
             </div>
             <div class="stata-code fragment">
 <span class="cmt">* PA estimator with AR(2) correlation</span>
 <span class="cmd">xtreg</span> lwage exp exp2 wks ed, <span class="opt">pa corr(ar 2) vce(robust)</span> nolog
-
 <span class="cmt">* ดู estimated correlation matrix</span>
 <span class="cmd">matrix list</span> e(R)
             </div>
-        </div>
-        <div>
-            <div class="key-insight fragment">
-                <p><strong>PA vs FE/RE:</strong></p>
-                <ul>
-                    <li>PA ไม่แยก &alpha;<sub>i</sub> ออกจาก model &mdash; รวมเข้า error structure แทน</li>
-                    <li>ให้ <strong>marginal effects</strong> โดยตรง (averaged over &alpha;<sub>i</sub>)</li>
-                    <li>Robust SE ทำให้ valid แม้ correlation structure ผิด</li>
-                </ul>
-            </div>
-            <div class="example-box fragment">
-                <p><strong>เมื่อไหร่ใช้ PA?</strong></p>
-                <ul>
-                    <li>สนใจ population-level effect ไม่ใช่ individual-level</li>
-                    <li>Nonlinear model ที่ FE มีปัญหา incidental parameters</li>
-                    <li>ต้องการ robust inference โดยไม่ต้อง assume &alpha;<sub>i</sub> distribution</li>
-                </ul>
+            <div class="fragment" style="font-size:0.42em; color:var(--text-light); margin-top:4px;">
+                <strong>เมื่อไหร่ใช้ PA?</strong> &bull; สนใจ population-level effect &bull; Nonlinear model ที่ FE มีปัญหา incidental parameters &bull; ต้องการ robust inference โดยไม่ assume distribution ของ &alpha;<sub>i</sub>
             </div>
         </div>
     </div>
