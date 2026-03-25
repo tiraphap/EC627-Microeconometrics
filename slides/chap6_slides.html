@@ -281,10 +281,13 @@
                 <tr><th>คุณสมบัติ</th><th>FE</th><th>RE</th></tr>
                 <tr><td>Corr(&alpha;<sub>i</sub>, x<sub>it</sub>)</td><td>อนุญาต</td><td class="highlight">= 0</td></tr>
                 <tr><td>Time-invariant vars</td><td class="highlight">ไม่ได้</td><td>ได้</td></tr>
-                <tr><td>Consistency</td><td>เสมอ*</td><td>ถ้า H<sub>0</sub> จริง</td></tr>
-                <tr><td>Efficiency</td><td>ต่ำกว่า</td><td>สูงกว่า (ถ้า H<sub>0</sub>)</td></tr>
+                <tr><td>Consistency</td><td>เสมอ*</td><td>ถ้า RE ถูก**</td></tr>
+                <tr><td>Efficiency</td><td>ต่ำกว่า</td><td>สูงกว่า (ถ้า RE ถูก)</td></tr>
             </table>
-            <p class="fragment" style="font-size:0.42em; color:var(--text-light);">*ภายใต้ strict exogeneity: E(&epsilon;<sub>it</sub>|x<sub>i1</sub>,...,x<sub>iT</sub>,&alpha;<sub>i</sub>) = 0</p>
+            <div class="fragment" style="font-size:0.42em; color:var(--text-light); line-height:1.5;">
+                <p>*<strong>FE consistent เสมอ</strong> (ภายใต้ strict exogeneity) เพราะ within-transformation กำจัด &alpha;<sub>i</sub> ออกไป ไม่ว่า &alpha;<sub>i</sub> จะสัมพันธ์กับ x<sub>it</sub> หรือไม่ก็ตาม</p>
+                <p>**<strong>RE consistent เฉพาะเมื่อ</strong> Corr(&alpha;<sub>i</sub>, x<sub>it</sub>) = 0 จริง (H<sub>0</sub> ของ Hausman test) &mdash; ถ้าสมมติฐานนี้ผิด RE จะ inconsistent เพราะ &alpha;<sub>i</sub> ที่สัมพันธ์กับ x ถูกปนเข้าไปใน error term</p>
+            </div>
         </div>
     </div>
 </section>
