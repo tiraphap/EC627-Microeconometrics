@@ -969,7 +969,7 @@
     <div class="two-col">
         <div>
             <div class="concept-box">
-                <p><strong>แนวทางเดิม 4 แบบยังใช้ได้:</strong></p>
+                <h3>แนวทางเดิม 4 แบบยังใช้ได้</h3>
                 <ul>
                     <li><strong>Pooled</strong> &mdash; ignore panel structure</li>
                     <li><strong>PA (GEE)</strong> &mdash; model correlation, marginal effects</li>
@@ -978,18 +978,38 @@
                 </ul>
             </div>
             <div class="key-insight fragment">
-                <p><strong>แต่มีปัญหาใหม่!</strong></p>
-                <ul>
-                    <li><strong>Incidental Parameters Problem:</strong> FE ใน nonlinear model ไม่ consistent เมื่อ T fixed, N &rarr; &infin;</li>
-                    <li>ยกเว้น conditional logit &amp; Poisson FE ที่มี sufficient statistics</li>
-                    <li>Linear FE ไม่มีปัญหานี้เพราะ within-transform กำจัด &alpha;<sub>i</sub> ได้พอดี</li>
-                </ul>
+                <h3>แต่ FE มีปัญหาใหม่!</h3>
+                <p>Linear FE: within-transform กำจัด &alpha;<sub>i</sub> ออกได้สะอาด &rarr; <strong>ไม่มีปัญหา</strong></p>
+                <p>Nonlinear FE (logit, probit, tobit): กำจัด &alpha;<sub>i</sub> ไม่ได้ ต้อง estimate &alpha;<sub>i</sub> ทุกตัว (N ตัว!) พร้อมกับ &beta;</p>
             </div>
         </div>
         <div>
-            <div class="interactive-container fragment">
-                <h4>Incidental Parameters Problem</h4>
-                <canvas id="incidentalCanvas" width="400" height="240"></canvas>
+            <div class="example-box fragment">
+                <h3>Incidental Parameters Problem คืออะไร?</h3>
+                <p>เมื่อ estimate FE logit/probit ต้อง estimate <strong>&alpha;<sub>1</sub>, &alpha;<sub>2</sub>, ..., &alpha;<sub>N</sub></strong> พร้อมกับ &beta;</p>
+                <p>ปัญหา: แต่ละ &alpha;<sub>i</sub> ถูก estimate จากแค่ <strong>T observations</strong> (เช่น T=5 ปี)</p>
+                <p>&rarr; &alpha;&#770;<sub>i</sub> ไม่ consistent (เพราะ T ไม่โต) &rarr; <strong>bias ของ &alpha;&#770;<sub>i</sub> ปนเปื้อนเข้าไปใน &beta;&#770;</strong> ด้วย</p>
+                <p>&rarr; ยิ่ง T น้อย bias ยิ่งมาก (T=3 bias ได้ถึง ~50%!)</p>
+            </div>
+            <div class="concept-box fragment" style="margin-top:6px;">
+                <h3>ทางออก</h3>
+                <ul>
+                    <li><strong>Conditional logit</strong> (clogit) &mdash; มี sufficient statistics ที่กำจัด &alpha;<sub>i</sub> ออกได้</li>
+                    <li><strong>Poisson FE</strong> &mdash; ก็มี sufficient statistics เช่นกัน</li>
+                    <li><strong>RE หรือ PA</strong> &mdash; ไม่ต้อง estimate &alpha;<sub>i</sub> ทีละตัว</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Incidental Parameters: ลองดูผลของ T</h2>
+    <div class="two-col">
+        <div>
+            <div class="interactive-container">
+                <h4>กดเปลี่ยน T แล้วดู bias ของ FE Logit</h4>
+                <canvas id="incidentalCanvas" width="450" height="280"></canvas>
                 <div style="text-align:center; margin-top:4px;">
                     <button class="interactive-btn" onclick="drawIncidental(3)">T = 3</button>
                     <button class="interactive-btn" onclick="drawIncidental(5)">T = 5</button>
@@ -997,8 +1017,26 @@
                     <button class="interactive-btn" onclick="drawIncidental(50)">T = 50</button>
                 </div>
             </div>
-            <div class="example-box fragment">
-                <p><strong>Logit FE (T=3):</strong> bias &ap; 50%! ใน short panel ผลลัพธ์ FE logit อาจ inflate coefficients มากจนเชื่อถือไม่ได้</p>
+        </div>
+        <div>
+            <div class="key-insight">
+                <h3>สังเกต</h3>
+                <ul>
+                    <li><strong>T = 3:</strong> &beta;&#770; ห่างจากค่าจริงมาก (bias ~50%) &mdash; ใช้ไม่ได้เลย</li>
+                    <li><strong>T = 10:</strong> bias ลดลงแต่ยังมีอยู่</li>
+                    <li><strong>T = 50:</strong> bias แทบหายไป &mdash; แต่ panel ส่วนใหญ่ไม่มี T ขนาดนี้</li>
+                </ul>
+            </div>
+            <div class="example-box fragment" style="margin-top:6px;">
+                <h3>สรุป: เมื่อไหร่ใช้ FE ใน nonlinear model?</h3>
+                <table class="compare-table">
+                    <tr><th>Model</th><th>FE ใช้ได้?</th><th>ทำไม?</th></tr>
+                    <tr><td><strong>Logit</strong></td><td>ได้ (clogit)</td><td>มี sufficient statistics</td></tr>
+                    <tr><td><strong>Probit</strong></td><td class="highlight">ไม่ได้</td><td>ไม่มี sufficient statistics</td></tr>
+                    <tr><td><strong>Poisson</strong></td><td>ได้</td><td>มี sufficient statistics</td></tr>
+                    <tr><td><strong>NegBin</strong></td><td class="highlight">ระวัง</td><td>ขึ้นกับ parameterization</td></tr>
+                    <tr><td><strong>Tobit</strong></td><td class="highlight">ไม่ได้</td><td>ไม่มี sufficient statistics</td></tr>
+                </table>
             </div>
         </div>
     </div>
