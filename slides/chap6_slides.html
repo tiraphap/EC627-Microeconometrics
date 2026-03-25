@@ -306,6 +306,8 @@
 <span class="cmt">* ดู within vs between variation</span>
 <span class="cmd">xtsum</span> id t lwage ed exp exp2 wks
             </div>
+        </div>
+        <div>
             <div class="key-insight fragment">
                 <p style="margin-bottom:0.15em;"><strong>Within vs Between variation:</strong></p>
                 <ul style="margin-top:0;">
@@ -315,25 +317,41 @@
                 </ul>
             </div>
         </div>
+    </div>
+</section>
+
+<section>
+    <h2>Panel Data Structure Explorer</h2>
+    <div class="two-col">
         <div>
-            <div class="interactive-container fragment">
-                <h4>Panel Data Structure Explorer</h4>
-                <canvas id="dataExplorer" width="400" height="220"></canvas>
-                <div style="text-align:center; margin-top:3px;">
+            <div class="interactive-container">
+                <canvas id="dataExplorer" width="480" height="320"></canvas>
+                <div style="text-align:center; margin-top:4px;">
                     <button class="interactive-btn active" onclick="showTransform('original')">Original</button>
                     <button class="interactive-btn" onclick="showTransform('within')">Within</button>
                     <button class="interactive-btn" onclick="showTransform('between')">Between</button>
                     <button class="interactive-btn" onclick="showTransform('fd')">First-Diff</button>
                 </div>
-                <div style="font-size:0.38em; color:var(--text-light); margin-top:3px; line-height:1.4; text-align:left;">
-                    <strong>วิธีอ่าน:</strong> แต่ละสี = คนคนเดียว (i) ติดตามข้ามเวลา &bull;
-                    <strong>จุดกลม</strong> = ค่า (x,y) ในแต่ละปี &bull;
-                    <strong>เส้นประ</strong> = เชื่อมจุดของคนเดียวกันข้ามเวลา &bull;
-                    <strong>กากบาท +</strong> = ค่าเฉลี่ยของแต่ละคน (x̄ᵢ, ȳᵢ)<br>
-                    กด <em>Within</em> &rarr; หักค่าเฉลี่ยออก (จุดทุกคนรวมที่จุดศูนย์กลาง) &bull;
-                    กด <em>Between</em> &rarr; เหลือแค่ค่าเฉลี่ย 5 จุด &bull;
-                    กด <em>First-Diff</em> &rarr; ดูการเปลี่ยนแปลงระหว่างปี
-                </div>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>วิธีอ่านกราฟ</h3>
+                <ul>
+                    <li><strong>แต่ละสี</strong> = คนคนเดียว (i) ติดตามข้ามเวลา</li>
+                    <li><strong>จุดกลม</strong> = ค่า (x, y) ในแต่ละปี</li>
+                    <li><strong>เส้นประ</strong> = เชื่อมจุดของคนเดียวกันข้ามเวลา</li>
+                    <li><strong>กากบาท +</strong> = ค่าเฉลี่ยของแต่ละคน (x&#772;<sub>i</sub>, y&#772;<sub>i</sub>)</li>
+                </ul>
+            </div>
+            <div class="key-insight fragment">
+                <h3>แต่ละปุ่มทำอะไร?</h3>
+                <ul>
+                    <li><strong>Original</strong> &rarr; ข้อมูลดิบ เห็น overall variation</li>
+                    <li><strong>Within</strong> &rarr; หักค่าเฉลี่ยของแต่ละคนออก (FE ใช้ variation นี้)</li>
+                    <li><strong>Between</strong> &rarr; เหลือแค่ค่าเฉลี่ย 5 จุด (BE ใช้ variation นี้)</li>
+                    <li><strong>First-Diff</strong> &rarr; ดูการเปลี่ยนแปลง y<sub>it</sub> &minus; y<sub>i,t-1</sub></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -1349,7 +1367,7 @@ const miniData = [
 function showTransform(mode) {
     const ctx = getCtx('dataExplorer');
     if (!ctx) return;
-    const W = 400, H = 280;
+    const W = 480, H = 320;
     clearCanvas(ctx, W, H);
 
     // Compute means
