@@ -220,14 +220,14 @@
             <div>
                 <div class="key-insight">
                     <h3>ปัญหา: Causal Inference</h3>
-                    <p><strong>RCTs</strong> เป็น gold standard แต่มีข้อจำกัดด้านจริยธรรม ค่าใช้จ่าย และความเป็นไปได้</p>
+                    <p><strong>RCTs</strong> <span style="font-size:0.85em; color:var(--text-light);">(Randomized Controlled Trials — การทดลองแบบสุ่ม)</span> เป็น gold standard <span style="font-size:0.85em; color:var(--text-light);">(วิธีที่น่าเชื่อถือที่สุดในการหาความเป็นเหตุเป็นผล)</span> แต่มีข้อจำกัดด้านจริยธรรม ค่าใช้จ่าย และความเป็นไปได้</p>
                 </div>
                 <div class="concept-box fragment">
                     <h3>RD ใช้ประโยชน์จาก "การทดลองธรรมชาติ"</h3>
                     <ul>
                         <li>Treatment ถูกกำหนดโดย <strong>score</strong> ข้าม <strong>cutoff</strong></li>
                         <li>หน่วยใกล้ cutoff ทั้งสองฝั่ง <strong>เปรียบเทียบกันได้</strong></li>
-                        <li>ผลต่างที่ cutoff = <strong>causal effect</strong></li>
+                        <li>ผลต่างที่ cutoff = <strong>causal effect</strong> <span style="font-size:0.85em; color:var(--text-light);">(ผลกระทบที่เกิดจาก treatment จริงๆ ไม่ใช่แค่ correlation)</span></li>
                     </ul>
                 </div>
             </div>
@@ -251,6 +251,7 @@
             <div>
                 <div class="concept-box">
                     <h3>Running Variable (X)</h3>
+                    <p style="font-size:0.85em; color:var(--text-light); margin-bottom:4px;">คล้ายเส้นวัดระดับน้ำ — ถ้าน้ำสูงกว่าขีดที่กำหนด ก็เปิดเขื่อนระบาย</p>
                     <ul>
                         <li><strong>Score</strong> ที่กำหนดการได้รับ treatment</li>
                         <li>ต้องเป็นตัวแปรต่อเนื่อง (continuous) หรือกึ่งต่อเนื่อง</li>
@@ -260,8 +261,8 @@
                 <div class="fragment concept-box">
                     <h3>Cutoff (c)</h3>
                     <ul>
-                        <li>จุดตัดที่กำหนดไว้ล่วงหน้า (predetermined)</li>
-                        <li>หน่วยไม่สามารถ manipulate ได้อย่างแม่นยำ</li>
+                        <li>จุดตัดที่กำหนดไว้ล่วงหน้า (predetermined) <span style="font-size:0.85em; color:var(--text-light);">(กำหนดไว้ก่อนแล้ว ไม่ใช่หลังจากเห็นผลลัพธ์)</span></li>
+                        <li>หน่วยไม่สามารถ manipulate <span style="font-size:0.85em; color:var(--text-light);">(เปลี่ยนแปลงเพื่อให้ได้ผลที่ต้องการ เช่น ปรับคะแนนให้ผ่านเกณฑ์)</span> ได้อย่างแม่นยำ</li>
                         <li>เช่น คะแนนสอบ = 50, poverty rate = 59.1984</li>
                     </ul>
                 </div>
@@ -323,7 +324,8 @@
             <div>
                 <div class="concept-box">
                     <h3>สมมติฐานหลัก</h3>
-                    <p><strong>Potential outcomes ต่อเนื่อง</strong> ที่จุด cutoff</p>
+                    <p><strong>Potential outcomes</strong> <span style="font-size:0.85em; color:var(--text-light);">(ผลลัพธ์ที่จะเกิดขึ้นถ้าได้/ไม่ได้รับ treatment)</span> <strong>ต่อเนื่อง</strong>ที่จุด cutoff</p>
+                    <p style="font-size:0.85em; color:var(--text-light);">คนที่คะแนน 49.9 กับ 50.1 ควรคล้ายกัน ถ้าไม่มี treatment</p>
                     <div class="math-block" id="math-continuity"></div>
                 </div>
                 <div class="key-insight fragment">
@@ -334,9 +336,9 @@
             <div class="example-box">
                 <h3>วิธีการประมาณค่า</h3>
                 <ul>
-                    <li><strong>Local polynomial regression</strong> รอบ cutoff</li>
-                    <li>เลือก <strong>bandwidth</strong> อย่างเหมาะสม</li>
-                    <li>ใช้ <strong>kernel weighting</strong> ให้น้ำหนักจุดใกล้ cutoff</li>
+                    <li><strong>Local polynomial regression</strong> รอบ cutoff <span style="font-size:0.85em; color:var(--text-light);">(fit เส้นโค้ง polynomial เฉพาะบริเวณรอบๆ cutoff)</span></li>
+                    <li>เลือก <strong>bandwidth</strong> อย่างเหมาะสม <span style="font-size:0.85em; color:var(--text-light);">(ความกว้างของ 'หน้าต่าง' ข้อมูลรอบ cutoff ที่ใช้ในการ estimate)</span></li>
+                    <li>ใช้ <strong>kernel weighting</strong> ให้น้ำหนักจุดใกล้ cutoff <span style="font-size:0.85em; color:var(--text-light);">(ให้น้ำหนักมากกับจุดใกล้ cutoff เพราะจุดใกล้ๆ ให้ข้อมูลที่น่าเชื่อถือกว่า)</span></li>
                     <li>Robust bias-corrected inference</li>
                 </ul>
             </div>
@@ -347,7 +349,7 @@
         <h2>กรอบแนวคิดที่ 2: Local Randomization</h2>
         <div class="concept-box" style="margin-bottom:3px;">
             <h3>สมมติฐานหลัก</h3>
-            <p>ภายในหน้าต่างแคบ ๆ รอบ cutoff <strong>การได้รับ treatment เสมือนถูกสุ่ม</strong> (as-if random) &mdash; potential outcomes เป็นอิสระจาก running variable ในหน้าต่างนั้น</p>
+            <p>ภายในหน้าต่างแคบ ๆ รอบ cutoff <strong>การได้รับ treatment เสมือนถูกสุ่ม</strong> (as-if random) <span style="font-size:0.85em; color:var(--text-light);">(เสมือนถูกสุ่ม — คนที่คะแนน 49 กับ 51 ไม่ได้เลือกฝั่งตัวเอง)</span> &mdash; potential outcomes เป็นอิสระจาก running variable ในหน้าต่างนั้น</p>
         </div>
         <div class="fragment two-col">
             <div>
@@ -355,8 +357,8 @@
                     <h3>ข้อดี</h3>
                     <ul>
                         <li>วิเคราะห์คล้าย <strong>RCT ภายใน window</strong></li>
-                        <li>ใช้ <strong>Fisherian inference</strong> (permutation-based)</li>
-                        <li>เหมาะกับ <strong>discrete running variable</strong></li>
+                        <li>ใช้ <strong>Fisherian inference</strong> <span style="font-size:0.85em; color:var(--text-light);">(สร้างการทดสอบจากการสลับ treatment-control ซ้ำหลายรอบ แล้วดูว่าผลที่สังเกตได้ผิดปกติแค่ไหน)</span></li>
+                        <li>เหมาะกับ <strong>discrete running variable</strong> <span style="font-size:0.85em; color:var(--text-light);">(ตัวแปรที่ไม่ต่อเนื่อง เช่น จำนวนเด็กในชั้น ซึ่ง cutoff อาจซ้ำกันหลายคน)</span></li>
                         <li>ทดสอบ balance ของ covariates ได้ตรงไปตรงมา</li>
                     </ul>
                 </div>
@@ -398,12 +400,12 @@
                 </tr>
                 <tr class="fragment">
                     <td><strong>วิธีประมาณค่า</strong></td>
-                    <td>Local polynomial + kernel</td>
-                    <td>Difference-in-means / permutation</td>
+                    <td>Local polynomial + kernel <br><span style="font-size:0.85em; color:var(--text-light);">(fit เส้นโค้งเฉพาะในบริเวณรอบ cutoff โดยให้น้ำหนักจุดใกล้มากกว่า)</span></td>
+                    <td>Difference-in-means / permutation <br><span style="font-size:0.85em; color:var(--text-light);">(เปรียบเทียบค่าเฉลี่ยสองกลุ่มตรงๆ / สลับกลุ่มซ้ำๆ เพื่อทดสอบ)</span></td>
                 </tr>
                 <tr class="fragment">
                     <td><strong>Inference</strong></td>
-                    <td>Robust bias-corrected CI</td>
+                    <td>Robust bias-corrected CI <br><span style="font-size:0.85em; color:var(--text-light);">(ช่วงเชื่อมั่นที่ปรับแล้วให้คำนึงถึง bias จากการ estimate)</span></td>
                     <td>Fisherian (randomization inference)</td>
                 </tr>
                 <tr class="fragment">
@@ -479,7 +481,7 @@
                     <div class="math-block" id="math-fuzzy"></div>
                     <ul>
                         <li class="fragment">ความน่าจะเป็นกระโดด แต่ <strong>ไม่ใช่จาก 0 ไป 1</strong></li>
-                        <li class="fragment">มี noncompliance: บางหน่วยเหนือ cutoff ไม่ได้รับ treatment</li>
+                        <li class="fragment">มี noncompliance <span style="font-size:0.85em; color:var(--text-light);">(ไม่ปฏิบัติตามกฎ cutoff — เช่น มีสิทธิ์ได้ทุนแต่ไม่รับ)</span>: บางหน่วยเหนือ cutoff ไม่ได้รับ treatment</li>
                     </ul>
                 </div>
             </div>
@@ -487,7 +489,7 @@
                 <div class="fragment key-insight">
                     <h3>Fuzzy RD = IV ที่ cutoff</h3>
                     <div class="math-block" id="math-fuzzy-effect"></div>
-                    <p>คล้าย Wald estimator / Local Average Treatment Effect (LATE) สำหรับ compliers ที่ cutoff</p>
+                    <p>คล้าย Wald estimator <span style="font-size:0.85em; color:var(--text-light);">(หาร reduced-form effect ด้วย first-stage effect — เหมือน IV)</span> / Local Average Treatment Effect (LATE) <span style="font-size:0.85em; color:var(--text-light);">(ผลกระทบเฉลี่ยสำหรับกลุ่มที่เปลี่ยนพฤติกรรมเพราะ cutoff)</span> สำหรับ compliers <span style="font-size:0.85em; color:var(--text-light);">(คนที่ปฏิบัติตาม — ได้ treatment เมื่ออยู่เหนือ cutoff, ไม่ได้เมื่ออยู่ใต้)</span> ที่ cutoff</p>
                 </div>
                 <div class="fragment stata-code">
 <span class="cmt">* Fuzzy RD estimation</span>
@@ -551,7 +553,7 @@
                     <ul>
                         <li><strong>Uniform:</strong> น้ำหนักเท่ากันทุกจุดใน bandwidth</li>
                         <li><strong>Triangular:</strong> น้ำหนักมากที่ cutoff, ลดลงตามระยะ</li>
-                        <li>Triangular เป็น <strong>MSE-optimal</strong> สำหรับ boundary estimation</li>
+                        <li>Triangular เป็น <strong>MSE-optimal</strong> <span style="font-size:0.85em; color:var(--text-light);">(เลือกให้ Mean Squared Error — ผลรวมของ Bias&#178; กับ Variance — น้อยที่สุด)</span> สำหรับ boundary estimation <span style="font-size:0.85em; color:var(--text-light);">(การ estimate ที่ขอบ — cutoff คือ 'ขอบ' ของข้อมูลแต่ละฝั่ง)</span></li>
                     </ul>
                 </div>
             </div>
@@ -587,6 +589,7 @@
 <span class="cmd">rdbwselect</span> $Y $X, <span class="opt">c</span>($C) <span class="opt">kernel</span>(uni) <span class="opt">all</span>
 <span class="cmt">* MSE-optimal: mserd</span>
 <span class="cmt">* CER-optimal: cerrd (shorter)</span>
+<span class="cmt">* (Coverage Error Rate — เลือก bandwidth ที่ทำให้ CI มี coverage ใกล้ nominal level)</span>
                     </div>
                 </div>
             </div>
@@ -597,7 +600,7 @@
                     <ul>
                         <li><strong>h</strong>: bandwidth หลักสำหรับ point estimation</li>
                         <li><strong>b</strong>: bandwidth สำหรับ bias correction (มักใหญ่กว่า h)</li>
-                        <li>ให้ <strong>robust confidence intervals</strong> ที่คำนึงถึง bias</li>
+                        <li>ให้ <strong>robust confidence intervals</strong> ที่คำนึงถึง bias <br><span style="font-size:0.85em; color:var(--text-light);">bias correction เหมือนปรับจุดเล็งปืนหลังจากรู้ว่าลมพัดไปทางไหน</span></li>
                     </ul>
                 </div>
             </div>
@@ -647,6 +650,7 @@
                 <li><strong>Conventional:</strong> point estimate + SE (อาจมี bias สูง)</li>
                 <li><strong>Bias-corrected:</strong> point estimate ปรับ bias แล้ว</li>
                 <li><strong>Robust:</strong> CI ที่ robust ต่อ bias → <strong>แนะนำใช้สำหรับ inference</strong></li>
+                <li style="font-size:0.85em; color:var(--text-light); list-style:none;">Conventional = ยิงตรง, Bias-corrected = ปรับจุดเล็ง, Robust = ปรับจุดเล็ง + ขยาย margin of error ให้ครอบคลุมความไม่แน่นอนจากการปรับ</li>
             </ul>
         </div>
     </section>
@@ -843,9 +847,9 @@
                 <div class="concept-box">
                     <h3>McCrary / Cattaneo et al. Density Test</h3>
                     <ul>
-                        <li>ถ้าหน่วยสามารถ manipulate running variable → <strong>จะเห็นการกระจุกตัว (bunching)</strong> ที่ฝั่งใดฝั่งหนึ่งของ cutoff</li>
+                        <li>ถ้าหน่วยสามารถ manipulate running variable → <strong>จะเห็นการกระจุกตัว (bunching)</strong> <span style="font-size:0.85em; color:var(--text-light);">(เช่น มีคนคะแนน 51 เยอะผิดปกติ เหมือนมีคนปรับคะแนนให้พ้น cutoff)</span> ที่ฝั่งใดฝั่งหนึ่งของ cutoff</li>
                         <li>H₀: density ต่อเนื่องที่ cutoff</li>
-                        <li>ปฏิเสธ H₀ → ระวัง! อาจมี sorting</li>
+                        <li>ปฏิเสธ H₀ → ระวัง! อาจมี sorting <span style="font-size:0.85em; color:var(--text-light);">(การจัดกลุ่มตัวเอง — คนเลือกฝั่งที่ตัวเองอยากอยู่)</span></li>
                     </ul>
                     <div class="stata-code">
 <span class="cmd">rddensity</span> $X, <span class="opt">c</span>($C)
@@ -872,7 +876,7 @@
             <div>
                 <div class="concept-box">
                     <h3>Balance on Pre-treatment Covariates</h3>
-                    <p>ตัวแปรที่ถูกกำหนดก่อน treatment <strong>ไม่ควรมี discontinuity</strong> ที่ cutoff</p>
+                    <p>ตัวแปรที่ถูกกำหนดก่อน treatment (pre-treatment covariates) <span style="font-size:0.85em; color:var(--text-light);">(ตัวแปรที่ถูกกำหนดก่อน treatment เกิด เช่น ประชากร เชื้อชาติ เปลี่ยนย้อนหลังไม่ได้)</span> <strong>ไม่ควรมี discontinuity</strong> ที่ cutoff</p>
                     <div class="stata-code">
 <span class="cmt">* ทดสอบ balance</span>
 <span class="cmd">rdrobust</span> census1960_pop $X,
@@ -905,7 +909,7 @@
                 </div>
                 <div class="fragment concept-box">
                     <h3>Donut Hole Approach</h3>
-                    <p>ตัดข้อมูลใกล้ cutoff มาก ๆ ออก:</p>
+                    <p>ตัดข้อมูลใกล้ cutoff มาก ๆ ออก: <span style="font-size:0.85em; color:var(--text-light);">(ตัดข้อมูลใกล้ cutoff มากๆ ออก เพื่อดูว่าผลถูกขับเคลื่อนด้วยจุดที่อาจ manipulate ได้หรือไม่)</span></p>
                     <div class="stata-code">
 <span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> abs(R)>=<span class="num">0.10</span>,
   <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
