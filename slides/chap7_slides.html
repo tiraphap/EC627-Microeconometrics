@@ -841,26 +841,25 @@
     </section>
 
     <section>
-        <h2>Density Test: ตรวจสอบ Manipulation</h2>
+        <h2>Falsification Test 1: Density Test</h2>
         <div class="two-col">
             <div>
                 <div class="concept-box">
-                    <h3>McCrary / Cattaneo et al. Density Test</h3>
-                    <ul>
-                        <li>ถ้าหน่วยสามารถ manipulate running variable → <strong>จะเห็นการกระจุกตัว (bunching)</strong> <span style="font-size:0.85em; color:var(--text-light);">(เช่น มีคนคะแนน 51 เยอะผิดปกติ เหมือนมีคนปรับคะแนนให้พ้น cutoff)</span> ที่ฝั่งใดฝั่งหนึ่งของ cutoff</li>
-                        <li>H₀: density ต่อเนื่องที่ cutoff</li>
-                        <li>ปฏิเสธ H₀ → ระวัง! อาจมี sorting <span style="font-size:0.85em; color:var(--text-light);">(การจัดกลุ่มตัวเอง — คนเลือกฝั่งที่ตัวเองอยากอยู่)</span></li>
-                    </ul>
-                    <div class="stata-code">
+                    <h3>ทำไมต้องทดสอบเป็นอันดับแรก?</h3>
+                    <p>ถ้าคน <strong>manipulate</strong> running variable ได้ (เช่น ปรับคะแนนให้ผ่าน cutoff) &rarr; จะเห็น <strong>การกระจุกตัว (bunching)</strong> ที่ฝั่งหนึ่งของ cutoff</p>
+                    <p style="font-size:0.85em; color:var(--text-light);">ตัวอย่าง: ถ้ามีเมืองคะแนน 59.2&ndash;60 เยอะผิดปกติ แสดงว่าอาจมีคนปรับตัวเลขเพื่อให้ได้ทุน Head Start</p>
+                </div>
+                <div class="stata-code fragment">
 <span class="cmd">rddensity</span> $X, <span class="opt">c</span>($C)
-<span class="cmt">* p-value > 0.05 → ดี (ไม่มี manipulation)</span>
-                    </div>
+<span class="cmt">* H₀: density ต่อเนื่องที่ cutoff</span>
+<span class="cmt">* p > 0.05 → ดี (ไม่มี manipulation)</span>
+<span class="cmt">* p < 0.05 → ระวัง! อาจมี sorting</span>
                 </div>
             </div>
             <div>
-                <div class="fragment interactive-container">
+                <div class="interactive-container fragment">
                     <h4>Density Test Visualizer</h4>
-                    <canvas id="densityCanvas" width="450" height="240"></canvas>
+                    <canvas id="densityCanvas" width="450" height="220"></canvas>
                     <div style="display:flex; gap:4px; margin-top:3px;">
                         <button class="interactive-btn active" onclick="setDensity('normal')">ไม่มี Manipulation</button>
                         <button class="interactive-btn" onclick="setDensity('bunching')">มี Bunching</button>
@@ -871,7 +870,7 @@
     </section>
 
     <section>
-        <h2>Falsification Test 1: Covariate Balance</h2>
+        <h2>Falsification Test 2: Covariate Balance</h2>
         <div class="two-col">
             <div>
                 <div class="concept-box">
@@ -909,7 +908,7 @@
     </section>
 
     <section>
-        <h2>Falsification Test 2: Placebo Outcomes</h2>
+        <h2>Falsification Test 3: Placebo Outcomes</h2>
         <div class="two-col">
             <div>
                 <div class="concept-box">
@@ -940,7 +939,7 @@
     </section>
 
     <section>
-        <h2>Falsification Test 3: Placebo Cutoffs</h2>
+        <h2>Falsification Test 4: Placebo Cutoffs</h2>
         <div class="two-col">
             <div>
                 <div class="concept-box">
@@ -976,7 +975,7 @@
     </section>
 
     <section>
-        <h2>Falsification Test 4: Donut Hole</h2>
+        <h2>Falsification Test 5: Donut Hole</h2>
         <div class="two-col">
             <div>
                 <div class="concept-box">
