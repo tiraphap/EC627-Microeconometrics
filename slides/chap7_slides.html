@@ -871,49 +871,140 @@
     </section>
 
     <section>
-        <h2>Covariate Balance & Placebo Tests</h2>
+        <h2>Falsification Test 1: Covariate Balance</h2>
         <div class="two-col">
             <div>
                 <div class="concept-box">
-                    <h3>Balance on Pre-treatment Covariates</h3>
-                    <p>ตัวแปรที่ถูกกำหนดก่อน treatment (pre-treatment covariates) <span style="font-size:0.85em; color:var(--text-light);">(ตัวแปรที่ถูกกำหนดก่อน treatment เกิด เช่น ประชากร เชื้อชาติ เปลี่ยนย้อนหลังไม่ได้)</span> <strong>ไม่ควรมี discontinuity</strong> ที่ cutoff</p>
-                    <div class="stata-code">
-<span class="cmt">* ทดสอบ balance</span>
-<span class="cmd">rdrobust</span> census1960_pop $X,
-  <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni)
-<span class="cmt">* ต้องการ: p-value > 0.05</span>
-<span class="cmt">* (ไม่มีการกระโดด = ดี)</span>
-                    </div>
+                    <h3>หลักการ</h3>
+                    <p>ตัวแปรที่ถูกกำหนด <strong>ก่อน</strong> treatment เกิด (pre-treatment covariates) <strong>ไม่ควรกระโดด</strong>ที่ cutoff</p>
+                    <p style="font-size:0.85em; color:var(--text-light);">เพราะตัวแปรเหล่านี้เกิดก่อน treatment &mdash; ถ้ามันกระโดดที่ cutoff แสดงว่ามีบางอย่างผิดปกติ เช่น คนสองฝั่งต่างกันตั้งแต่แรก</p>
                 </div>
-                <div class="fragment key-insight">
-                    <h3>Placebo Outcomes</h3>
-                    <p>ทดสอบกับผลลัพธ์ที่ <strong>ไม่ควรถูกกระทบ</strong>:</p>
-                    <div class="stata-code">
-<span class="cmt">* การตายของผู้ใหญ่ (ไม่ควรถูกกระทบ)</span>
-<span class="cmd">rdrobust</span> mort_age25plus_related_postHS
-  $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
-                    </div>
+                <div class="key-insight fragment">
+                    <h3>ตัวอย่าง Head Start</h3>
+                    <p>ประชากรปี 1960 (<strong>census1960_pop</strong>) ถูกกำหนดก่อนที่จะมีโครงการ Head Start</p>
+                    <p>&rarr; เมืองที่ poverty rate = 58 กับ 60 ควรมีขนาดประชากรใกล้เคียงกัน</p>
+                    <p>&rarr; ถ้าไม่ใกล้เคียง (p &lt; 0.05) &rarr; <strong style="color:var(--accent);">สัญญาณอันตราย!</strong> อาจมี sorting</p>
                 </div>
             </div>
             <div>
-                <div class="fragment example-box">
-                    <h3>Placebo Cutoffs</h3>
-                    <p>ทดสอบที่ cutoff ปลอม → <strong>ไม่ควรพบ discontinuity</strong></p>
-                    <div class="stata-code">
-<span class="cmt">* Placebo cutoff ที่ R=2 และ R=3</span>
-<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> R><span class="num">0</span>,
-  <span class="opt">c</span>(<span class="num">2</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
-<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> R><span class="num">0</span>,
-  <span class="opt">c</span>(<span class="num">3</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
-                    </div>
+                <div class="stata-code fragment">
+<span class="cmt">* ทดสอบ: ประชากรกระโดดที่ cutoff มั้ย?</span>
+<span class="cmd">rdrobust</span> census1960_pop $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni)
+<span class="cmt">* ต้องการ: p-value > 0.05 (ไม่มีการกระโดด = ดี)</span>
+
+<span class="cmt">* ทดสอบกับ covariates อื่นด้วย</span>
+<span class="cmd">rdrobust</span> census1960_pcturban $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni)
+<span class="cmd">rdrobust</span> census1960_pctblack $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni)
                 </div>
-                <div class="fragment concept-box">
-                    <h3>Donut Hole Approach</h3>
-                    <p>ตัดข้อมูลใกล้ cutoff มาก ๆ ออก: <span style="font-size:0.85em; color:var(--text-light);">(ตัดข้อมูลใกล้ cutoff มากๆ ออก เพื่อดูว่าผลถูกขับเคลื่อนด้วยจุดที่อาจ manipulate ได้หรือไม่)</span></p>
-                    <div class="stata-code">
-<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> abs(R)>=<span class="num">0.10</span>,
-  <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
-                    </div>
+                <div class="example-box fragment">
+                    <h3>วิธีอ่านผล</h3>
+                    <table class="compare-table">
+                        <tr><th>p-value</th><th>แปลว่า</th><th>สรุป</th></tr>
+                        <tr><td>&gt; 0.05</td><td>ไม่กระโดด</td><td style="color:var(--accent3);"><strong>ผ่าน &#10003;</strong></td></tr>
+                        <tr><td>&lt; 0.05</td><td>กระโดด!</td><td style="color:var(--accent);"><strong>ไม่ผ่าน &#10007;</strong></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Falsification Test 2: Placebo Outcomes</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>หลักการ</h3>
+                    <p>ทดสอบกับผลลัพธ์ที่ <strong>ไม่ควรถูกกระทบ</strong>โดย treatment</p>
+                    <p style="font-size:0.85em; color:var(--text-light);">ถ้า RD design ถูกต้อง &mdash; discontinuity ควรปรากฏเฉพาะกับ outcome ที่ treatment กระทบจริงๆ ไม่ใช่กับทุกอย่าง</p>
+                </div>
+                <div class="key-insight fragment">
+                    <h3>ตัวอย่าง Head Start</h3>
+                    <p>Head Start ช่วยเหลือ <strong>เด็ก</strong> &rarr; ควรลดการตายของเด็กเท่านั้น</p>
+                    <p><strong>การตายของผู้ใหญ่ (อายุ 25+)</strong> ไม่ควรเปลี่ยนที่ cutoff เพราะ Head Start ไม่ได้ช่วยผู้ใหญ่</p>
+                    <p>&rarr; ถ้าการตายผู้ใหญ่กระโดดด้วย &rarr; <strong style="color:var(--accent);">มีปัญหา!</strong> อาจเป็น confounding factor ไม่ใช่ผลของ Head Start</p>
+                </div>
+            </div>
+            <div>
+                <div class="stata-code fragment">
+<span class="cmt">* Placebo: อัตราตายผู้ใหญ่ (ไม่ควรกระโดด)</span>
+<span class="cmd">rdrobust</span> mort_age25plus_related_postHS $X, <span class="opt">c</span>($C) <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+<span class="cmt">* ต้องการ: p-value > 0.05 &amp; coef ≈ 0</span>
+                </div>
+                <div class="example-box fragment">
+                    <h3>สรุปตรรกะ</h3>
+                    <p>Treatment กระทบ <strong>เฉพาะ</strong> outcome ที่ควรกระทบ &rarr; RD น่าเชื่อถือ</p>
+                    <p>Treatment กระทบ <strong>ทุกอย่าง</strong> &rarr; อาจมี confounding ที่ cutoff &rarr; ไม่น่าเชื่อถือ</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Falsification Test 3: Placebo Cutoffs</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>หลักการ</h3>
+                    <p>ย้าย cutoff ไปที่อื่น &rarr; <strong>ไม่ควรพบ discontinuity</strong></p>
+                    <p style="font-size:0.85em; color:var(--text-light);">ถ้า treatment effect เกิดจาก cutoff จริงๆ มันควรเกิดเฉพาะที่ cutoff จริง ไม่ใช่ทุกจุด</p>
+                </div>
+                <div class="key-insight fragment">
+                    <h3>ตัวอย่าง Head Start</h3>
+                    <p>Cutoff จริง: poverty rate = 59.2</p>
+                    <p>ลองเลื่อนไปที่ 61.2 (R=2) หรือ 62.2 (R=3) &mdash; จุดเหล่านี้ไม่มีนโยบายอะไร</p>
+                    <p>&rarr; ถ้าพบ discontinuity ที่ cutoff ปลอม &rarr; <strong style="color:var(--accent);">ผลที่ cutoff จริงอาจไม่น่าเชื่อถือ</strong> อาจเป็นแค่ noise หรือ functional form ที่ผิด</p>
+                </div>
+            </div>
+            <div>
+                <div class="stata-code fragment">
+<span class="cmt">* ทดสอบ cutoff ปลอม ฝั่งขวาของ cutoff จริง</span>
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> R><span class="num">0</span>, <span class="opt">c</span>(<span class="num">2</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> R><span class="num">0</span>, <span class="opt">c</span>(<span class="num">3</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+<span class="cmt">* ต้องการ: ไม่ significant (p > 0.05)</span>
+                </div>
+                <div class="example-box fragment">
+                    <h3>เปรียบเทียบ</h3>
+                    <table class="compare-table">
+                        <tr><th>Cutoff</th><th>คาดหวัง</th></tr>
+                        <tr><td>59.2 (จริง)</td><td>Significant &mdash; เพราะนโยบายเปลี่ยนที่นี่</td></tr>
+                        <tr><td>61.2 (ปลอม)</td><td>ไม่ significant &mdash; ไม่มีนโยบายเปลี่ยน</td></tr>
+                        <tr><td>62.2 (ปลอม)</td><td>ไม่ significant &mdash; ไม่มีนโยบายเปลี่ยน</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Falsification Test 4: Donut Hole</h2>
+        <div class="two-col">
+            <div>
+                <div class="concept-box">
+                    <h3>หลักการ</h3>
+                    <p>ตัดข้อมูลที่อยู่ <strong>ใกล้ cutoff มากๆ</strong> ออก แล้ว estimate ใหม่</p>
+                    <p style="font-size:0.85em; color:var(--text-light);">เจาะ "โดนัท" ตรงกลาง &mdash; เอาจุดที่ใกล้ cutoff สุดออก ถ้าจุดเหล่านี้เป็นจุดที่อาจถูก manipulate ผลควรไม่เปลี่ยนมาก</p>
+                </div>
+                <div class="key-insight fragment">
+                    <h3>ตัวอย่าง Head Start</h3>
+                    <p>เมืองที่ poverty rate = 59.0&ndash;59.4 อาจถูกปัดคะแนนเพื่อให้ผ่าน cutoff</p>
+                    <p>&rarr; ตัดเมืองที่ |R| &lt; 0.10 ออก (ใกล้ cutoff มากๆ)</p>
+                    <p>&rarr; ถ้า estimate ยังคล้ายเดิม &rarr; <strong style="color:var(--accent3);">ดี!</strong> ผลไม่ได้ถูกขับเคลื่อนด้วยจุดที่อาจโดน manipulate</p>
+                </div>
+            </div>
+            <div>
+                <div class="stata-code fragment">
+<span class="cmt">* ตัดจุดที่ |R| < 0.10 ออก (เจาะโดนัท)</span>
+<span class="cmd">rdrobust</span> $Y R <span class="opt">if</span> abs(R)>=<span class="num">0.10</span>, <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+<span class="cmt">* เปรียบเทียบกับผลเดิม (ไม่ตัด)</span>
+<span class="cmd">rdrobust</span> $Y R, <span class="opt">h</span>(<span class="num">9</span>) <span class="opt">kernel</span>(uni) <span class="opt">vce</span>(hc0)
+                </div>
+                <div class="example-box fragment">
+                    <h3>วิธีอ่านผล</h3>
+                    <table class="compare-table">
+                        <tr><th>ผลลัพธ์</th><th>แปลว่า</th></tr>
+                        <tr><td>Estimate ใกล้เคียงเดิม</td><td style="color:var(--accent3);"><strong>ดี</strong> &mdash; ผลไม่ขึ้นกับจุดใกล้ cutoff</td></tr>
+                        <tr><td>Estimate เปลี่ยนมาก</td><td style="color:var(--accent);"><strong>ระวัง</strong> &mdash; อาจมี manipulation</td></tr>
+                    </table>
                 </div>
             </div>
         </div>
