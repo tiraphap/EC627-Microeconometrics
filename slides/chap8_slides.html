@@ -399,9 +399,36 @@
             </div>
         </div>
     </div>
-    <div class="key-insight fragment" style="margin-top:5px;">
-        <h3>ปัญหา: CIA มักไม่สมจริง!</h3>
-        <p>เพราะมี <strong>unobserved confounders</strong> ที่ควบคุมไม่ได้ (เช่น แรงจูงใจ, connections, ครอบครัว) &rarr; ต้องใช้วิธีอื่น เช่น <strong>DID</strong> ที่ใช้ข้อมูลก่อน-หลังกำจัด time-invariant confounders แทน</p>
+
+</section>
+
+<section>
+    <h2>ปัญหา: CIA มักไม่สมจริง!</h2>
+    <div class="key-insight">
+        <h3>Unobserved Confounders</h3>
+        <p>ในทางปฏิบัติ เรามักควบคุม X ได้ไม่ครบ &mdash; มีตัวแปรที่ <strong>วัดไม่ได้</strong> แต่มีผลต่อทั้ง D และ Y</p>
+    </div>
+    <div class="example-box fragment" style="margin-top:5px;">
+        <h3>กลับมาที่ตัวอย่าง ป.โท</h3>
+        <p>เราควบคุม ability ได้ (เช่น จาก GPA, คะแนนสอบ) แต่ยังมีสิ่งที่วัดไม่ได้:</p>
+        <div class="two-col" style="margin-top:4px;">
+            <div>
+                <ul>
+                    <li><strong>แรงจูงใจ</strong> &mdash; คนที่อยากเรียนมากมักทำงานหนักกว่า</li>
+                    <li><strong>Connections</strong> &mdash; มหาวิทยาลัยดีมี network ที่ช่วยหางาน</li>
+                </ul>
+            </div>
+            <div>
+                <ul>
+                    <li><strong>ฐานะครอบครัว</strong> &mdash; ครอบครัวรวยส่งเรียนได้ + มี safety net</li>
+                    <li><strong>Signaling</strong> &mdash; ป.โท อาจแค่ส่งสัญญาณ ไม่ได้เพิ่ม productivity</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="concept-box fragment" style="margin-top:5px;">
+        <h3>ทางออก: DID</h3>
+        <p>แทนที่จะพยายามควบคุม X ให้ครบ &rarr; ใช้ <strong>ข้อมูลก่อน-หลัง</strong> นโยบาย &rarr; กำจัด confounders ที่คงที่ตามเวลา (time-invariant) ออกไปได้ทั้งหมด &mdash; ไม่ต้องวัดมันเลย</p>
     </div>
 </section>
 
