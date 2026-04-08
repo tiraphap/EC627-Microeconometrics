@@ -885,7 +885,7 @@
         <div>
             <div class="key-insight fragment">
                 <h3>ข้อควรระวัง (Staggered Treatment)</h3>
-                <p>เมื่อกลุ่มต่างๆ ได้รับ treatment ในเวลาที่ต่างกัน (staggered adoption):</p>
+                <p>เมื่อกลุ่มต่างๆ ได้รับ treatment ในเวลาที่ต่างกัน (ดูหน้าถัดไป)</p>
                 <ul>
                     <li>TWFE อาจให้ค่า <span data-tex="\delta"></span> ที่มี bias</li>
                     <li>เนื่องจาก "already-treated" units ถูกใช้เป็น control</li>
@@ -897,6 +897,41 @@
     <div class="stata-code fragment">
         <span class="cmt">* TWFE DID in Stata</span><br>
         <span class="cmd">reg</span> y treat_post <span class="opt">i.state i.year</span>, <span class="opt">cluster(state)</span>
+    </div>
+</section>
+
+<section>
+    <h2>Staggered Policy Adoption คืออะไร?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>นิยาม</h3>
+                <p>นโยบายที่แต่ละรัฐ/หน่วย <strong>รับไปใช้คนละเวลากัน</strong> ไม่ได้เริ่มพร้อมกันทุกที่</p>
+            </div>
+            <div class="example-box fragment">
+                <h3>ตัวอย่าง: Autor (2003)</h3>
+                <p>กฎหมาย employment-at-will exception:</p>
+                <div class="stata-code" style="font-size:0.9em !important; line-height:1.8;">
+รัฐ A: ─────┃ treat ──────────<br>
+รัฐ B: ─────────────┃ treat ──<br>
+รัฐ C: ──┃ treat ─────────────<br>
+รัฐ D: ──────────────────────── (control)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1980&nbsp;&nbsp; 1985&nbsp;&nbsp; 1990&nbsp;&nbsp; 1995
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="key-insight fragment">
+                <h3>ข้อดี</h3>
+                <p>รัฐที่ <strong>ยังไม่รับนโยบาย</strong> เป็น control ให้รัฐที่เพิ่งรับได้ &rarr; มีหลาย "ก่อน-หลัง" จากหลายรัฐ &rarr; DID มีพลังมากขึ้น</p>
+            </div>
+            <div class="key-insight fragment" style="border-left-color: var(--accent);">
+                <h3>แต่ต้องระวัง! (TWFE Bias)</h3>
+                <p>TWFE อาจเอา<strong>รัฐที่ได้ treatment ก่อนหน้า</strong>มาเป็น "control" ให้รัฐที่ได้ทีหลัง</p>
+                <p>ถ้า treatment effect เปลี่ยนตามเวลา (dynamic effects) &rarr; <strong>TWFE ให้ค่า bias</strong></p>
+                <p style="font-size:0.85em; color:var(--text-light);">วิธีแก้: ใช้ Callaway &amp; Sant'Anna (2021) หรือ Sun &amp; Abraham (2021) ที่ไม่ใช้ already-treated เป็น control</p>
+            </div>
+        </div>
     </div>
 </section>
 
