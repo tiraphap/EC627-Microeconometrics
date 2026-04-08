@@ -1535,7 +1535,7 @@ function drawDIDCanvas() {
     ctx.fillStyle = '#a0aec0'; ctx.setLineDash([4, 3]);
     ctx.strokeStyle = '#a0aec0'; ctx.beginPath(); ctx.moveTo(W - mr - 150, mt + 39); ctx.lineTo(W - mr - 136, mt + 39); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = '#a0aec0'; ctx.fillText('Counterfactual', W - mr - 132, mt + 43);
+    ctx.fillStyle = '#a0aec0'; ctx.fillText('Counterfactual (ถ้าไม่มี treatment)', W - mr - 132, mt + 43);
 }
 
 // Slider listeners for DID visualizer
@@ -1626,7 +1626,7 @@ function drawViolation() {
     ctx.fillStyle = '#4a90d9'; ctx.fillText('Control', toX(1) + 10, toY(ctrl1));
     ctx.fillStyle = '#d4534a'; ctx.fillText('Treatment', toX(1) + 10, toY(treat1));
     ctx.fillStyle = '#a0aec0'; ctx.fillText('DID assumes', toX(1) + 10, toY(treat0 + ctrlSlope));
-    ctx.fillStyle = '#e8a838'; ctx.fillText('True CF', toX(1) + 10, toY(counterfactual));
+    ctx.fillStyle = '#e8a838'; ctx.fillText('Counterfactual (ไม่มี treatment)', toX(1) + 10, toY(counterfactual));
 
     // Bias indicator
     if (Math.abs(bias) > 0.01) {
