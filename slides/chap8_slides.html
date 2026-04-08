@@ -263,8 +263,12 @@
                 <div class="math-block">
                     <span data-tex="\text{ATE} = E[Y(1) - Y(0)]"></span>
                 </div>
-                <p class="fragment">= ผลกระทบเฉลี่ยสำหรับ<strong>ทุกคน</strong>ในประชากร</p>
-                <p class="fragment">ถ้าเราสุ่มได้สมบูรณ์ (RCT) เราสามารถประมาณค่านี้ได้โดยตรง</p>
+                <p>= ผลกระทบเฉลี่ยสำหรับ<strong>ทุกคน</strong>ในประชากร</p>
+            </div>
+            <div class="example-box fragment">
+                <h3>ตัวอย่าง: ค่าแรงขั้นต่ำ</h3>
+                <p>ถ้า<strong>บังคับทุกจังหวัด</strong>ขึ้นค่าแรง &rarr; การจ้างงานเฉลี่ยเปลี่ยนเท่าไหร่?</p>
+                <p>= ATE (ผลต่อทุกคน ไม่ว่าจะเคยขึ้นค่าแรงหรือไม่)</p>
             </div>
         </div>
         <div>
@@ -273,14 +277,18 @@
                 <div class="math-block">
                     <span data-tex="\text{ATT} = E[Y(1) - Y(0) \mid D = 1]"></span>
                 </div>
-                <p class="fragment">= ผลกระทบเฉลี่ยสำหรับ<strong>ผู้ที่ได้รับ treatment จริง</strong>เท่านั้น</p>
-                <p class="fragment">ในบริบท DID มักสนใจ ATT มากกว่า ATE</p>
+                <p>= ผลกระทบเฉลี่ยสำหรับ<strong>ผู้ที่ได้รับ treatment จริง</strong>เท่านั้น</p>
+            </div>
+            <div class="example-box fragment">
+                <h3>ตัวอย่าง: ค่าแรงขั้นต่ำ</h3>
+                <p>เฉพาะ<strong>จังหวัดที่ขึ้นค่าแรงจริง</strong> &rarr; การจ้างงานเปลี่ยนเท่าไหร่?</p>
+                <p>= ATT (ผลต่อกลุ่มที่ได้รับนโยบาย) &mdash; <strong>DID ให้ค่านี้</strong></p>
             </div>
         </div>
     </div>
-    <div class="example-box fragment" style="margin-top:5px;">
-        <h3>ทำไม ATT ไม่เท่ากับ ATE?</h3>
-        <p>เพราะคนที่เลือกเข้ารับ treatment อาจมีลักษณะแตกต่างจากคนทั่วไป เช่น คนที่เลือกเรียนต่อปริญญาโทอาจมี ability สูงกว่าเฉลี่ย ดังนั้นผลของการศึกษาอาจต่างกันระหว่าง ATE กับ ATT</p>
+    <div class="key-insight fragment" style="margin-top:5px;">
+        <h3>ทำไม ATE &ne; ATT?</h3>
+        <p><strong>ตัวอย่าง:</strong> จังหวัดที่เลือกขึ้นค่าแรงอาจเป็นจังหวัดอุตสาหกรรมที่ตลาดแรงงานตึงตัวอยู่แล้ว &rarr; ผลกระทบต่อจังหวัดเหล่านี้ (ATT) อาจต่างจากผลที่จะเกิดถ้าบังคับทุกจังหวัด (ATE) เพราะจังหวัดเกษตรกรรมอาจได้รับผลกระทบหนักกว่า</p>
     </div>
 </section>
 
