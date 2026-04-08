@@ -355,30 +355,53 @@
     <div class="two-col">
         <div>
             <div class="concept-box">
-                <h3>นิยาม</h3>
+                <h3>CIA คืออะไร?</h3>
                 <div class="math-block">
                     <span data-tex="\{Y(0), Y(1)\} \perp D \mid X"></span>
                 </div>
-                <p>ควบคุม <strong>X</strong> (confounders) แล้ว treatment เป็นอิสระจาก potential outcomes</p>
-            </div>
-            <div class="key-insight fragment">
-                <h3>X = Confounders</h3>
-                <p>ตัวแปรที่เป็นสาเหตุร่วมของทั้ง D และ Y &mdash; ถ้าไม่ควบคุม X จะได้ ATE ที่มี bias</p>
+                <p>เมื่อควบคุม <strong>X</strong> แล้ว &rarr; การได้รับ treatment (D) <strong>ไม่เกี่ยวกับ</strong> potential outcomes</p>
+                <p style="font-size:0.85em; color:var(--text-light);">พูดง่ายๆ: ในกลุ่มคนที่มีลักษณะ X เหมือนกัน ใครได้/ไม่ได้ treatment เสมือนถูกสุ่ม</p>
             </div>
         </div>
         <div>
-            <div class="example-box fragment">
-                <h3>ภายใต้ SUTVA + CIA</h3>
-                <div class="math-block">
-                    <span data-tex="Y = \alpha + \beta D + \gamma X + \varepsilon"></span>
-                </div>
-                <p><span data-tex="\beta"></span> = <strong>ATE</strong> แต่ในทางปฏิบัติ CIA มักไม่สมจริง เพราะมี unobserved confounders</p>
-            </div>
-            <div class="key-insight fragment">
-                <h3>จาก CIA สู่ DID</h3>
-                <p>เมื่อ CIA ไม่สมจริง ต้องหา identification strategy อื่น เช่น <strong>DID</strong> ที่ใช้ข้อมูลก่อน-หลังกำจัด time-invariant confounders</p>
+            <div class="key-insight">
+                <h3>Confounders (X) คืออะไร?</h3>
+                <p>ตัวแปรที่มีผลต่อ <strong>ทั้ง</strong> D (treatment) <strong>และ</strong> Y (outcome)</p>
+                <p>ถ้าไม่ควบคุม X &rarr; เปรียบเทียบ treatment กับ control ไม่ fair &rarr; <strong>bias</strong></p>
             </div>
         </div>
+    </div>
+</section>
+
+<section>
+    <h2>CIA: ตัวอย่าง</h2>
+    <div class="example-box">
+        <h3>ตัวอย่าง: ผลของปริญญาโทต่อรายได้</h3>
+        <p>D = เรียนจบ ป.โท &bull; Y = รายได้ &bull; คำถาม: ป.โท ทำให้รายได้สูงขึ้นจริงหรือ?</p>
+    </div>
+    <div class="two-col fragment" style="margin-top:5px;">
+        <div>
+            <div class="key-insight">
+                <h3>ถ้าไม่ควบคุม X</h3>
+                <p>คนเรียน ป.โท อาจมี <strong>ability สูงกว่า</strong>อยู่แล้ว &rarr; รายได้สูงไม่ใช่เพราะ ป.โท แต่เพราะเก่ง</p>
+                <p>X = ability เป็น confounder &rarr; ทำให้ ป.โท ดูมีผลมากกว่าความจริง</p>
+            </div>
+        </div>
+        <div>
+            <div class="concept-box">
+                <h3>ถ้า CIA จริง</h3>
+                <p>เปรียบเทียบคนที่ <strong>ability เท่ากัน</strong> (X เท่ากัน) &rarr; คนนึงเรียน ป.โท คนนึงไม่เรียน</p>
+                <p>ผลต่างรายได้ = <strong>causal effect ของ ป.โท จริงๆ</strong></p>
+                <div class="math-block" style="margin-top:4px;">
+                    <span data-tex="Y = \alpha + \beta D + \gamma X + \varepsilon"></span>
+                </div>
+                <p><span data-tex="\beta"></span> = ATE (ถ้า CIA จริง)</p>
+            </div>
+        </div>
+    </div>
+    <div class="key-insight fragment" style="margin-top:5px;">
+        <h3>ปัญหา: CIA มักไม่สมจริง!</h3>
+        <p>เพราะมี <strong>unobserved confounders</strong> ที่ควบคุมไม่ได้ (เช่น แรงจูงใจ, connections, ครอบครัว) &rarr; ต้องใช้วิธีอื่น เช่น <strong>DID</strong> ที่ใช้ข้อมูลก่อน-หลังกำจัด time-invariant confounders แทน</p>
     </div>
 </section>
 
