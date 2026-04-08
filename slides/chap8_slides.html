@@ -592,8 +592,11 @@
 <!-- Interactive: DID Visualizer -->
 <section>
     <h2>DID Visualizer</h2>
+    <div class="math-block" style="margin-bottom:4px;">
+        <span data-tex="Y_{it} = \alpha + \beta \cdot \text{Group}_i + \gamma \cdot \text{Post}_t + \delta \cdot (\text{Group}_i \times \text{Post}_t) + \varepsilon_{it}"></span>
+    </div>
     <div class="interactive-container">
-        <h4>ปรับค่าเพื่อดูว่า DID ประมาณค่า treatment effect อย่างไร</h4>
+        <h4>ปรับ &beta;, &gamma;, &delta; เพื่อดูว่า DID ประมาณค่า treatment effect อย่างไร</h4>
         <div class="two-col">
             <div>
                 <canvas id="didCanvas" width="480" height="300"></canvas>
