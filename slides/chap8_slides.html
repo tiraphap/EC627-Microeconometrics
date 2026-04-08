@@ -1309,6 +1309,42 @@
     </div>
 </section>
 
+<section>
+    <h2>ชื่อย่อในแผนภาพ: วิธีอื่นถ้า DID ใช้ไม่ได้</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>SCM &mdash; Synthetic Control Method</h3>
+                <p>สร้าง control group <strong>"สังเคราะห์"</strong> จากหลายหน่วยถ่วงน้ำหนัก ให้ได้หน่วยที่คล้าย treatment group มากที่สุดก่อนนโยบาย</p>
+                <p style="font-size:0.85em; color:var(--text-light);">ตัวอย่าง: ศึกษาผลของกฎหมายบุหรี่ในแคลิฟอร์เนีย &rarr; สร้าง "แคลิฟอร์เนียสังเคราะห์" จากรัฐอื่นถ่วงน้ำหนัก</p>
+                <p style="font-size:0.85em; color:var(--text-light);">ใช้เมื่อ: มี treatment group แค่ 1 หน่วย หรือ parallel trends ไม่สมเหตุสมผล</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>CIC &mdash; Changes-in-Changes</h3>
+                <p>ใช้ <strong>ทั้ง distribution</strong> ของ control group มาสร้าง counterfactual ไม่ใช่แค่ค่าเฉลี่ย &mdash; อ่อนกว่า parallel trends เพราะอนุญาตให้ treatment effect ต่างกันตามตำแหน่งใน distribution</p>
+                <p style="font-size:0.85em; color:var(--text-light);">ใช้เมื่อ: สงสัยว่า treatment effect ไม่เท่ากันทุกคน (heterogeneous effects)</p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ITS &mdash; Interrupted Time Series</h3>
+                <p>ใช้ <strong>ข้อมูลอนุกรมเวลายาวๆ ก่อน-หลัง</strong> นโยบาย โดย<strong>ไม่ต้องมี control group</strong> &mdash; ดูว่า trend เปลี่ยนที่จุดแทรกแซงมั้ย</p>
+                <p style="font-size:0.85em; color:var(--text-light);">ตัวอย่าง: ผลของการห้ามสูบบุหรี่ในร้านอาหารต่อยอดขาย &mdash; ดู trend ก่อน vs หลังกฎหมาย</p>
+                <p style="font-size:0.85em; color:var(--text-light);">ใช้เมื่อ: ไม่มี control group ที่เหมาะสม แต่มีข้อมูลหลาย time periods</p>
+            </div>
+            <div class="concept-box fragment">
+                <h3>RDD &mdash; Regression Discontinuity Design</h3>
+                <p>ใช้เมื่อ treatment ถูกกำหนดโดย <strong>cutoff ของ running variable</strong> (ดูบทที่ 7)</p>
+                <p style="font-size:0.85em; color:var(--text-light);">ใช้เมื่อ: ไม่มี control group แต่มี running variable ข้าม cutoff</p>
+            </div>
+            <div class="concept-box fragment">
+                <h3>CIA &mdash; Conditional Independence Assumption</h3>
+                <p>ใช้ OLS + ควบคุม X ให้ครบ (ดูสไลด์ก่อนหน้า) &mdash; ใช้เมื่อมีแค่ cross-section ไม่มีข้อมูลก่อน-หลัง</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Key Takeaways -->
 <section>
     <h2>Key Takeaways</h2>
