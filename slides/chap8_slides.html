@@ -480,41 +480,72 @@
 
 <!-- DID Equation -->
 <section>
-    <h2>สมการ DID</h2>
+    <h2>สมการ DID: ตัวแปรคืออะไร?</h2>
     <div class="concept-box">
-        <h3>สมการถดถอย DID (2x2)</h3>
         <div class="math-block">
             <span data-tex="Y_{it} = \alpha + \beta \cdot \text{Group}_i + \gamma \cdot \text{Post}_t + \delta \cdot (\text{Group}_i \times \text{Post}_t) + \varepsilon_{it}"></span>
         </div>
     </div>
     <div class="two-col" style="margin-top:5px;">
         <div>
-            <div class="example-box fragment">
-                <h3>ความหมายของสัมประสิทธิ์</h3>
-                <ul>
-                    <li><span data-tex="\alpha"></span> = ค่าเฉลี่ย Y ของ control group ที่ t=0</li>
-                    <li><span data-tex="\beta"></span> = ความแตกต่างระหว่าง treatment กับ control ที่ t=0</li>
-                    <li><span data-tex="\gamma"></span> = time trend (การเปลี่ยนแปลงของ control)</li>
-                    <li><span data-tex="\delta"></span> = <strong>DID estimate = ATT</strong></li>
-                </ul>
+            <div class="example-box">
+                <h3>ตัวอย่าง: ค่าแรงขั้นต่ำกับการจ้างงาน</h3>
+                <p>Y = การจ้างงาน &bull; i = รัฐ &bull; t = เวลา</p>
+                <table class="compare-table" style="margin-top:4px;">
+                    <tr><th>ตัวแปร</th><th>ความหมาย</th><th>ตัวอย่าง</th></tr>
+                    <tr><td><strong>Group<sub>i</sub></strong></td><td>dummy = 1 ถ้าเป็น treatment group</td><td>1 = NJ (ขึ้นค่าแรง)<br>0 = PA (ไม่ขึ้น)</td></tr>
+                    <tr><td><strong>Post<sub>t</sub></strong></td><td>dummy = 1 ถ้าเป็นช่วงหลังนโยบาย</td><td>1 = หลังขึ้นค่าแรง<br>0 = ก่อนขึ้น</td></tr>
+                    <tr><td><strong>Group &times; Post</strong></td><td>= 1 เฉพาะ treatment group หลังนโยบาย</td><td>1 = NJ หลังขึ้นค่าแรง<br>0 = อื่นๆ ทั้งหมด</td></tr>
+                </table>
             </div>
         </div>
         <div>
-            <table class="did-cell-table fragment">
-                <tr><th></th><th>t = 0</th><th>t = 1</th></tr>
-                <tr><td><strong>Treatment</strong></td><td><span data-tex="\alpha + \beta"></span></td><td><span data-tex="\alpha + \beta + \gamma + \delta"></span></td></tr>
-                <tr><td><strong>Control</strong></td><td><span data-tex="\alpha"></span></td><td><span data-tex="\alpha + \gamma"></span></td></tr>
-            </table>
-            <div class="key-insight fragment" style="margin-top:5px;">
-                <h3>DID = <span data-tex="\delta"></span></h3>
-                <p><span data-tex="(\alpha+\beta+\gamma+\delta - (\alpha+\beta)) - ((\alpha+\gamma) - \alpha) = \delta"></span></p>
+            <div class="key-insight fragment">
+                <h3>สัมประสิทธิ์แต่ละตัวบอกอะไร?</h3>
+                <ul>
+                    <li><span data-tex="\alpha"></span> = การจ้างงานเฉลี่ยของ PA ก่อนขึ้นค่าแรง (baseline)</li>
+                    <li><span data-tex="\beta"></span> = NJ ต่างจาก PA แค่ไหน <strong>ตั้งแต่ก่อนนโยบาย</strong></li>
+                    <li><span data-tex="\gamma"></span> = PA เปลี่ยนไปเท่าไหร่ระหว่างก่อน-หลัง (time trend ที่เกิดกับทุกคน)</li>
+                    <li><span data-tex="\delta"></span> = <strong>DID estimate = ATT</strong> &mdash; ผลของค่าแรงขั้นต่ำต่อการจ้างงานใน NJ</li>
+                </ul>
             </div>
         </div>
     </div>
-    <div class="stata-code fragment">
-        <span class="cmt">* สมการ DID ใน Stata</span><br>
-        <span class="cmd">gen</span> treat_post = group * post<br>
-        <span class="cmd">reg</span> y group post treat_post, <span class="opt">vce(cluster state)</span>
+</section>
+
+<section>
+    <h2>สมการ DID: ดูจากตาราง</h2>
+    <div class="two-col">
+        <div>
+            <table class="did-cell-table">
+                <tr><th></th><th>ก่อน (t=0)</th><th>หลัง (t=1)</th><th class="diff-col">ผลต่าง</th></tr>
+                <tr><td><strong>NJ (treat)</strong></td><td><span data-tex="\alpha + \beta"></span></td><td><span data-tex="\alpha + \beta + \gamma + \delta"></span></td><td class="diff-col"><span data-tex="\gamma + \delta"></span></td></tr>
+                <tr><td><strong>PA (control)</strong></td><td><span data-tex="\alpha"></span></td><td><span data-tex="\alpha + \gamma"></span></td><td class="diff-col"><span data-tex="\gamma"></span></td></tr>
+                <tr><td></td><td></td><td></td><td class="did-cell"><strong>DID = <span data-tex="\delta"></span></strong></td></tr>
+            </table>
+            <div class="key-insight fragment" style="margin-top:5px;">
+                <h3>DID = <span data-tex="\delta"></span> มาจากไหน?</h3>
+                <p><span data-tex="(\gamma + \delta) - \gamma = \delta"></span></p>
+                <p>เอาผลต่างก่อน-หลังของ NJ ลบด้วยผลต่างก่อน-หลังของ PA &rarr; time trend (<span data-tex="\gamma"></span>) หายไป เหลือแค่ <span data-tex="\delta"></span></p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ใส่ตัวเลข</h3>
+                <table class="compare-table">
+                    <tr><th></th><th>ก่อน</th><th>หลัง</th><th>ผลต่าง</th></tr>
+                    <tr><td><strong>NJ</strong></td><td>20.4</td><td>21.0</td><td>+0.6</td></tr>
+                    <tr><td><strong>PA</strong></td><td>23.3</td><td>21.2</td><td>-2.1</td></tr>
+                    <tr><td></td><td></td><td></td><td><strong>DID = +2.7</strong></td></tr>
+                </table>
+                <p style="font-size:0.85em; color:var(--text-light); margin-top:4px;">NJ จ้างงานเพิ่ม 0.6 แต่ PA ลดลง 2.1 &rarr; ถ้าไม่มีนโยบาย NJ น่าจะลดเหมือน PA &rarr; ผลจริงของค่าแรงขั้นต่ำ = 0.6 - (-2.1) = <strong>+2.7</strong></p>
+            </div>
+            <div class="stata-code fragment">
+<span class="cmd">gen</span> treat_post = group * post
+<span class="cmd">reg</span> y group post treat_post, <span class="opt">vce(cluster state)</span>
+<span class="cmt">* coef ของ treat_post = δ = DID estimate</span>
+            </div>
+        </div>
     </div>
 </section>
 
