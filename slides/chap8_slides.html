@@ -708,36 +708,80 @@
     </div>
 </section>
 
+<!-- Common Trends Violation: Explanation -->
+<section>
+    <h2>Common Trends Violation: เกิดอะไรขึ้น?</h2>
+    <div class="two-col">
+        <div>
+            <div class="concept-box">
+                <h3>Common Trends สมมติว่า</h3>
+                <div class="math-block" style="margin:4px 0;">
+                    <span data-tex="E[Y(0)_{t=1} - Y(0)_{t=0} \mid D=1] = E[Y(0)_{t=1} - Y(0)_{t=0} \mid D=0]"></span>
+                </div>
+                <p>ถ้า <strong>ไม่มี treatment</strong> ทั้งสองกลุ่มจะเปลี่ยนแปลงในอัตราเดียวกัน</p>
+                <p style="font-size:0.85em; color:var(--text-light);">พูดง่ายๆ: trend ของ treatment group (ถ้าไม่ได้รับ treatment) = trend ของ control group</p>
+            </div>
+            <div class="key-insight fragment">
+                <h3>ถ้าสมมติฐานนี้ผิด?</h3>
+                <p>สมมติ trend ของ treatment group สูงกว่า control อยู่แล้ว:</p>
+                <div class="math-block" style="margin:4px 0;">
+                    <span data-tex="\text{DID} = \delta + \underbrace{(\gamma_{\text{treat}} - \gamma_{\text{control}})}_{\text{Bias}}"></span>
+                </div>
+                <p>DID จะ <strong>ประมาณค่า δ สูงเกินจริง</strong> เพราะรวม trend ที่ต่างกันเข้าไปด้วย</p>
+            </div>
+        </div>
+        <div>
+            <div class="example-box fragment">
+                <h3>ตัวอย่าง: ค่าแรงขั้นต่ำ</h3>
+                <p>ถ้า NJ มีเศรษฐกิจโตเร็วกว่า PA <strong>อยู่แล้ว</strong> (ไม่เกี่ยวกับค่าแรง):</p>
+                <ul>
+                    <li>การจ้างงาน NJ จะเพิ่มขึ้นมากกว่า PA แม้ไม่มีนโยบาย</li>
+                    <li>DID จะคิดว่าส่วนที่เพิ่มคือผลของค่าแรงขั้นต่ำ</li>
+                    <li>แต่จริงๆ แค่ NJ โตเร็วกว่า &rarr; <strong>overestimate δ</strong></li>
+                </ul>
+            </div>
+            <div class="concept-box fragment" style="margin-top:5px;">
+                <h3>วิธีตรวจสอบ</h3>
+                <ul>
+                    <li><strong>Pre-trends test:</strong> ดูข้อมูลหลายปีก่อนนโยบาย trend ขนานกันมั้ย?</li>
+                    <li><strong>Event study:</strong> plot <span data-tex="\delta_k"></span> สำหรับ k &lt; 0 ควร &ap; 0</li>
+                    <li><strong>Placebo DID:</strong> ลองทำ DID กับช่วงก่อนนโยบาย ไม่ควรพบ effect</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Interactive: Common Trends Violation -->
 <section>
-    <h2>Common Trends Violation</h2>
+    <h2>Common Trends Violation: ลองดู</h2>
     <div class="interactive-container">
-        <h4>ดูว่าเกิดอะไรเมื่อ Parallel Trends ถูกละเมิด</h4>
+        <h4>ปรับ slope ของสองกลุ่มให้ต่างกัน แล้วดู bias ที่เกิดขึ้น</h4>
         <div class="two-col">
             <div>
                 <canvas id="violationCanvas" width="480" height="280"></canvas>
             </div>
             <div>
                 <div class="slider-group">
-                    <label>Treat Slope:</label>
+                    <label>Treat Slope (<span data-tex="\gamma_{\text{treat}}"></span>):</label>
                     <input type="range" id="sliderTreatSlope" min="0" max="5" step="0.5" value="3">
                     <span class="val" id="valTreatSlope">3.0</span>
                 </div>
                 <div class="slider-group">
-                    <label>Control Slope:</label>
+                    <label>Control Slope (<span data-tex="\gamma_{\text{ctrl}}"></span>):</label>
                     <input type="range" id="sliderCtrlSlope" min="0" max="5" step="0.5" value="2">
                     <span class="val" id="valCtrlSlope">2.0</span>
                 </div>
                 <div class="slider-group">
-                    <label>True Effect:</label>
+                    <label>True Effect (<span data-tex="\delta"></span>):</label>
                     <input type="range" id="sliderTrueEffect" min="0" max="4" step="0.5" value="1">
                     <span class="val" id="valTrueEffect">1.0</span>
                 </div>
                 <div class="key-insight" style="margin-top:8px;">
                     <p><strong>DID estimate:</strong> <span id="violDID" style="font-weight:700;">2.0</span></p>
-                    <p><strong>True effect:</strong> <span id="violTrue" style="font-weight:700;color:var(--accent3);">1.0</span></p>
-                    <p><strong>Bias:</strong> <span id="violBias" style="font-weight:700;color:var(--accent);">1.0</span></p>
-                    <p style="font-size:0.45em;">Bias = ส่วนต่างของ slope ระหว่าง 2 กลุ่ม</p>
+                    <p><strong>True effect (<span data-tex="\delta"></span>):</strong> <span id="violTrue" style="font-weight:700;color:var(--accent3);">1.0</span></p>
+                    <p><strong>Bias (<span data-tex="\gamma_{\text{treat}} - \gamma_{\text{ctrl}}"></span>):</strong> <span id="violBias" style="font-weight:700;color:var(--accent);">1.0</span></p>
+                    <p style="font-size:0.45em;">ลอง: ปรับ slope ให้เท่ากัน &rarr; bias = 0 &rarr; DID = true effect</p>
                 </div>
             </div>
         </div>
