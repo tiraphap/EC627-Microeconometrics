@@ -165,7 +165,14 @@ print("=" * 60)
 # log helps compress the right tail, making a linear conditional quantile
 # model more plausible.
 # -----------------------------------------------------------------------
-df = pd.read_excel("Chap5_1_data.xlsx")
+# Try multiple paths (Colab, local scripts/, repo root)
+for _path in ['Chap5_1_data.xlsx', '../data/Chap5_1_data.xlsx', 'data/Chap5_1_data.xlsx']:
+    if os.path.exists(_path):
+        df = pd.read_excel(_path)
+        break
+else:
+    raise FileNotFoundError('Cannot find Chap5_1_data.xlsx. Upload it or check data/ folder.')
+
 df = df.dropna(subset=['ltotexp'])
 print(f"\nSample size: {len(df)}")
 

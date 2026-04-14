@@ -158,6 +158,14 @@ Note on `linearmodels` terminology:
 #   - statsmodels: OLS and other standard econometric models
 #   - linearmodels: IV estimators (2SLS, GMM, LIML) -- this package
 #     was specifically designed to replicate Stata's ivregress functionality
+# Auto-install packages for Colab compatibility
+import subprocess, sys, os
+for _pkg in ['linearmodels', 'openpyxl']:
+    try:
+        __import__(_pkg)
+    except ImportError:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', _pkg, '-q'])
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -226,7 +234,14 @@ print("=" * 60)
 # requires the same sample across first-stage and second-stage regressions.
 # Mismatched samples would invalidate the procedure.
 #
-df = pd.read_excel("Chap4_data.xlsx")
+# Try multiple paths (Colab, local scripts/, repo root)
+for _path in ['Chap4_data.xlsx', '../data/Chap4_data.xlsx', 'data/Chap4_data.xlsx']:
+    if os.path.exists(_path):
+        df = pd.read_excel(_path)
+        break
+else:
+    raise FileNotFoundError('Cannot find Chap4_data.xlsx. Upload it or check data/ folder.')
+
 
 x2list = ['totchr', 'age', 'female', 'blhisp', 'linc']
 dep_var = 'ldrugexp'

@@ -104,6 +104,13 @@ the counties that received assistance?
 # ============================================================
 # SETUP
 # ============================================================
+# Install rdrobust if not already installed (needed for Colab)
+import subprocess, sys
+try:
+    from rdrobust import rdrobust
+except ImportError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'rdrobust', '-q'])
+
 # We import the standard scientific Python stack:
 #   - pandas: for data manipulation (DataFrames)
 #   - numpy: for numerical computations
@@ -115,6 +122,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 import statsmodels.api as sm
+import os
 
 # Set numpy to display 4 decimal places for cleaner output
 np.set_printoptions(precision=4)
@@ -156,7 +164,13 @@ print("=" * 60)
 #   falsification tests to check that they are balanced (i.e., continuous) at
 #   the cutoff.
 # ============================================================
-df = pd.read_excel("Chap7_headstart.xlsx")
+# Try multiple paths (works on Colab, local, and from repo root)
+for _path in ['Chap7_headstart.xlsx', '../data/Chap7_headstart.xlsx', 'data/Chap7_headstart.xlsx']:
+    if os.path.exists(_path):
+        df = pd.read_excel(_path)
+        break
+else:
+    raise FileNotFoundError("Cannot find Chap7_headstart.xlsx. Please upload it or check the data/ folder.")
 print(f"\nDataset: Head Start (Ludwig & Miller, 2007)")
 print(f"Observations: {len(df)}")
 

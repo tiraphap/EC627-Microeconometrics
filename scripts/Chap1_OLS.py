@@ -73,7 +73,14 @@ np.set_printoptions(precision=4)
 #
 # Stata equivalent: use "Chap 1 data.dta", clear
 # In Python, we read from the Excel file that was converted from Stata's .dta format.
-df = pd.read_excel("Chap1_data.xlsx")
+# Try multiple paths (Colab, local scripts/, repo root)
+for _path in ['Chap1_data.xlsx', '../data/Chap1_data.xlsx', 'data/Chap1_data.xlsx']:
+    if os.path.exists(_path):
+        df = pd.read_excel(_path)
+        break
+else:
+    raise FileNotFoundError('Cannot find Chap1_data.xlsx. Upload it or check data/ folder.')
+
 
 print("=" * 60)
 print("CHAPTER 1: OLS REGRESSION & SPECIFICATION ANALYSIS")

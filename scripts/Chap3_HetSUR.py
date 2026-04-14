@@ -79,6 +79,14 @@ PART 3 -- SURVEY DATA: WEIGHTING, CLUSTERING, AND STRATIFICATION
 # ============================================================
 # SETUP
 # ============================================================
+# Auto-install packages for Colab compatibility
+import subprocess, sys, os
+for _pkg in ['linearmodels', 'openpyxl']:
+    try:
+        __import__(_pkg)
+    except ImportError:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', _pkg, '-q'])
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -514,7 +522,14 @@ print("\n" + "=" * 60)
 print("PART 2: SEEMINGLY UNRELATED REGRESSIONS (SUR)")
 print("=" * 60)
 
-df_sur = pd.read_excel("Chap3_surdata.xlsx")
+# Try multiple paths (Colab, local scripts/, repo root)
+for _path in ['Chap3_surdata.xlsx', '../data/Chap3_surdata.xlsx', 'data/Chap3_surdata.xlsx']:
+    if os.path.exists(_path):
+        df_sur = pd.read_excel(_path)
+        break
+else:
+    raise FileNotFoundError('Cannot find Chap3_surdata.xlsx. Upload it or check data/ folder.')
+
 print("\nSUR data summary:")
 sur_vars = ['ldrugexp', 'ltotothr', 'age', 'age2', 'educyr', 'actlim', 'totchr', 'medicaid', 'private']
 print(df_sur[sur_vars].describe().round(3))

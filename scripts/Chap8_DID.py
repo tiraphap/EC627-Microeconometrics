@@ -124,6 +124,14 @@ Topics and methods covered:
 # pd.set_option('display.max_columns', 15) ensures pandas displays enough
 # columns without truncation when printing DataFrames.
 # --------------------------------------------------------------------------
+# Auto-install packages for Colab compatibility
+import subprocess, sys, os
+for _pkg in ['linearmodels', 'openpyxl']:
+    try:
+        __import__(_pkg)
+    except ImportError:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', _pkg, '-q'])
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -168,7 +176,14 @@ print("=" * 60)
 # We sort by state and year to ensure proper panel ordering, then restrict the
 # sample to 1979-1995, matching Autor's analysis period.
 # --------------------------------------------------------------------------
-df = pd.read_excel("Chap8_autor.xlsx")
+# Try multiple paths (Colab, local scripts/, repo root)
+for _path in ['Chap8_autor.xlsx', '../data/Chap8_autor.xlsx', 'data/Chap8_autor.xlsx']:
+    if os.path.exists(_path):
+        df = pd.read_excel(_path)
+        break
+else:
+    raise FileNotFoundError('Cannot find Chap8_autor.xlsx. Upload it or check data/ folder.')
+
 print(f"\nDataset: Autor (2003, JOLE) - Employment-at-Will Exceptions")
 print(f"Total observations: {len(df)}")
 

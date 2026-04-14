@@ -134,6 +134,14 @@ MAPPING BETWEEN STATA AND PYTHON
 #   - statsmodels: econometric models (OLS, Logit, GLM for Poisson/NB)
 #   - linearmodels.panel: dedicated panel data estimators that closely
 #     mirror Stata's xtreg command (FE, RE, BE, FD, Pooled OLS)
+# Auto-install packages for Colab compatibility
+import subprocess, sys, os
+for _pkg in ['linearmodels', 'openpyxl']:
+    try:
+        __import__(_pkg)
+    except ImportError:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', _pkg, '-q'])
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -198,7 +206,14 @@ print("\n" + "=" * 60)
 print("PART A: LINEAR PANEL DATA (PSID)")
 print("=" * 60)
 
-df = pd.read_excel("Chap6_panel.xlsx")
+# Try multiple paths (Colab, local scripts/, repo root)
+for _path in ['Chap6_panel.xlsx', '../data/Chap6_panel.xlsx', 'data/Chap6_panel.xlsx']:
+    if os.path.exists(_path):
+        df = pd.read_excel(_path)
+        break
+else:
+    raise FileNotFoundError('Cannot find Chap6_panel.xlsx. Upload it or check data/ folder.')
+
 print(f"\nDataset: 595 individuals x 7 years (1976-82)")
 print(f"Total observations: {len(df)}")
 print(f"\n--- Summary Statistics ---")
