@@ -421,7 +421,10 @@ print("=" * 60)
 # --------------------------------------------------------------------------
 
 # Reload original data for regression
-df2 = pd.read_excel("Chap8_autor.xlsx")
+for _path in ['Chap8_autor.xlsx', '../data/Chap8_autor.xlsx', 'data/Chap8_autor.xlsx']:
+    if os.path.exists(_path):
+        df2 = pd.read_excel(_path)
+        break
 df2 = df2.sort_values(['state', 'year'])
 
 # --------------------------------------------------------------------------
